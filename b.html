@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>Supporter Code Input</title>
+<script src="sha512.js"></script>
+<script>
+function save_code(){
+	let code=document.getElementById("code").value;
+	localStorage.supporterCode = sha512_256(code + "abcdefg").substr(16) + sha512_256(code + "abcdefgh").substr(16) + sha512_256(code + "abcdefghi").substr(16) + sha512_256(code + "abcdefghij").substr(16);
+}
+</script>
+</head>
+<body>
+Input Correct Supporter Code to gain bonuses to my incremental games!<br>
+<input id="code">
+<a href="javascript:void(save_code());">Save</a><br>
+<br>
+Supporter Code Bonuses: <br>
+10x 1st Milestone effect, 2x Prestige Points and 2x All Passive Reset Gains in The Milestone Tree<br>
+<br>
+If you don't have it, <a href=https://patreon.com/user?u=56328626 target=_blank>Patreon Donation</a> and go to <a href=https://discord.gg/jztUReQ2vT target=_blank>my Discord server</a> to get!
+<br>
+For Chinese users, donate me in <a href=https://afdian.net/@loader3229 target=_blank>https://Afdian.net/@loader3229</a> and contact me to get!
+</body>
+</html>
