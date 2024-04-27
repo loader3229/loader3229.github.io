@@ -1,0 +1,1174 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>装备狂潮</title>
+<style id="sty1"></style>
+<script>
+var equipment_names=[
+["匕首","短剑","木剑","草原短刀","铁剑","钢剑","森林剑","铜剑","银剑","金剑","火剑","魔法剑","三叉戟","自然之剑"],
+["布衣","皮甲","轻甲","铁甲","钢甲","森林铠甲","沙漠衣","铜甲","银甲","黄金铠甲","羽毛衣","燃烧铠甲","水之护盾","自然护盾"],
+["布鞋","皮鞋","森林鞋","沙漠行者","水上行者","天空之鞋","火焰靴","魔法鞋"],
+["转生宝石","生命宝石","暴击宝石","海洋之心","火焰核心","经验宝石","魔法核心","吸血宝石","自然核心","大地核心","生命水晶","回复宝石"],
+["新手村之章","草原徽章","森林徽章","沙漠徽章","洞穴徽章","水之章","自然之章","天空之章","火之章","魔法之章"],
+];
+var i18n={
+	battling:"正在战斗中",
+	softreset:"是否软重置？你将重新开始游戏但保留转生点和转生相关升级。",
+	hardreset1:function(){
+		return "是否硬重置？你将重新开始游戏并且失去转生点"+(highest_progress>=200?"、转生相关升级、超越点和超越相关升级！":"和转生相关升级")+"！";
+	},
+	hardreset2:"是否硬重置？你将失去所有东西！这是最后一次警告！",
+	inputsave:"输入你的存档",
+	transcend:"是否超越？你将重新开始游戏且失去转生点和转生相关升级，但是会获得超越点。",
+};
+function update(){
+	for(var i=4;;i+=5){
+		var t=document.getElementById("b"+i);
+		if(!t)break;
+		if(!t.children[4])break;
+		t.children[0].className="non_boss";
+		t.children[1].className="non_boss";
+		t.children[2].className="non_boss";
+		t.children[3].className="non_boss";
+	}
+	if(document.getElementById("hide_non_boss").checked)document.getElementById("sty1").innerHTML=".non_boss{display:none;}";
+	else document.getElementById("sty1").innerHTML="";
+	document.getElementById("lv").innerHTML=format(getlv().lv)+" 经验值："+format(getlv().step-getlv().next)+"/"+format(getlv().step);
+	if(getlv().lv>=1e8)document.getElementById("lv").innerHTML=format(getlv().lv)+" &nbsp;&nbsp;"+format(getlv().step)+"经验值升1级";
+	document.getElementById("power").innerHTML=format(getpower());
+	document.getElementById("energy").innerHTML=energy;
+	document.getElementById("hp").innerHTML=format(hp)+" ("+format(gethp())+")";
+	document.getElementById("atk").innerHTML=format(atk)+" ("+format(getatk())+")";
+	document.getElementById("def").innerHTML=format(def)+" ("+format(getdef())+")";
+	document.getElementById("prestige").innerHTML=format(pp)+" (+"+format(getpp())+")";
+	if(transcendlv>=9)document.getElementById("prestige").innerHTML=format(pp)+" (每次战斗+"+format(Math.floor(getpp()*energyc_eff()))+")";
+	if(highest_progress>=200)document.getElementById("prestige").innerHTML+=" 超越点："+format(tp)+" (+"+format(gettp())+")";
+	document.getElementById("prestige2").innerHTML=format(getpp());
+	document.getElementById("prestige3").innerHTML=format(pp);
+	document.getElementById("prestige_eff").innerHTML=Math.floor(prestige_eff()*100)/100;
+	if(prestige_eff()>=10000)document.getElementById("prestige_eff").innerHTML=format(prestige_eff());
+	document.getElementById("luk").innerHTML=format(luk);
+	document.getElementById("points").innerHTML=format(points);
+	document.getElementById("save").value=exportsave();
+	localStorage.zbkc=exportsave();
+	for(var i=4;i<progress;i+=5)document.getElementById("b"+i).style.display="inline";
+	
+	var eq_log="";
+	if(eqtab==0){
+		eq_log=eq_log+"你的武器提供了"+format((geteqeff(0)-1)*100)+"%的额外攻击，你有：";
+	}
+	if(eqtab==1){
+		eq_log=eq_log+"你的防具提供了"+format((geteqeff(1)-1)*100)+"%的额外防御，你有：";
+	}
+	if(eqtab==2){
+		eq_log=eq_log+"你的鞋子提供了"+format((geteqeff(2)-1)*100)+"%的额外战斗速度，你有：";
+	}
+	if(eqtab==4){
+		eq_log=eq_log+"你的徽章提供了"+format((geteqeff(4)-1)*100)+"%的额外生命值、攻击、防御";
+		if(highest_progress>=185)eq_log=eq_log+"、经验值";
+		eq_log=eq_log+"和转生点，你有：";
+	}
+	for(var i=0;i<equipment_names[eqtab].length;i++){
+		if((equipments[eqtab][i]||0)>0 || (eqlevels[eqtab][i]||0)>0){
+			eq_log=eq_log+"<br>"+equipment_names[eqtab][i]+((eqlevels[eqtab][i]||0)>0?"+"+eqlevels[eqtab][i]:"")+"x"+format(equipments[eqtab][i]||0);
+			if(eqtab==3&&i==0)eq_log=eq_log+"(+"+format((geteqeffs(3,0)-1)*100)+"%转生点)";
+			if(eqtab==3&&i==1)eq_log=eq_log+"(+"+format((geteqeffs(3,1)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==2)eq_log=eq_log+"(+"+format((geteqeffs(3,2)-1)*100)+"%暴击率)";
+			if(eqtab==3&&i==3)eq_log=eq_log+"(+"+format((geteqeffs(3,3)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==4)eq_log=eq_log+"(+"+format((geteqeffs(3,4)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==5&&highest_progress>=160)eq_log=eq_log+"+1000";
+			if(eqtab==3&&i==5&&highest_progress>=195)eq_log=eq_log+"00";
+			if(eqtab==3&&i==5&&highest_progress>=220)eq_log=eq_log+"00";
+			if(eqtab==3&&i==5)eq_log=eq_log+"(+"+format((geteqeffs(3,5)-1)*100)+"%经验值)";
+			if(eqtab==3&&i==6)eq_log=eq_log+"(+"+format((geteqeffs(3,6)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==7)eq_log=eq_log+"(+"+((geteqeffs(3,7)-1)*100).toFixed(4)+"%吸血)";
+			if(eqtab==3&&i==8)eq_log=eq_log+"(+"+format((geteqeffs(3,8)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==9)eq_log=eq_log+"(+"+format((geteqeffs(3,9)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==10)eq_log=eq_log+"(+"+format((geteqeffs(3,10)-1)*100)+"%生命值)";
+			if(eqtab==3&&i==11)eq_log=eq_log+"(+"+((geteqeffs(3,11)-1)*100).toFixed(4)+"%生命值回复)";
+			if(highest_progress>=50){
+				eq_log=eq_log+" <a href=\"javascript:eqlevelup("+eqtab+","+i+");\">强化（需要"+format(eqlevel_cost(eqtab,i))+"个"+equipment_names[eqtab][i]+"）</a>";
+			}
+		}
+	}
+	if(document.getElementById("eq").innerHTML!=eq_log)document.getElementById("eq").innerHTML=eq_log;
+	if(highest_progress<progress)highest_progress=progress;
+	if(highest_progress>=10){
+		document.getElementById("pu2").style.display="inline";
+		var temp="";
+		if(highest_progress>=180)temp="+4";
+		else if(highest_progress>=110)temp="+3";
+		else if(highest_progress>=90)temp="+2";
+		else if(highest_progress>=80)temp="+1";
+		document.getElementById("pu2").innerHTML="生命加点提升"+temp+"（"+(pu[2]||0)+"级，升级需"+format(prestige_cost(2))+"转生点）";
+	}
+	if(highest_progress>=20){
+		document.getElementById("pu1").style.display="inline";
+		var temp="";
+		if(highest_progress>=120)temp="+1";
+		if(highest_progress>=260)temp="+2";
+		document.getElementById("pu1").innerHTML="初始能量提升"+temp+"（"+(pu[1]||0)+"级，升级需"+format(prestige_cost(1))+"转生点）";
+	}
+	if(highest_progress>=30){
+		document.getElementById("pu0").style.display="inline";
+		document.getElementById("pu0").innerHTML="初始等级提升（"+(pu[0]||0)+"级，升级需"+format(prestige_cost(0))+"转生点）";
+	}
+	if(highest_progress>=40){
+		document.getElementById("pu3").style.display="inline";
+		var temp="";
+		if(highest_progress>=190)temp="+4";
+		else if(highest_progress>=130)temp="+3";
+		else if(highest_progress>=100)temp="+2";
+		else if(highest_progress>=70)temp="+1";
+		document.getElementById("pu3").innerHTML="生命值提升"+temp+"（"+(pu[3]||0)+"级，升级需"+format(prestige_cost(3))+"转生点）";
+	}
+	if(highest_progress>=50){
+		document.getElementById("pu4").style.display="inline";
+		var temp="";
+		if(highest_progress>=150)temp="+1";
+		document.getElementById("pu4").innerHTML="BOSS额外掉落"+temp+"（"+(pu[4]||0)+"级，升级需"+format(prestige_cost(4))+"转生点）";
+	}
+	if(pu[4]>=3){
+		document.getElementById("eq_4").style.display="inline";
+	}
+	if(highest_progress>=60){
+		document.getElementById("pu5").style.display="inline";
+		document.getElementById("pu5").innerHTML="强化的效果提升（"+(pu[5]||0)+"级，升级需"+format(prestige_cost(5))+"转生点）";
+	}
+	if(highest_progress>=70){
+		document.getElementById("pu6").style.display="inline";
+		var temp="";
+		if(highest_progress>=170)temp="+1";
+		document.getElementById("pu6").innerHTML="多倍能量消耗设定"+temp+"（"+(pu[6]||0)+"级，升级需"+format(prestige_cost(6))+"转生点）";
+	}
+	if(pu[6]>=1){
+		document.getElementById("energyc").style.display="inline";
+		var mxenergyc=Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1;
+		if(mxenergyc>=8&&highest_progress>=170)mxenergyc=pu[6]+5;
+		else if(mxenergyc>=9)mxenergyc=9;
+		document.getElementById("energycinput").max=Math.ceil(mxenergyc);
+		energyc=parseInt(document.getElementById("energycinput").value);
+		if(energyc<0)energyc=0;
+		if(energyc>=9)energyc=Math.floor((energyc-5)**1.5+1);
+		if(energyc>Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1)energyc=Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1;
+		if(transcendlv>=10)energyc=energyc*2;
+		document.getElementById("energyc_eff").innerHTML="消耗"+energyc+"能量，得到"+energyc_eff().toFixed(2)+"倍经验和装备";
+	}else energyc=1;
+	if(highest_progress>=75){
+		document.getElementById("chall").style.display="inline";
+		document.getElementById("chall").innerHTML="你当前在挑战"+chall+"中";
+		document.getElementById("chall_tab").style.display="inline";
+		if(!challlvs[chall] || challlvs[chall]<getlv().lv){
+			challlvs[chall]=getlv().lv;
+		}
+		document.getElementById("chall0").style.display="block";
+		document.getElementById("chall0lv").innerHTML=format(challlvs[0]||0);
+		document.getElementById("chall0eff").innerHTML=format((challeff(0)-1)*100);
+		document.getElementById("chall1").style.display="block";
+		document.getElementById("chall1lv").innerHTML=format(challlvs[1]||0);
+		document.getElementById("chall1eff").innerHTML=format((challeff(1)-1)*100);
+	}
+	if(highest_progress>=80){
+		document.getElementById("pu7").style.display="inline";
+		document.getElementById("pu7").innerHTML="升级可得属性点提升（"+(pu[7]||0)+"级，升级需"+format(prestige_cost(7))+"转生点）";
+	}
+	if(highest_progress>=85){
+		document.getElementById("chall2").style.display="block";
+		document.getElementById("chall2lv").innerHTML=format(challlvs[2]||0);
+		document.getElementById("chall2eff").innerHTML=format(challeff(2));
+	}
+	if(highest_progress>=90){
+		document.getElementById("chall3").style.display="block";
+		document.getElementById("chall3lv").innerHTML=format(challlvs[3]||0);
+		document.getElementById("chall3eff").innerHTML=format((challeff(3)-1)*100);
+	}
+	if(highest_progress>=95){
+		document.getElementById("chall4").style.display="block";
+		document.getElementById("chall4lv").innerHTML=format(challlvs[4]||0);
+		document.getElementById("chall4eff").innerHTML=format((challeff(4)-1)*100);
+	}
+	if(highest_progress>=100){
+		document.getElementById("diffselect").style.display="block";
+		document.getElementById("diff0_disp").style.display="inline";
+		for(var i=0;i*100<=highest_progress;i++)document.getElementById("diff"+i).style.display="inline";
+	}
+	if(highest_progress>=100){
+		document.getElementById("pu8").style.display="inline";
+		document.getElementById("pu8").innerHTML="经验值提升（"+(pu[8]||0)+"级，升级需"+format(prestige_cost(8))+"转生点）";
+	}
+	if(highest_progress>=105){
+		document.getElementById("chall5").style.display="block";
+		document.getElementById("chall5lv").innerHTML=format(challlvs[5]||0);
+		document.getElementById("chall5eff").innerHTML=format((challeff(5)-1)*100);
+	}
+	if(highest_progress>=125){
+		document.getElementById("pu9").style.display="inline";
+		document.getElementById("pu9").innerHTML="战斗速度提升（"+(pu[9]||0)+"级，升级需"+format(prestige_cost(9))+"转生点）";
+	}
+	if(highest_progress>=150){
+		document.getElementById("tower_tab").style.display="inline";
+		document.getElementById("challtower").style.display="block";
+		document.getElementById("tower_floor").innerHTML=tower;
+		document.getElementById("tower_floor2").innerHTML=tower*1.5;
+		document.getElementById("tower_battle").innerHTML="挑战第"+(tower+1+towerc)+"层（战力"+format(gettowerpower())+"）";
+	}
+	if(highest_progress>=170){
+		document.getElementById("chall6").style.display="block";
+		document.getElementById("chall6lv").innerHTML=format(challlvs[6]||0);
+		document.getElementById("chall6eff").innerHTML=format((challeff(6)-1)*100);
+	}
+	if(highest_progress>=190){
+		document.getElementById("pu10").style.display="inline";
+		document.getElementById("pu10").innerHTML="装备掉落提升（"+(pu[10]||0)+"级，升级需"+format(prestige_cost(10))+"转生点）";
+	}
+	if(highest_progress>=200){
+		document.getElementById("trans_tab").style.display="inline";
+		document.getElementById("transcend2").innerHTML=format(gettp());
+		document.getElementById("transcend3").innerHTML=format(tp);
+		document.getElementById("transcend_eff").innerHTML=Math.floor(transcend_eff()*100)/100;
+		document.getElementById("transcend_eff2").innerHTML=Math.floor(transcend_eff2()*100)/100;
+	}
+	if(highest_progress>=205){
+		document.getElementById("tab6a").style.display="block";
+		document.getElementById("transcendlv").innerHTML=format(transcendlv);
+		document.getElementById("transcendlv2").innerHTML=format(transcendlvupreq());
+		document.getElementById("transcendlv3").innerHTML=format(Math.pow(2,transcendlv));
+		document.getElementById("transcendlv_eff").innerHTML=Math.floor(Math.pow(1.1,transcendlv)*100)/100;
+		document.getElementById("transcendlv_eff2").innerHTML="";
+		if(transcendlv>=1)document.getElementById("transcendlv_eff2").innerHTML+="1级：你可以跳层挑战通天塔。取消"+(transcendlv>=11?25:transcendlv>=8?50:transcendlv>=5?70:200)+"层以上的通天塔怪物强度放缩。<br>";
+		if(transcendlv>=2)document.getElementById("transcendlv_eff2").innerHTML+="2级：挑战2的效果更好。<br>";
+		if(transcendlv>=4){
+			document.getElementById("transcendlv_eff2").innerHTML+="3级：在你受到致命伤害之后，以1点生命值复活，1场战斗最多"+tlv3eff()+"次。<br>";
+			document.getElementById("transcendlv_eff2").innerHTML+="4级：转生或超越后你直接解锁普通难度的所有战斗区域。（挑战2中无效）<br>";
+		}else if(transcendlv>=3)document.getElementById("transcendlv_eff2").innerHTML+="3级：在你受到致命伤害之后，以1点生命值复活，1场战斗最多1次。<br>";
+		if(transcendlv>=5){
+			document.getElementById("fboss_tab").style.display="inline";
+			document.getElementById("transcendlv_eff2").innerHTML+="5级：现在你可以在任何挑战内更新挑战0、1和5的最高等级。解锁最终BOSS。<br>";
+			if(!challlvs[0] || challlvs[0]<getlv().lv){
+				challlvs[0]=getlv().lv;
+			}
+			if(!challlvs[1] || challlvs[1]<getlv().lv){
+				challlvs[1]=getlv().lv;
+			}
+			if(!challlvs[5] || challlvs[5]<getlv().lv){
+				challlvs[5]=getlv().lv;
+			}
+			document.getElementById("final_boss_hp").innerHTML=Math.ceil(1000000000-fbossdamage)+"/1000000000";
+			document.getElementById("final_boss_damage1").innerHTML=Math.floor(fbossdamage);
+			document.getElementById("final_boss_damage2").innerHTML=Math.floor(getfbossdamage());
+			document.getElementById("final_boss_damage3").innerHTML=(1+fbossdamage/1e8).toFixed(3);
+			document.getElementById("final_boss_effect").innerHTML="累计对最终BOSS造成1亿伤害，可以获得一个神秘效果！";
+			if(fbossdamage>=100000000){
+				document.getElementById("final_boss_effect").innerHTML="你已经累计对最终BOSS造成1亿伤害，得到效果：当超越之神等级>=9时，你对最终BOSS造成的伤害的效果作用于转生点。";
+			}
+		}
+		if(transcendlv>=6)document.getElementById("transcendlv_eff2").innerHTML+="6级：超越之神效果现在对生命值、攻击和防御生效。<br>";
+		if(transcendlv>=7)document.getElementById("transcendlv_eff2").innerHTML+="7级：超越之神效果现在对经验生效。<br>";
+		if(transcendlv>=8){
+			document.getElementById("transcendlv_eff2").innerHTML+="8级：现在你可以在任何挑战内更新挑战2的最高等级。<br>";
+			if(!challlvs[2] || challlvs[2]<getlv().lv){
+				challlvs[2]=getlv().lv;
+			}
+		}
+		if(transcendlv>=9)document.getElementById("transcendlv_eff2").innerHTML+="9级：每次战斗时获得转生点。超越之神效果现在对转生点生效。转生或超越后你直接解锁已经解锁的所有战斗区域（挑战2中无效）。<br>";
+		if(transcendlv>=10)document.getElementById("transcendlv_eff2").innerHTML+="10级：提升每次使用能量战斗时的奖励倍率但每次战斗时消耗能量翻倍。每次战斗胜利后对最终BOSS造成少量伤害。<br>";
+		if(transcendlv>=11)document.getElementById("transcendlv_eff2").innerHTML+="11级：基于超越之神等级减少通天塔怪物的生命值。<br>";
+	}
+	if(highest_progress>=225){
+		document.getElementById("pu11").style.display="inline";
+		document.getElementById("pu11").innerHTML="防御提升（"+(pu[11]||0)+"级，升级需"+format(prestige_cost(11))+"转生点）";
+	}
+	if(highest_progress>=240){
+		document.getElementById("pu12").style.display="inline";
+		document.getElementById("pu12").innerHTML="攻击提升（"+(pu[12]||0)+"级，升级需"+format(prestige_cost(12))+"转生点）";
+	}
+	if(transcendlv>=1){
+		document.getElementById("tower_skip").style.display="inline";
+		document.getElementById("towercinput").max=9;
+		towerc=parseInt(document.getElementById("towercinput").value);
+		document.getElementById("towerc_eff").innerHTML="跳过"+towerc+"层";
+	}else towerc=0;
+	
+	if(autopoints.checked){
+		var autopoints1=parseInt(document.getElementById("autopoints1").value);
+		if(autopoints1<0||autopoints1>10)document.getElementById("autopoints1").value=autopoints1=0;
+		var autopoints2=parseInt(document.getElementById("autopoints2").value);
+		if(autopoints2<0||autopoints2>10)document.getElementById("autopoints2").value=autopoints2=0;
+		var autopoints3=parseInt(document.getElementById("autopoints3").value);
+		if(autopoints3<0||autopoints3>10)document.getElementById("autopoints3").value=autopoints3=0;
+		var autopoints4=parseInt(document.getElementById("autopoints4").value);
+		if(autopoints4<0||autopoints4>10)document.getElementById("autopoints4").value=autopoints4=0;
+		var autopointssum=autopoints1+autopoints2+autopoints3+autopoints4;
+		if(autopointssum>0){
+			add(1,autopoints1/autopointssum);
+			autopointssum-=autopoints1;
+		}
+		if(autopointssum>0){
+			add(2,autopoints2/autopointssum);
+			autopointssum-=autopoints2;
+		}
+		if(autopointssum>0){
+			add(3,autopoints3/autopointssum);
+			autopointssum-=autopoints3;
+		}
+		if(autopointssum>0){
+			add(4,autopoints4/autopointssum);
+			autopointssum-=autopoints4;
+		}
+	}
+}
+function battle(x){
+	if(battling){
+		alert("正在战斗中");
+		return;
+	}
+	if(energy<energyc && x!='tower'){
+		alert("能量不足，请转生！");
+		return;
+	}
+	if(chall==2&&energyc<=0 && x!='tower'){
+		alert("由于挑战2的限制，战斗必须消耗至少1能量！");
+		return;
+	}
+	battling=1;
+	var simple_mode=document.getElementById("simple_mode").checked;
+	document.getElementById("tab0").style.display="none";
+	document.getElementById("tab1").style.display="none";
+	document.getElementById("tab2").style.display="none";
+	document.getElementById("tab3").style.display="none";
+	document.getElementById("tab4").style.display="none";
+	document.getElementById("battlelog").style.display="block";
+	var curhp=gethp();
+	var enemyhp=getehp(x);
+	if(x==79&&highest_progress>=80){
+		enemyhp=Math.ceil(enemyhp/((highest_progress-x+1.5)**0.75));
+	}
+	if(x==179&&highest_progress>=180){
+		enemyhp=Math.ceil(enemyhp/((highest_progress-x+1.5)**0.75));
+	}
+	var enemyhp2=enemyhp;
+	var enemyatk=geteatk(x);
+	var enemydef=getedef(x);
+	var keep1hp=0;
+	if(transcendlv>=3)keep1hp=tlv3eff();
+	var temp_towerc=0;
+	if(x=='tower')temp_towerc=towerc;
+	var mult=1;
+	var battle_status={"log":"你遇到了怪物<br>","interval":-1};
+	if(x%5==4)battle_status.log="你遇到了BOSS，BOSS有"+format(enemyhp)+"点生命值<br>";
+	if(x==39||x==69||x==139||x==169)battle_status.log+="BOSS特性：受到的伤害开方<br>";
+	if(x==49||x==99||x==149||x==199||x==249)battle_status.log+="BOSS特性：23.33%暴击率<br>";
+	if(x==59||x==99||x==159||x==199||x==259)battle_status.log+="BOSS特性：23.33%闪避率<br>";
+	if(x==74&&chall==5)battle_status.log+="BOSS特性：BOSS的第二次攻击为必杀<br>";
+	else if(x==74)battle_status.log+="BOSS特性：一击必杀<br>";
+	if(x==174&&chall==5)battle_status.log+="BOSS特性：BOSS的第二次攻击为必杀<br>";
+	else if(x==174)battle_status.log+="BOSS特性：一击必杀<br>";
+	if(x==79&&chall==1)battle_status.log+="BOSS特性：受到的伤害变为原来的0.25次方<br>";
+	else if(x==79)battle_status.log+="BOSS特性：受到的伤害取自然对数<br>";
+	if(x==179&&chall==1)battle_status.log+="BOSS特性：受到的伤害变为原来的0.25次方<br>";
+	else if(x==179)battle_status.log+="BOSS特性：受到的伤害取自然对数<br>";
+	if(x==84||x==184)battle_status.log+="BOSS特性：你的能量越多，BOSS越强<br>",enemyatk*=(1+0.15*energy),enemydef*=(1+0.15*(energy**1.5));
+	if(x==89||x==99||x==189||x==199)battle_status.log+="BOSS特性：你的等级越高，BOSS越强<br>",enemyatk*=(getlv().lv),enemydef*=(getlv().lv);
+	if(x==94||x==99||x==194||x==199)battle_status.log+="BOSS特性：你的武器和防具越多，BOSS越强<br>",enemyatk*=(geteqeff(1)),enemydef*=(geteqeff(0));
+	var ename="怪物";
+	if(x%5==4)ename="BOSS";
+	if(chall==5&&x!='tower'){
+		var damage2=Math.floor(1+enemyatk*enemyatk/getdef()*rand_2()*mult);
+		damage2=Math.floor(1+damage2*(Math.log10(damage2)**1.5)*1.5);
+		curhp-=damage2;if(curhp<=0&&keep1hp>0){
+				battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你倒下了，但是你以1点生命值复活了（剩余"+(keep1hp-1)+"次）<br>";
+				curhp=1;
+				keep1hp--;
+			}else if(curhp<=0){
+			clearInterval(battle_status.interval);
+			battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你倒下了<br><a href=\"javascript:battle("+x+");\">再次战斗</a>";
+			battling=0;
+		}else battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你还剩"+format(curhp)+"点生命值<br>";
+	}
+	if(simple_mode){
+		battle_status.log="玩家生命值："+format(curhp)+"/"+format(gethp())+"<br>"+ename+"生命值："+Math.ceil(enemyhp/enemyhp2*100)+"%<br>战斗速度："+Math.floor((geteqeff(2)+(pu[9]||0)*2)*100)+"%";
+	}
+	document.getElementById("battlelog").innerHTML=battle_status.log;
+	var battle_turn=function(){
+		document.getElementById("tab0").style.display="none";
+		document.getElementById("tab1").style.display="none";
+		document.getElementById("battlelog").style.display="block";
+		let liferecovery=gethp()*(geteqeffs(3,11)-1);
+		if(liferecovery>gethp()-curhp)liferecovery=gethp()-curhp;
+		curhp+=liferecovery;
+		if(liferecovery>0)battle_status.log+="你回复了"+format(liferecovery)+"点生命值，你还剩"+format(curhp)+"点生命值<br>";
+		var damage1=Math.floor(1+getatk()*getatk()/enemydef*rand_2()*mult);
+		var damage2=Math.floor(1+enemyatk*enemyatk/getdef()*rand_2()*mult);
+		if(chall==5&&x!='tower')damage2=Math.floor(1+damage2*(Math.log10(damage2)**1.5));
+		if(Math.random()+1<geteqeffs(3,2)){
+			if(Math.random()+2<geteqeffs(3,2)){
+				damage1*=2;battle_status.log+="超级";
+			}
+			damage1*=2;battle_status.log+="暴击";
+			if(Math.random()+3<geteqeffs(3,2)){
+				damage1*=1.5;battle_status.log+="+";
+			}
+			if(Math.random()+4<geteqeffs(3,2)){
+				damage1*=1.5;battle_status.log+="+";
+			}
+			if(Math.random()+5<geteqeffs(3,2)){
+				damage1*=(4/3);battle_status.log+="+";
+			}
+			if(Math.random()+6<geteqeffs(3,2)){
+				damage1*=(4/3);battle_status.log+="+";
+			}
+			if(Math.random()+7<geteqeffs(3,2)){
+				damage1*=1.25;battle_status.log+="+";
+			}
+			battle_status.log+="！";
+		}
+		var damage1_disp=damage1;
+		if(x==39||x==69||x==139||x==169)damage1=Math.floor(damage1**0.5);
+		if(x==79&&chall==1)damage1=Math.floor(damage1**0.25);
+		else if(x==79)damage1=Math.log(damage1);
+		if(x==179&&chall==1)damage1=Math.floor(damage1**0.25);
+		else if(x==179)damage1=Math.log(damage1);
+		if((x==59||x==99||x==159||x==199||x==259) && Math.random()<7/30)damage1=0;
+		enemyhp-=damage1;
+		if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="你对"+ename+"造成了"+format(damage1_disp)+"点伤害<br>";
+		if(enemyhp<=0){
+			if(x==79&&chall!=1)battle_status.log+="由于BOSS的特性，实际造成了"+damage1.toFixed(2)+"点伤害，"+ename+"被击败了<br>";
+			else if(x==179&&chall!=1)battle_status.log+="由于BOSS的特性，实际造成了"+damage1.toFixed(2)+"点伤害，"+ename+"被击败了<br>";
+			else if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="由于BOSS的特性，实际造成了"+format(damage1)+"点伤害，"+ename+"被击败了<br>";
+			else battle_status.log+="你对"+ename+"造成了"+format(damage1)+"点伤害，"+ename+"被击败了<br>";
+			enemyhp=0;
+			clearInterval(battle_status.interval);
+			var exp_base=Math.pow(enemyatk*enemydef,0.75);
+			if(exp_base>=9e10&&highest_progress>=250)exp_base=(exp_base**0.777)*(9e10**0.223);
+			else if(exp_base>=9e10&&highest_progress>=230)exp_base=(exp_base**0.75)*(9e10**0.25);
+			else if(exp_base>=9e10&&highest_progress>=225)exp_base=(exp_base**0.7)*(9e10**0.3);
+			else if(exp_base>=9e10&&highest_progress>=210)exp_base=(exp_base**0.666)*(9e10**0.334);
+			else if(exp_base>=9e10&&highest_progress>=170)exp_base=(exp_base**0.6)*(9e10**0.4);
+			else if(exp_base>=9e10)exp_base=(exp_base**0.5)*(9e10**0.5);
+			if(exp_base>=3e13)exp_base=(exp_base**0.5)*(3e13**0.5);
+			if(highest_progress>=230&&x<=100){
+				exp_base*=(exp_data[x]+150-x);
+			}else if(highest_progress>=230&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/2);
+			}else if(highest_progress>=225&&x<=100){
+				exp_base*=(exp_data[x]+125-x);
+			}else if(highest_progress>=225&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/4);
+			}else if(highest_progress>=210&&x<=100){
+				exp_base*=(exp_data[x]+120-x);
+			}else if(highest_progress>=210&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/5);
+			}else if(highest_progress>=170&&x<=100){
+				exp_base*=(exp_data[x]+(100-x)/2);
+			}else if(highest_progress>=140&&x<=100){
+				exp_base*=(exp_data[x]+(100-x)/5);
+			}else{
+				exp_base*=exp_data[x];
+			}
+			if(highest_progress>=185)exp_base*=geteqeff(4);
+			if(transcendlv>=7)exp_base*=Math.pow(1.1,transcendlv);
+			var exp_give=Math.floor(exp_base*rand_2()*geteqeffs(3,5)*prestige_eff()*energyc_eff()*challeff(3)*Math.pow(1.2,(pu[8]||0))*(1+tower*1.5/100)*transcend_eff());
+			if(x=='tower')exp_give=0;
+			if(simple_mode){
+				battle_status.log="玩家生命值："+format(curhp)+"/"+format(gethp())+"<br>"+ename+"生命值："+Math.ceil(enemyhp/enemyhp2*100)+"%<br>战斗速度："+Math.floor((geteqeff(2)+(pu[9]||0)*2)*100)+"%";
+				battle_status.log+="<br><br>";
+			}
+			battle_status.log+="战斗胜利，你得到了"+format(exp_give)+"经验";
+			if(x!='tower')if(transcendlv>=9)battle_status.log+="和"+format(Math.floor(getpp()*energyc_eff()))+"转生点",pp+=Math.floor(getpp()*energyc_eff());
+			var fbossdamage_w=getfbossdamage()/1000*Math.min(1000,energyc_eff());
+			if(x!='tower')if(transcendlv>=10){
+				fbossdamage+=fbossdamage_w;
+			}
+			battle_status.log+="<br>";
+			var level1=getlv().lv;
+			exp+=exp_give;
+			var level2=getlv().lv;
+			if(level2>level1)battle_status.log+="你升了"+format(level2-level1)+"级<br>";
+			hp+=(level2-level1)*10;
+			atk+=(level2-level1);
+			def+=(level2-level1);
+			points+=(level2-level1)*(4+(pu[7]||0));
+			var give_equipments=Math.floor(equipment_data[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data[x][0]][equipment_data[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+			if(chall==4||x=='tower')give_equipments=0;
+			if(x!='tower')if(transcendlv>=10){
+				battle_status.log+="由于超越之神10级效果，你对最终BOSS造成了"+Math.floor(fbossdamage_w)+"点伤害<br>";
+			}
+			if(give_equipments>0){
+				battle_status.log+=ename+"掉落了"+format(give_equipments)+"个"+equipment_names[equipment_data[x][0]][equipment_data[x][1]];
+				equipments[equipment_data[x][0]][equipment_data[x][1]]=(equipments[equipment_data[x][0]][equipment_data[x][1]]||0)+give_equipments;
+			}
+			if(x%5==4){
+				document.getElementById("b"+x).style.display="inline";
+				while(progress<x){
+					energy+=3;
+					if(chall==2)energy-=2;
+					progress+=5;
+				}
+				if(x==69&&highest_progress<69)battle_status.log+="<br>由于你第一次打败山脉BOSS2，转生升级“生命值提升”的效果增加了，同时徽章的效果增加了。";
+				if(x==79&&highest_progress<79)battle_status.log+="<br>由于你第一次打败天空BOSS2，转生升级“生命加点提升”的效果增加了。";
+				if(x==89&&highest_progress<89)battle_status.log+="<br>由于你第一次打败火山BOSS2，转生升级“生命加点提升”的效果增加了，同时徽章的效果增加了。";
+				if(x==99&&highest_progress<99)battle_status.log+="<br>由于你第一次打败城堡BOSS2，转生升级“生命值提升”的效果增加了，同时解锁了新难度！";
+				if(x==109&&highest_progress<109)battle_status.log+="<br>由于你第一次打败普通新手村外BOSS，转生升级“生命加点提升”的效果增加了。";
+				if(x==119&&highest_progress<119)battle_status.log+="<br>由于你第一次打败普通草原BOSS2，转生升级“初始能量提升”的效果增加了。";
+				if(x==129&&highest_progress<129)battle_status.log+="<br>由于你第一次打败普通森林BOSS2，转生升级“生命值提升”的效果增加了，同时徽章的效果增加了。";
+				if(x==139&&highest_progress<139)battle_status.log+="<br>由于你第一次打败普通沙漠BOSS2，简单难度怪物获得的经验值得到了不同程度的增加。";
+				if(x==149&&highest_progress<149)battle_status.log+="<br>由于你第一次打败普通洞穴BOSS2，转生升级“BOSS额外掉落”的效果增加了，同时徽章的效果增加了。";
+				if(x==159&&highest_progress<159)battle_status.log+="<br>由于你第一次打败普通海洋BOSS2，你得到了1000个永久性的经验宝石（不可用于强化）。";
+				if(x==169&&highest_progress<169)battle_status.log+="<br>由于你第一次打败普通山脉BOSS2，转生升级“多倍能量消耗设定”的效果增加了，同时你得到的经验值增加了。";
+				if(x==179&&highest_progress<179)battle_status.log+="<br>由于你第一次打败普通天空BOSS2，转生升级“生命加点提升”的效果增加了，同时徽章的效果增加了。";
+				if(x==184&&highest_progress<184)battle_status.log+="<br>由于你第一次打败普通火山BOSS1，转生升级“初始等级提升”的效果在挑战3中生效，同时徽章的效果开始对经验值生效。";
+				if(x==189&&highest_progress<189)battle_status.log+="<br>由于你第一次打败普通火山BOSS2，转生升级“生命值提升”的效果增加了。";
+				if(x==194&&highest_progress<194)battle_status.log+="<br>由于你第一次打败普通城堡BOSS1，你得到了99000个永久性的经验宝石（不可用于强化），且通天塔的怪物强度降低了。";
+				if(x==199&&highest_progress<199)battle_status.log+="<br>由于你第一次打败普通城堡BOSS2，你解锁了超越（一个新的重置层）。";
+				if(x==209&&highest_progress<209)battle_status.log+="<br>由于你第一次打败困难新手村外BOSS，你得到的经验值增加了。";
+				if(x==219&&highest_progress<219)battle_status.log+="<br>由于你第一次打败困难草原BOSS2，你得到了9900000个永久性的经验宝石（不可用于强化）。";
+				if(x==224&&highest_progress<224)battle_status.log+="<br>由于你第一次打败困难森林BOSS1，你得到的经验值增加了。";
+				if(x==229&&highest_progress<229)battle_status.log+="<br>由于你第一次打败困难森林BOSS2，你得到的经验值增加了。";
+				if(x==234&&highest_progress<234)battle_status.log+="<br>由于你第一次打败困难沙漠BOSS1，徽章的效果增加了。";
+				if(x==239&&highest_progress<239)battle_status.log+="<br>由于你第一次打败困难沙漠BOSS2，徽章的效果增加了。";
+				if(x==244&&highest_progress<244)battle_status.log+="<br>由于你第一次打败困难洞穴BOSS1，徽章的效果增加了。";
+				if(x==249&&highest_progress<249)battle_status.log+="<br>由于你第一次打败困难洞穴BOSS2，你得到的经验值增加了。";
+				if(x==254&&highest_progress<254)battle_status.log+="<br>由于你第一次打败困难海洋BOSS1，徽章的效果增加了。";
+				if(x==254&&highest_progress<259)battle_status.log+="<br>由于你第一次打败困难海洋BOSS2，转生升级“初始能量提升”的效果增加了。";
+				if(pu[4]){
+					var rate2=1-Math.pow(0.85,pu[4]**0.75);
+					if(highest_progress>=150)rate2=1-Math.pow(0.85,pu[4]**0.85);
+					for(var j=x-((pu[4]>=6&&x>=pu[4])?pu[4]:(pu[4]>=6)?x:(pu[4]>=2&&x>=5)?5:4);j<=x;j++){
+						give_equipments=Math.floor(equipment_data[j][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data[j][0]][equipment_data[j][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*rate2*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0)battle_status.log+="<br>由于转生升级“BOSS额外掉落”的效果，"+ename+"额外掉落了"+format(give_equipments)+"个"+equipment_names[equipment_data[j][0]][equipment_data[j][1]];
+						if(give_equipments>0)equipments[equipment_data[j][0]][equipment_data[j][1]]=(equipments[equipment_data[j][0]][equipment_data[j][1]]||0)+give_equipments;
+					}
+					if(pu[4]>=2+x/10){
+						give_equipments=Math.floor(equipment_data_extra[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data_extra[x][0]][equipment_data_extra[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(highest_progress>=150)give_equipments=Math.floor(give_equipments*1.5);
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0){
+							battle_status.log+="<br>由于转生升级“BOSS额外掉落”的效果，"+ename+"额外掉落了"+format(give_equipments)+"个"+equipment_names[equipment_data_extra[x][0]][equipment_data_extra[x][1]];
+							equipments[equipment_data_extra[x][0]][equipment_data_extra[x][1]]=(equipments[equipment_data_extra[x][0]][equipment_data_extra[x][1]]||0)+give_equipments;
+						}
+					}
+					if(pu[4]>=x/10 && x>200){
+						give_equipments=Math.floor(equipment_data_extra2[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0){
+							battle_status.log+="<br>由于转生升级“BOSS额外掉落”的效果，"+ename+"额外掉落了"+format(give_equipments)+"个"+equipment_names[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]];
+							equipments[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]=(equipments[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]||0)+give_equipments;
+						}
+					}
+				}
+			}
+			if(x!='tower')battle_status.log+="<br><a href=\"javascript:battle("+x+");\">再次战斗</a>";
+			if(x!='tower'&&x<hpdata.length-1)battle_status.log+="<br><a href=\"javascript:battle("+(x+1)+");\">挑战下一关</a>";
+			if(x!='tower'&&x%5==4&&x<hpdata.length-1)battle_status.log+="<br><a href=\"javascript:battle("+(x+5)+");\">挑战下一个BOSS</a>";
+			if(x!='tower')energy-=energyc;else tower+=(1+temp_towerc);
+			battling=0;
+		}else{
+			if((x==59||x==99||x==159||x==199||x==259) && damage1==0)battle_status.log+=ename+"闪避，"+ename+"还剩"+format(enemyhp)+"点生命值<br>";
+			else if(x==79&&chall!=1)battle_status.log+="由于BOSS的特性，实际造成了"+damage1.toFixed(2)+"点伤害，"+ename+"还剩"+format(enemyhp)+"点生命值<br>";
+			else if(x==179&&chall!=1)battle_status.log+="由于BOSS的特性，实际造成了"+damage1.toFixed(2)+"点伤害，"+ename+"还剩"+format(enemyhp)+"点生命值<br>";
+			else if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="由于BOSS的特性，实际造成了"+format(damage1)+"点伤害，"+ename+"还剩"+format(enemyhp)+"点生命值<br>";
+			else if(x%5==4)battle_status.log+="你对"+ename+"造成了"+format(damage1)+"点伤害，"+ename+"还剩"+format(enemyhp)+"点生命值<br>";
+			else battle_status.log+="你对"+ename+"造成了"+format(damage1)+"点伤害，"+ename+"还剩"+Math.ceil(enemyhp/enemyhp2*100)+"%生命值<br>";
+			let lifesteal=damage1*(geteqeffs(3,7)-1);
+			if(lifesteal>gethp()-curhp)lifesteal=gethp()-curhp;
+			curhp+=lifesteal;
+			if(lifesteal>0)battle_status.log+="你吸取了"+format(lifesteal)+"点生命值，你还剩"+format(curhp)+"点生命值<br>";
+			if((x==49||x==99||x==149||x==199||x==249) && Math.random()<7/30){
+				damage2*=2;battle_status.log+="BOSS暴击！";
+			}
+			if(x==74||x==174)damage2=Infinity;
+			curhp-=damage2;
+			if(curhp<=0&&keep1hp>0){
+				battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你倒下了，但是你以1点生命值复活了（剩余"+(keep1hp-1)+"次）<br>";
+				curhp=1;
+				keep1hp--;
+			}else if(curhp<=0){
+				clearInterval(battle_status.interval);
+				if(x!='tower')battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你倒下了<br><a href=\"javascript:battle("+x+");\">再次战斗</a>";
+				else battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你倒下了";
+				battling=0;
+			}else battle_status.log+=ename+"对你造成了"+format(damage2)+"点伤害，你还剩"+format(curhp)+"点生命值<br>";
+			if(simple_mode){
+				if(curhp<=0){
+					curhp=0;
+				}
+				battle_status.log="玩家生命值："+format(curhp)+"/"+format(gethp())+"<br>"+ename+"生命值："+Math.ceil(enemyhp/enemyhp2*100)+"%<br>战斗速度："+Math.floor((geteqeff(2)+(pu[9]||0)*2)*100)+"%";
+				if(curhp<=0){
+					if(x!='tower')battle_status.log+="<br><br>战斗失败<br><a href=\"javascript:battle("+x+");\">再次战斗</a>";
+				}
+			}
+		}
+		document.getElementById("battlelog").innerHTML=battle_status.log;
+		mult=mult*1.01;
+		if(mult>1.2)mult=mult*1.01;
+		if(mult>100)mult=mult*1.01;
+	}
+	if(curhp>0)battle_status.interval=setInterval(battle_turn,(simple_mode?700:777)/(geteqeff(2)+(pu[9]||0)*2));
+}
+function format(x){
+	if(x>=1e308)return "无限";
+	if(x>=1e76)return format(x/1e68)+"无量大数";
+	if(x>=1e74)return (x/1e72).toFixed(0)+"万无量大数";
+	if(x>=1e72)return (x/1e72).toFixed(2)+"万无量大数";
+	if(x>=1e70)return (x/1e68).toFixed(0)+"无量大数";
+	if(x>=1e68)return (x/1e68).toFixed(2)+"无量大数";
+	if(x>=1e66)return (x/1e64).toFixed(0)+"不可思议";
+	if(x>=1e64)return (x/1e64).toFixed(2)+"不可思议";
+	if(x>=1e62)return (x/1e60).toFixed(0)+"那由他";
+	if(x>=1e60)return (x/1e60).toFixed(2)+"那由他";
+	if(x>=1e58)return (x/1e56).toFixed(0)+"阿僧祗";
+	if(x>=1e56)return (x/1e56).toFixed(2)+"阿僧祗";
+	if(x>=1e54)return (x/1e52).toFixed(0)+"恒河沙";
+	if(x>=1e52)return (x/1e52).toFixed(2)+"恒河沙";
+	if(x>=1e50)return (x/1e48).toFixed(0)+"极";
+	if(x>=1e48)return (x/1e48).toFixed(2)+"极";
+	if(x>=1e46)return (x/1e44).toFixed(0)+"载";
+	if(x>=1e44)return (x/1e44).toFixed(2)+"载";
+	if(x>=1e42)return (x/1e40).toFixed(0)+"正";
+	if(x>=1e40)return (x/1e40).toFixed(2)+"正";
+	if(x>=1e38)return (x/1e36).toFixed(0)+"涧";
+	if(x>=1e36)return (x/1e36).toFixed(2)+"涧";
+	if(x>=1e34)return (x/1e32).toFixed(0)+"沟";
+	if(x>=1e32)return (x/1e32).toFixed(2)+"沟";
+	if(x>=1e30)return (x/1e28).toFixed(0)+"穰";
+	if(x>=1e28)return (x/1e28).toFixed(2)+"穰";
+	if(x>=1e26)return (x/1e24).toFixed(0)+"秭";
+	if(x>=1e24)return (x/1e24).toFixed(2)+"秭";
+	if(x>=1e22)return (x/1e20).toFixed(0)+"垓";
+	if(x>=1e20)return (x/1e20).toFixed(2)+"垓";
+	if(x>=1e18)return (x/1e16).toFixed(0)+"京";
+	if(x>=1e16)return (x/1e16).toFixed(2)+"京";
+	if(x>=1e14)return (x/1e12).toFixed(0)+"兆";
+	if(x>=1e12)return (x/1e12).toFixed(2)+"兆";
+	if(x>=1e10)return (x/1e8).toFixed(0)+"亿";
+	if(x>=1e8)return (x/1e8).toFixed(2)+"亿";
+	return Math.floor(x);
+}
+function formats(x){
+	if(x>=1e308)return "无限";
+	if(x>=1e8)return (x/(10**Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x));
+	return Math.floor(x);
+}
+</script>
+<script src="zbkc.js?1.2.7"></script>
+<script>
+importsave(localStorage.zbkc);
+setInterval(update,20);
+</script>
+</head>
+<body>
+等级：<span id="lv"></span><br>
+战力：<span id="power"></span> 能量：<span id="energy"></span> 转生点：<span id="prestige"></span><br>
+生命值：<span id="hp"></span> <a href="javascript:add(1,0.2)">20%加点</a> <a href="javascript:add(1,0.5)">50%加点</a> <a href="javascript:add(1,1)">全加点</a><br>
+攻击：<span id="atk"></span> <a href="javascript:add(2,0.2)">20%加点</a> <a href="javascript:add(2,0.5)">50%加点</a> <a href="javascript:add(2,1)">全加点</a><br>
+防御：<span id="def"></span> <a href="javascript:add(3,0.2)">20%加点</a> <a href="javascript:add(3,0.5)">50%加点</a> <a href="javascript:add(3,1)">全加点</a><br>
+幸运：<span id="luk"></span> <a href="javascript:add(4,0.2)">20%加点</a> <a href="javascript:add(4,0.5)">50%加点</a> <a href="javascript:add(4,1)">全加点</a><br>
+属性点：<span id="points"></span><br> <input name="autopoints" id="autopoints" type="checkbox"><label for="autopoints">自动加点（该设置退出时不保存）</label>：生命值:攻击:防御:幸运=<input type="number" min="0" max="10" step="1" value="1" id="autopoints1">:<input type="number" min="0" max="10" step="1" value="1" id="autopoints2">:<input type="number" min="0" max="10" step="1" value="1" id="autopoints3">:<input type="number" min="0" max="10" step="1" value="1" id="autopoints4"><br>
+
+<input name="hide_non_boss" id="hide_non_boss" type="checkbox"><label for="hide_non_boss">隐藏非BOSS地图（该设置退出时不保存）</label>
+<input name="simple_mode" id="simple_mode" type="checkbox"><label for="simple_mode">简略战斗模式</label><br>
+<span id="chall"></span>
+<br>
+<a href="javascript:settab(0);">战斗</a> <a href="javascript:settab(1);">装备</a> <a href="javascript:settab(3);">转生</a> 
+<a href="javascript:settab(6);" style="display:none;" id="trans_tab">超越</a>
+<a href="javascript:settab(4);" style="display:none;" id="chall_tab">挑战</a>
+<a href="javascript:settab(5);" style="display:none;" id="tower_tab">通天塔</a>
+<a href="javascript:settab(7);" style="display:none;" id="fboss_tab">最终BOSS</a>
+<a href="javascript:settab(2);">存档</a>
+<a href="https://afdian.net/a/loader3229/plan">用爱发电（捐赠）</a>
+<div id="tab0" style="display:none;">
+<span id="energyc" style="display:none;">能量消耗设置：<input id="energycinput" type="range" min="0" max="2" step="1" value="1"><span id="energyc_eff"></span><br></span>
+<div id="diffselect" style="display:none;">选择难度：<a id="diff0" href="javascript:setdiff(0);">简单</a> <a id="diff1" style="display:none;" href="javascript:setdiff(1);">普通</a> <a id="diff2" style="display:none;" href="javascript:setdiff(2);">困难</a></div>
+<div id="diff0div">
+<span id="diff0_disp" style="display:none;">当前难度：简单<br></span>
+<span id="diff0_chall2" style="display:none;"></span>
+<a href="javascript:battle(0);" class="non_boss">新手村1（推荐战力10）</a>
+<a href="javascript:battle(1);" class="non_boss">新手村2（推荐战力25）</a>
+<a href="javascript:battle(2);" class="non_boss">新手村3（推荐战力50）</a>
+<a href="javascript:battle(3);" class="non_boss">新手村4（推荐战力75）</a>
+<a href="javascript:battle(4);">新手村BOSS（推荐战力100）</a><br>
+<span id="b4" style="display:none;">
+<a href="javascript:battle(5);">新手村外1（推荐战力125）</a>
+<a href="javascript:battle(6);">新手村外2（推荐战力150）</a>
+<a href="javascript:battle(7);">新手村外3（推荐战力200）</a>
+<a href="javascript:battle(8);">新手村外4（推荐战力300）</a>
+<a href="javascript:battle(9);">新手村外BOSS（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b9" style="display:none;">
+<a href="javascript:battle(10);">草原1（推荐战力400）</a>
+<a href="javascript:battle(11);">草原2（推荐战力500）</a>
+<a href="javascript:battle(12);">草原3（推荐战力600）</a>
+<a href="javascript:battle(13);">草原4（推荐战力800）</a>
+<a href="javascript:battle(14);">草原BOSS1（推荐战力1000）</a>
+</span><br>
+<span id="b14" style="display:none;">
+<a href="javascript:battle(15);">草原6（推荐战力1000）</a>
+<a href="javascript:battle(16);">草原7（推荐战力1250）</a>
+<a href="javascript:battle(17);">草原8（推荐战力1600）</a>
+<a href="javascript:battle(18);">草原9（推荐战力2000）</a>
+<a href="javascript:battle(19);">草原BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b19" style="display:none;">
+<a href="javascript:battle(20);">森林1（推荐战力2500）</a>
+<a href="javascript:battle(21);">森林2（推荐战力3000）</a>
+<a href="javascript:battle(22);">森林3（推荐战力3500）</a>
+<a href="javascript:battle(23);">森林4（推荐战力4000）</a>
+<a href="javascript:battle(24);">森林BOSS1（推荐战力5000）</a>
+</span><br>
+<span id="b24" style="display:none;">
+<a href="javascript:battle(25);">森林6（推荐战力5000）</a>
+<a href="javascript:battle(26);">森林7（推荐战力6000）</a>
+<a href="javascript:battle(27);">森林8（推荐战力8000）</a>
+<a href="javascript:battle(28);">森林9（推荐战力10000）</a>
+<a href="javascript:battle(29);">森林BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b29" style="display:none;">
+<a href="javascript:battle(30);">沙漠1（推荐战力16000）</a>
+<a href="javascript:battle(31);">沙漠2（推荐战力20000）</a>
+<a href="javascript:battle(32);">沙漠3（推荐战力24000）</a>
+<a href="javascript:battle(33);">沙漠4（推荐战力30000）</a>
+<a href="javascript:battle(34);">沙漠BOSS1（推荐战力40000）</a>
+</span><br>
+<span id="b34" style="display:none;">
+<a href="javascript:battle(35);">沙漠6（推荐战力40000）</a>
+<a href="javascript:battle(36);">沙漠7（推荐战力50000）</a>
+<a href="javascript:battle(37);">沙漠8（推荐战力60000）</a>
+<a href="javascript:battle(38);">沙漠9（推荐战力80000）</a>
+<a href="javascript:battle(39);">沙漠BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b39" style="display:none;">
+<a href="javascript:battle(40);">洞穴1（推荐战力10万）</a>
+<a href="javascript:battle(41);">洞穴2（推荐战力13万）</a>
+<a href="javascript:battle(42);">洞穴3（推荐战力17万）</a>
+<a href="javascript:battle(43);">洞穴4（推荐战力20万）</a>
+<a href="javascript:battle(44);">洞穴BOSS1（推荐战力23万）</a>
+</span><br>
+<span id="b44" style="display:none;">
+<a href="javascript:battle(45);">洞穴6（推荐战力25万）</a>
+<a href="javascript:battle(46);">洞穴7（推荐战力30万）</a>
+<a href="javascript:battle(47);">洞穴8（推荐战力37万）</a>
+<a href="javascript:battle(48);">洞穴9（推荐战力45万）</a>
+<a href="javascript:battle(49);">洞穴BOSS2（打败以解锁强化和新的转生升级！）</a>
+</span><br>
+<span id="b49" style="display:none;">
+<a href="javascript:battle(50);">海洋1（推荐战力80万）</a>
+<a href="javascript:battle(51);">海洋2（推荐战力110万）</a>
+<a href="javascript:battle(52);">海洋3（推荐战力140万）</a>
+<a href="javascript:battle(53);">海洋4（推荐战力170万）</a>
+<a href="javascript:battle(54);">海洋BOSS1（推荐战力233万）</a>
+</span><br>
+<span id="b54" style="display:none;">
+<a href="javascript:battle(55);">海洋6（推荐战力400万）</a>
+<a href="javascript:battle(56);">海洋7（推荐战力500万）</a>
+<a href="javascript:battle(57);">海洋8（推荐战力700万）</a>
+<a href="javascript:battle(58);">海洋9（推荐战力1000万）</a>
+<a href="javascript:battle(59);">海洋BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b59" style="display:none;">
+<a href="javascript:battle(60);">山脉1（推荐战力3000万）</a>
+<a href="javascript:battle(61);">山脉2（推荐战力4000万）</a>
+<a href="javascript:battle(62);">山脉3（推荐战力6000万）</a>
+<a href="javascript:battle(63);">山脉4（推荐战力8000万）</a>
+<a href="javascript:battle(64);">山脉BOSS1（推荐战力1亿）</a>
+</span><br>
+<span id="b64" style="display:none;">
+<a href="javascript:battle(65);">山脉6（推荐战力2亿）</a>
+<a href="javascript:battle(66);">山脉7（推荐战力3亿）</a>
+<a href="javascript:battle(67);">山脉8（推荐战力4亿）</a>
+<a href="javascript:battle(68);">山脉9（推荐战力5亿）</a>
+<a href="javascript:battle(69);">山脉BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b69" style="display:none;">
+<a href="javascript:battle(70);">天空1（推荐战力10亿）</a>
+<a href="javascript:battle(71);">天空2（推荐战力16亿）</a>
+<a href="javascript:battle(72);">天空3（推荐战力24亿）</a>
+<a href="javascript:battle(73);">天空4（推荐战力32亿）</a>
+<a href="javascript:battle(74);">天空BOSS1（打败以解锁挑战！）</a>
+</span><br>
+<span id="b74" style="display:none;">
+<a href="javascript:battle(75);">天空6（推荐战力100亿）</a>
+<a href="javascript:battle(76);">天空7（推荐战力200亿）</a>
+<a href="javascript:battle(77);">天空8（推荐战力300亿）</a>
+<a href="javascript:battle(78);">天空9（推荐战力400亿）</a>
+<a href="javascript:battle(79);">天空BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b79" style="display:none;">
+<a href="javascript:battle(80);">火山1（推荐战力2000亿）</a>
+<a href="javascript:battle(81);">火山2（推荐战力3000亿）</a>
+<a href="javascript:battle(82);">火山3（推荐战力4000亿）</a>
+<a href="javascript:battle(83);">火山4（推荐战力6000亿）</a>
+<a href="javascript:battle(84);">火山BOSS1（打败以解锁新挑战！）</a>
+</span><br>
+<span id="b84" style="display:none;">
+<a href="javascript:battle(85);">火山6（推荐战力6兆）</a>
+<a href="javascript:battle(86);">火山7（推荐战力8兆）</a>
+<a href="javascript:battle(87);">火山8（推荐战力12兆）</a>
+<a href="javascript:battle(88);">火山9（推荐战力15兆）</a>
+<a href="javascript:battle(89);">火山BOSS2（打败以解锁新挑战！）</a>
+</span><br>
+<span id="b89" style="display:none;">
+<a href="javascript:battle(90);">城堡1（推荐战力50兆）</a>
+<a href="javascript:battle(91);">城堡2（推荐战力70兆）</a>
+<a href="javascript:battle(92);">城堡3（推荐战力90兆）</a>
+<a href="javascript:battle(93);">城堡4（推荐战力100兆）</a>
+<a href="javascript:battle(94);">城堡BOSS1（打败以解锁新挑战！）</a>
+</span><br>
+<span id="b94" style="display:none;">
+<a href="javascript:battle(95);">城堡6（推荐战力400兆）</a>
+<a href="javascript:battle(96);">城堡7（推荐战力500兆）</a>
+<a href="javascript:battle(97);">城堡8（推荐战力700兆）</a>
+<a href="javascript:battle(98);">城堡9（推荐战力900兆）</a>
+<a href="javascript:battle(99);">城堡BOSS2（打败以解锁新的转生升级！）</a>
+</span>
+</div>
+<div id="diff1div" style="display:none;">
+当前难度：普通<br>
+<span id="diff1_chall2" style="display:none;">挑战2中你必须先从简单难度开始战斗！<br></span>
+<span id="b99" style="display:none;">
+<a href="javascript:battle(100);">新手村1（推荐战力2000兆）</a>
+<a href="javascript:battle(101);">新手村2（推荐战力5000兆）</a>
+<a href="javascript:battle(102);">新手村3（推荐战力1京）</a>
+<a href="javascript:battle(103);">新手村4（推荐战力2京）</a>
+<a href="javascript:battle(104);">新手村BOSS（打败以解锁新挑战！）</a>
+</span><br>
+<span id="b104" style="display:none;">
+<a href="javascript:battle(105);">新手村外1（推荐战力3京）</a>
+<a href="javascript:battle(106);">新手村外2（推荐战力4京）</a>
+<a href="javascript:battle(107);">新手村外3（推荐战力5京）</a>
+<a href="javascript:battle(108);">新手村外4（推荐战力7京）</a>
+<a href="javascript:battle(109);">新手村外BOSS</a>
+</span><br>
+<span id="b109" style="display:none;">
+<a href="javascript:battle(110);">草原1（推荐战力10京）</a>
+<a href="javascript:battle(111);">草原2（推荐战力12京）</a>
+<a href="javascript:battle(112);">草原3（推荐战力14京）</a>
+<a href="javascript:battle(113);">草原4（推荐战力17京）</a>
+<a href="javascript:battle(114);">草原BOSS1</a>
+</span><br>
+<span id="b114" style="display:none;">
+<a href="javascript:battle(115);">草原6（推荐战力25京）</a>
+<a href="javascript:battle(116);">草原7（推荐战力30京）</a>
+<a href="javascript:battle(117);">草原8（推荐战力40京）</a>
+<a href="javascript:battle(118);">草原9（推荐战力50京）</a>
+<a href="javascript:battle(119);">草原BOSS2</a>
+</span><br>
+<span id="b119" style="display:none;">
+<a href="javascript:battle(120);">森林1（推荐战力100京）</a>
+<a href="javascript:battle(121);">森林2（推荐战力150京）</a>
+<a href="javascript:battle(122);">森林3（推荐战力200京）</a>
+<a href="javascript:battle(123);">森林4（推荐战力250京）</a>
+<a href="javascript:battle(124);">森林BOSS1（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b124" style="display:none;">
+<a href="javascript:battle(125);">森林6（推荐战力800京）</a>
+<a href="javascript:battle(126);">森林7（推荐战力1000京）</a>
+<a href="javascript:battle(127);">森林8（推荐战力1400京）</a>
+<a href="javascript:battle(128);">森林9（推荐战力1800京）</a>
+<a href="javascript:battle(129);">森林BOSS2</a>
+</span><br>
+<span id="b129" style="display:none;">
+<a href="javascript:battle(130);">沙漠1（推荐战力4000京）</a>
+<a href="javascript:battle(131);">沙漠2（推荐战力5000京）</a>
+<a href="javascript:battle(132);">沙漠3（推荐战力6000京）</a>
+<a href="javascript:battle(133);">沙漠4（推荐战力7000京）</a>
+<a href="javascript:battle(134);">沙漠BOSS1</a>
+</span><br>
+<span id="b134" style="display:none;">
+<a href="javascript:battle(135);">沙漠6（推荐战力1垓）</a>
+<a href="javascript:battle(136);">沙漠7（推荐战力1垓）</a>
+<a href="javascript:battle(137);">沙漠8（推荐战力1.5垓）</a>
+<a href="javascript:battle(138);">沙漠9（推荐战力2垓）</a>
+<a href="javascript:battle(139);">沙漠BOSS2</a>
+</span><br>
+<span id="b139" style="display:none;">
+<a href="javascript:battle(140);">洞穴1（推荐战力5垓）</a>
+<a href="javascript:battle(141);">洞穴2（推荐战力6垓）</a>
+<a href="javascript:battle(142);">洞穴3（推荐战力8垓）</a>
+<a href="javascript:battle(143);">洞穴4（推荐战力10垓）</a>
+<a href="javascript:battle(144);">洞穴BOSS1</a>
+</span><br>
+<span id="b144" style="display:none;">
+<a href="javascript:battle(145);">洞穴6（推荐战力12垓）</a>
+<a href="javascript:battle(146);">洞穴7（推荐战力15垓）</a>
+<a href="javascript:battle(147);">洞穴8（推荐战力18垓）</a>
+<a href="javascript:battle(148);">洞穴9（推荐战力24垓）</a>
+<a href="javascript:battle(149);">洞穴BOSS2（打败以解锁通天塔！）</a>
+</span><br>
+<span id="b149" style="display:none;">
+<a href="javascript:battle(150);">海洋1（推荐战力40垓）</a>
+<a href="javascript:battle(151);">海洋2（推荐战力50垓）</a>
+<a href="javascript:battle(152);">海洋3（推荐战力60垓）</a>
+<a href="javascript:battle(153);">海洋4（推荐战力80垓）</a>
+<a href="javascript:battle(154);">海洋BOSS1</a>
+</span><br>
+<span id="b154" style="display:none;">
+<a href="javascript:battle(155);">海洋6（推荐战力150垓）</a>
+<a href="javascript:battle(156);">海洋7（推荐战力200垓）</a>
+<a href="javascript:battle(157);">海洋8（推荐战力300垓）</a>
+<a href="javascript:battle(158);">海洋9（推荐战力500垓）</a>
+<a href="javascript:battle(159);">海洋BOSS2</a>
+</span><br>
+<span id="b159" style="display:none;">
+<a href="javascript:battle(160);">山脉1（推荐战力1000垓）</a>
+<a href="javascript:battle(161);">山脉2（推荐战力1500垓）</a>
+<a href="javascript:battle(162);">山脉3（推荐战力2200垓）</a>
+<a href="javascript:battle(163);">山脉4（推荐战力3000垓）</a>
+<a href="javascript:battle(164);">山脉BOSS1</a>
+</span><br>
+<span id="b164" style="display:none;">
+<a href="javascript:battle(165);">山脉6（推荐战力5000垓）</a>
+<a href="javascript:battle(166);">山脉7（推荐战力7000垓）</a>
+<a href="javascript:battle(167);">山脉8（推荐战力9000垓）</a>
+<a href="javascript:battle(168);">山脉9（推荐战力1秭）</a>
+<a href="javascript:battle(169);">山脉BOSS2（打败以解锁新挑战！）</a>
+</span><br>
+<span id="b169" style="display:none;">
+<a href="javascript:battle(170);">天空1（推荐战力2秭）</a>
+<a href="javascript:battle(171);">天空2（推荐战力3秭）</a>
+<a href="javascript:battle(172);">天空3（推荐战力5秭）</a>
+<a href="javascript:battle(173);">天空4（推荐战力7秭）</a>
+<a href="javascript:battle(174);">天空BOSS1</a>
+</span><br>
+<span id="b174" style="display:none;">
+<a href="javascript:battle(175);">天空6（推荐战力10秭）</a>
+<a href="javascript:battle(176);">天空7（推荐战力20秭）</a>
+<a href="javascript:battle(177);">天空8（推荐战力30秭）</a>
+<a href="javascript:battle(178);">天空9（推荐战力40秭）</a>
+<a href="javascript:battle(179);">天空BOSS2</a>
+</span><br>
+<span id="b179" style="display:none;">
+<a href="javascript:battle(180);">火山1（推荐战力50秭）</a>
+<a href="javascript:battle(181);">火山2（推荐战力70秭）</a>
+<a href="javascript:battle(182);">火山3（推荐战力90秭）</a>
+<a href="javascript:battle(183);">火山4（推荐战力130秭）</a>
+<a href="javascript:battle(184);">火山BOSS1</a>
+</span><br>
+<span id="b184" style="display:none;">
+<a href="javascript:battle(185);">火山6（推荐战力1500秭）</a>
+<a href="javascript:battle(186);">火山7（推荐战力2000秭）</a>
+<a href="javascript:battle(187);">火山8（推荐战力2500秭）</a>
+<a href="javascript:battle(188);">火山9（推荐战力3000秭）</a>
+<a href="javascript:battle(189);">火山BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b189" style="display:none;">
+<a href="javascript:battle(190);">城堡1（推荐战力1穰）</a>
+<a href="javascript:battle(191);">城堡2（推荐战力1穰）</a>
+<a href="javascript:battle(192);">城堡3（推荐战力2穰）</a>
+<a href="javascript:battle(193);">城堡4（推荐战力3穰）</a>
+<a href="javascript:battle(194);">城堡BOSS1</a>
+</span><br>
+<span id="b194" style="display:none;">
+<a href="javascript:battle(195);">城堡6（推荐战力13穰）</a>
+<a href="javascript:battle(196);">城堡7（推荐战力18穰）</a>
+<a href="javascript:battle(197);">城堡8（推荐战力23穰）</a>
+<a href="javascript:battle(198);">城堡9（推荐战力30穰）</a>
+<a href="javascript:battle(199);">城堡BOSS2（打败以解锁超越！）</a>
+</span>
+</div>
+<div id="diff2div" style="display:none;">
+当前难度：困难<br>
+<span id="diff2_chall2" style="display:none;">挑战2中你必须先从简单难度开始战斗！<br></span>
+<span id="b199" style="display:none;">
+<a href="javascript:battle(200);">新手村1（推荐战力2000穰）</a>
+<a href="javascript:battle(201);">新手村2（推荐战力5000穰）</a>
+<a href="javascript:battle(202);">新手村3（推荐战力1沟）</a>
+<a href="javascript:battle(203);">新手村4（推荐战力2沟）</a>
+<a href="javascript:battle(204);">新手村BOSS（打败以解锁超越选项卡下的新功能！）</a>
+</span><br>
+<span id="b204" style="display:none;">
+<a href="javascript:battle(205);">新手村外1（推荐战力7沟）</a>
+<a href="javascript:battle(206);">新手村外2（推荐战力11沟）</a>
+<a href="javascript:battle(207);">新手村外3（推荐战力15沟）</a>
+<a href="javascript:battle(208);">新手村外4（推荐战力22沟）</a>
+<a href="javascript:battle(209);">新手村外BOSS</a>
+</span><br>
+<span id="b209" style="display:none;">
+<a href="javascript:battle(210);">草原1（推荐战力400沟）</a>
+<a href="javascript:battle(211);">草原2（推荐战力500沟）</a>
+<a href="javascript:battle(212);">草原3（推荐战力600沟）</a>
+<a href="javascript:battle(213);">草原4（推荐战力800沟）</a>
+<a href="javascript:battle(214);">草原BOSS1</a>
+</span><br>
+<span id="b214" style="display:none;">
+<a href="javascript:battle(215);">草原6（推荐战力3000沟）</a>
+<a href="javascript:battle(216);">草原7（推荐战力4000沟）</a>
+<a href="javascript:battle(217);">草原8（推荐战力5000沟）</a>
+<a href="javascript:battle(218);">草原9（推荐战力6000沟）</a>
+<a href="javascript:battle(219);">草原BOSS2</a>
+</span><br>
+<span id="b219" style="display:none;">
+<a href="javascript:battle(220);">森林1（推荐战力6涧）</a>
+<a href="javascript:battle(221);">森林2（推荐战力7涧）</a>
+<a href="javascript:battle(222);">森林3（推荐战力8涧）</a>
+<a href="javascript:battle(223);">森林4（推荐战力10涧）</a>
+<a href="javascript:battle(224);">森林BOSS1（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b224" style="display:none;">
+<a href="javascript:battle(225);">森林6（推荐战力400涧）</a>
+<a href="javascript:battle(226);">森林7（推荐战力500涧）</a>
+<a href="javascript:battle(227);">森林8（推荐战力600涧）</a>
+<a href="javascript:battle(228);">森林9（推荐战力800涧）</a>
+<a href="javascript:battle(229);">森林BOSS2</a>
+</span><br>
+<span id="b229" style="display:none;">
+<a href="javascript:battle(230);">沙漠1（推荐战力2正）</a>
+<a href="javascript:battle(231);">沙漠2（推荐战力3正）</a>
+<a href="javascript:battle(232);">沙漠3（推荐战力5正）</a>
+<a href="javascript:battle(233);">沙漠4（推荐战力7正）</a>
+<a href="javascript:battle(234);">沙漠BOSS1</a>
+</span><br>
+<span id="b234" style="display:none;">
+<a href="javascript:battle(235);">沙漠6（推荐战力100正）</a>
+<a href="javascript:battle(236);">沙漠7（推荐战力200正）</a>
+<a href="javascript:battle(237);">沙漠8（推荐战力400正）</a>
+<a href="javascript:battle(238);">沙漠9（推荐战力800正）</a>
+<a href="javascript:battle(239);">沙漠BOSS2（打败以解锁新的转生升级！）</a>
+</span><br>
+<span id="b239" style="display:none;">
+<a href="javascript:battle(240);">洞穴1</a>
+<a href="javascript:battle(241);">洞穴2</a>
+<a href="javascript:battle(242);">洞穴3</a>
+<a href="javascript:battle(243);">洞穴4</a>
+<a href="javascript:battle(244);">洞穴BOSS1</a>
+</span><br>
+<span id="b244" style="display:none;">
+<a href="javascript:battle(245);">洞穴6</a>
+<a href="javascript:battle(246);">洞穴7</a>
+<a href="javascript:battle(247);">洞穴8</a>
+<a href="javascript:battle(248);">洞穴9</a>
+<a href="javascript:battle(249);">洞穴BOSS2</a>
+</span><br>
+<span id="b249" style="display:none;">
+<a href="javascript:battle(250);">海洋1</a>
+<a href="javascript:battle(251);">海洋2</a>
+<a href="javascript:battle(252);">海洋3</a>
+<a href="javascript:battle(253);">海洋4</a>
+<a href="javascript:battle(254);">海洋BOSS1</a>
+</span><br>
+<span id="b254" style="display:none;">
+<a href="javascript:battle(255);">海洋6</a>
+<a href="javascript:battle(256);">海洋7</a>
+<a href="javascript:battle(257);">海洋8</a>
+<a href="javascript:battle(258);">海洋9</a>
+<a href="javascript:battle(259);">海洋BOSS2</a>
+</span><br>
+<span id="b259" style="display:none;">
+<a href="javascript:battle(260);">山脉1</a>
+<a href="javascript:battle(261);">山脉2</a>
+<a href="javascript:battle(262);">山脉3</a>
+<a href="javascript:battle(263);">山脉4</a>
+<a href="javascript:battle(264);">山脉BOSS1</a>
+</span><br>
+<span id="b264" style="display:none;">
+</span><br>
+<span id="b269" style="display:none;">
+</span><br>
+</div>
+</div>
+<div id="tab1" style="display:none;">
+<a href="javascript:eqtab=0;">武器</a> <a href="javascript:eqtab=1;">防具</a> <a href="javascript:eqtab=2;">鞋子</a> <a href="javascript:eqtab=3;">宝石</a>
+<a href="javascript:eqtab=4;" style="display:none;" id="eq_4">徽章</a><br>
+<div id="eq">
+</div>
+
+</div>
+<div id="tab2" style="display:none;">
+你的存档是：<input id="save" /><br>
+<a href="javascript:load();">读档</a> <a href="javascript:softreset();">软重置</a> <a href="javascript:reset();">硬重置</a><br>
+</div>
+<div id="tab3" style="display:none;">
+转生将重置你的等级、属性、装备和能量并获得<span id="prestige2"></span>转生点。
+<a href="javascript:prestige();">开始转生</a><br>
+<br>
+你有<span id="prestige3"></span>转生点，经验和装备的获得变为原来的<span id="prestige_eff"></span>倍<br>
+<a id="pu2" href="javascript:prestige_up(2);" style="display:none;">生命值加点提升</a><br>
+<a id="pu1" href="javascript:prestige_up(1);" style="display:none;">初始能量提升</a><br>
+<a id="pu0" href="javascript:prestige_up(0);" style="display:none;">初始等级提升</a><br>
+<a id="pu3" href="javascript:prestige_up(3);" style="display:none;">生命值提升</a><br>
+<a id="pu4" href="javascript:prestige_up(4);" style="display:none;">boss额外掉落</a><br>
+<a id="pu5" href="javascript:prestige_up(5);" style="display:none;">强化的效果提升</a><br>
+<a id="pu6" href="javascript:prestige_up(6);" style="display:none;"></a><br>
+<a id="pu7" href="javascript:prestige_up(7);" style="display:none;"></a><br>
+<a id="pu8" href="javascript:prestige_up(8);" style="display:none;"></a><br>
+<a id="pu9" href="javascript:prestige_up(9);" style="display:none;"></a><br>
+<a id="pu10" href="javascript:prestige_up(10);" style="display:none;"></a><br>
+<a id="pu11" href="javascript:prestige_up(11);" style="display:none;"></a><br>
+<a id="pu12" href="javascript:prestige_up(12);" style="display:none;"></a><br>
+</div>
+<div id="tab4" style="display:none;">
+<div id="challtower" style="display:none;">挑战5的效果不会对通天塔的怪物生效。</div>
+<div id="chall0" style="display:none;">
+挑战0：这个挑战没有任何效果。除非你在其他挑战中，否则你始终在这个挑战中。<a href="javascript:startchall(0);">开始</a><br>
+最高等级：<span id="chall0lv"></span>，效果：+<span id="chall0eff"></span>%转生点
+<hr>
+</div>
+<div id="chall1" style="display:none;">
+挑战1：你的生命值为1。<a href="javascript:startchall(1);">开始</a><br>
+最高等级：<span id="chall1lv"></span>，效果：+<span id="chall1eff"></span>%生命值
+<hr>
+</div>
+<div id="chall2" style="display:none;">
+挑战2：初始能量为1，每个BOSS只提供1点能量，每次战斗必须消耗能量。<a href="javascript:startchall(2);">开始</a><br>
+最高等级：<span id="chall2lv"></span>，效果：+<span id="chall2eff"></span>初始能量
+<hr>
+</div>
+<div id="chall3" style="display:none;">
+挑战3：升级所需经验值大量增加。<a href="javascript:startchall(3);">开始</a><br>
+最高等级：<span id="chall3lv"></span>，效果：+<span id="chall3eff"></span>%经验值
+<hr>
+</div>
+<div id="chall4" style="display:none;">
+挑战4：你不能获得装备。<a href="javascript:startchall(4);">开始</a><br>
+最高等级：<span id="chall4lv"></span>，效果：+<span id="chall4eff"></span>%装备掉落
+<hr>
+</div>
+<div id="chall5" style="display:none;">
+挑战5：怪物造成的伤害提升，并且怪物在战斗开始时会以1.5倍伤害攻击一次。<a href="javascript:startchall(5);">开始</a><br>
+最高等级：<span id="chall5lv"></span>，效果：+<span id="chall5eff"></span>%攻击
+<hr>
+</div>
+<div id="chall6" style="display:none;">
+挑战6：你的生命值、攻击和防御变为原来的0.5次方。<a href="javascript:startchall(6);">开始</a><br>
+最高等级：<span id="chall6lv"></span>，效果：+<span id="chall6eff"></span>%防御
+<hr>
+</div>
+</div>
+<div id="tab5" style="display:none;">
+挑战通天塔不消耗能量，不会获得装备和经验值。通天塔的进度在转生时保留。<br>
+最高层数：<span id="tower_floor"></span>，增加<span id="tower_floor2"></span>%的生命值、经验值和转生点<br>
+<a href="javascript:battle('tower');" id="tower_battle"></a><br><span id="tower_skip">跳层：<input id="towercinput" type="range" min="0" max="2" step="1" value="0"><span id="towerc_eff"></span></span>
+</div>
+<div id="tab6" style="display:none;">
+超越将重置你的等级、属性、装备、能量、转生点和转生相关升级并获得<span id="transcend2"></span>超越点。<br>
+超越不会重置强化、挑战和通天塔。<br>
+<a href="javascript:transcend();">开始超越</a><br>
+<br>
+你有<span id="transcend3"></span>超越点，经验、装备的获得变为原来的<span id="transcend_eff"></span>倍，转生点的获得变为原来的<span id="transcend_eff2"></span>倍<br>
+<div id="tab6a" style="display:none;">
+<hr>
+超越之神的等级为<span id="transcendlv"></span>/11，升级需要你有<span id="transcendlv2"></span>超越点，花费<span id="transcendlv3"></span>超越点。<br>
+超越之神使超越点的获得变为原来的<span id="transcendlv_eff"></span>倍。
+<a href="javascript:transcendlvup();">升级超越之神</a><br>
+<br>
+超越之神的效果：<span id="transcendlv_eff2"></span>
+</div>
+</div>
+<div id="tab7" style="display:none;">
+你遇到了最终BOSS。最终BOSS太强大了，以至于你每次转生只能攻击它一次。最终BOSS生命值越低，它的防御就越高，有时候，你甚至不能对它造成任何伤害。<br>
+最终BOSS的生命值：<span id="final_boss_hp"></span>（转生时不重置，超越时重置）<br>
+你已对最终BOSS造成的伤害：<span id="final_boss_damage1"></span>，使超越点的获得变为原来的<span id="final_boss_damage3"></span>倍<br>
+你本次转生之后可以对最终BOSS造成的伤害（基于攻击和可得转生点）：<span id="final_boss_damage2"></span><br>
+<span id="final_boss_effect"></span>
+</div>
+</div>
+<div id="battlelog">
+欢迎进入《装备狂潮》，作者为loader3229！这是一个类似于属性膨胀的游戏，特点是怪物可以直接掉落大量装备！感受爆装备的乐趣吧！<br>
+与大多数通胀类游戏不同，这个游戏内在你被打败时不消耗能量，并且可以多次挑战BOSS。<br>
+版本：1.2.8<br>
+当前版本通关要求：通天塔到达3000层<br>
+本游戏建议在电脑上游玩（作者懒得写css）
+</div>
+</body>
+</html>

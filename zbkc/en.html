@@ -1,0 +1,1019 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Lots of Equipments RPG</title>
+<script>
+var equipment_names=[
+["Dagger","Shortsword","Wooden Sword","Grassland Sword","Iron Sword","Tin Sword","Forest Sword","Copper Sword","Silver Sword","Golden Sword","Firesword","Magical Sword","Trident","Nature Sword"],
+["Shirt","Leather Armor","Light Armor","Iron Armor","Tin Armor","Forest Armor","Desert Armor","Copper Armor","Silver Armor","Golden Armor","Feather Armor","Fire Armor","Water Shield","Nature Shield"],
+["Simple Shoe","Leather Shoe","Forest Shoe","Desert Shoe","Ocean Shoe","Sky Shoe","Fire Shoe","Magical Shoe"],
+["Prestige Gem","Life Gem","Critical Gem","Ocean Core","Fire Core","EXP Gem","Magical Core","Lifesteal Gem","Nature Core","Earth Core","Life Crystal","Recovery Gem"],
+["Village Pin","Grassland Pin","Forest Pin","Desert Pin","Cave Pin","Water Pin","Nature Pin","Sky Pin","Fire Pin","Magical Pin"],
+];
+var i18n={
+	battling:"A battle is running",
+	softreset:"Do you want to soft reset? You will restart the game but keep your prestige points and upgrades.",
+	hardreset1:function(){
+		return "Do you want to hard reset? You will restart the game and lose your prestige points and upgrades"+(highest_progress>=200?", transcend points and upgrades!":"!");
+	},
+	hardreset2:"Do you want to hard reset? You will lose everything! THIS IS THE LAST WARNING!",
+	inputsave:"Input your save",
+	transcend:"Do you want to transcend? You will restart the game and lose your prestige points and upgrades, but in return, you will gain transcend points.",
+};
+function update(){
+	document.getElementById("lv").innerHTML=format(getlv().lv)+" EXP: "+format(getlv().step-getlv().next)+"/"+format(getlv().step);
+	if(getlv().lv>=1e8)document.getElementById("lv").innerHTML=format(getlv().lv)+" &nbsp;&nbsp;"+format(getlv().step)+" EXP/Level";
+	document.getElementById("power").innerHTML=format(getpower());
+	document.getElementById("energy").innerHTML=energy;
+	document.getElementById("hp").innerHTML=format(hp)+" ("+format(gethp())+")";
+	document.getElementById("atk").innerHTML=format(atk)+" ("+format(getatk())+")";
+	document.getElementById("def").innerHTML=format(def)+" ("+format(getdef())+")";
+	document.getElementById("prestige").innerHTML=format(pp)+" (+"+format(getpp())+")";
+	if(highest_progress>=200)document.getElementById("prestige").innerHTML+=" Transcend Points: "+format(tp)+" (+"+format(gettp())+")";
+	document.getElementById("prestige2").innerHTML=format(getpp());
+	document.getElementById("prestige3").innerHTML=format(pp);
+	document.getElementById("prestige_eff").innerHTML=Math.floor(prestige_eff()*100)/100;
+	if(prestige_eff()>=10000)document.getElementById("prestige_eff").innerHTML=format(prestige_eff());
+	document.getElementById("luk").innerHTML=format(luk);
+	document.getElementById("points").innerHTML=format(points);
+	document.getElementById("save").value=exportsave();
+	localStorage.zbkc=exportsave();
+	for(var i=4;i<progress;i+=5)document.getElementById("b"+i).style.display="inline";
+	
+	var eq_log="";
+	if(eqtab==0){
+		eq_log=eq_log+"Your weapons give you "+format((geteqeff(0)-1)*100)+"% more ATK, You have: ";
+	}
+	if(eqtab==1){
+		eq_log=eq_log+"Your armors give you "+format((geteqeff(1)-1)*100)+"% more DEF, You have: ";
+	}
+	if(eqtab==2){
+		eq_log=eq_log+"Your shoes give you "+format((geteqeff(2)-1)*100)+"% more Battle Speed, You have: ";
+	}
+	if(eqtab==4){
+		eq_log=eq_log+"Your pins give you "+format((geteqeff(4)-1)*100)+"% more HP, ATK, DEF";
+		if(highest_progress>=185)eq_log=eq_log+", EXP";
+		eq_log=eq_log+"and PP, You have: ";
+	}
+	for(var i=0;i<equipment_names[eqtab].length;i++){
+		if((equipments[eqtab][i]||0)>0 || (eqlevels[eqtab][i]||0)>0){
+			eq_log=eq_log+"<br>"+equipment_names[eqtab][i]+((eqlevels[eqtab][i]||0)>0?"+"+eqlevels[eqtab][i]:"")+"x"+format(equipments[eqtab][i]||0);
+			if(eqtab==3&&i==0)eq_log=eq_log+"(+"+format((geteqeffs(3,0)-1)*100)+"% PP)";
+			if(eqtab==3&&i==1)eq_log=eq_log+"(+"+format((geteqeffs(3,1)-1)*100)+"% HP)";
+			if(eqtab==3&&i==2)eq_log=eq_log+"(+"+format((geteqeffs(3,2)-1)*100)+"% Crit Chance)";
+			if(eqtab==3&&i==3)eq_log=eq_log+"(+"+format((geteqeffs(3,3)-1)*100)+"% HP)";
+			if(eqtab==3&&i==4)eq_log=eq_log+"(+"+format((geteqeffs(3,4)-1)*100)+"% HP)";
+			if(eqtab==3&&i==5&&highest_progress>=160)eq_log=eq_log+"+1000";
+			if(eqtab==3&&i==5&&highest_progress>=195)eq_log=eq_log+"00";
+			if(eqtab==3&&i==5&&highest_progress>=220)eq_log=eq_log+"00";
+			if(eqtab==3&&i==5)eq_log=eq_log+"(+"+format((geteqeffs(3,5)-1)*100)+"% EXP)";
+			if(eqtab==3&&i==6)eq_log=eq_log+"(+"+format((geteqeffs(3,6)-1)*100)+"% HP)";
+			if(eqtab==3&&i==7)eq_log=eq_log+"(+"+((geteqeffs(3,7)-1)*100).toFixed(4)+"% Lifesteal)";
+			if(eqtab==3&&i==8)eq_log=eq_log+"(+"+format((geteqeffs(3,8)-1)*100)+"% HP)";
+			if(eqtab==3&&i==9)eq_log=eq_log+"(+"+format((geteqeffs(3,9)-1)*100)+"% HP)";
+			if(eqtab==3&&i==10)eq_log=eq_log+"(+"+format((geteqeffs(3,10)-1)*100)+"% HP)";
+			if(eqtab==3&&i==11)eq_log=eq_log+"(+"+((geteqeffs(3,11)-1)*100).toFixed(4)+"% HP Recovery)";
+			if(highest_progress>=50){
+				eq_log=eq_log+" <a href=\"javascript:eqlevelup("+eqtab+","+i+");\">Level Up (Cost: "+format(eqlevel_cost(eqtab,i))+" "+equipment_names[eqtab][i]+")</a>";
+			}
+		}
+	}
+	if(document.getElementById("eq").innerHTML!=eq_log)document.getElementById("eq").innerHTML=eq_log;
+	if(highest_progress<progress)highest_progress=progress;
+	if(highest_progress>=10){
+		document.getElementById("pu2").style.display="inline";
+		var temp="";
+		if(highest_progress>=180)temp="+4";
+		else if(highest_progress>=110)temp="+3";
+		else if(highest_progress>=90)temp="+2";
+		else if(highest_progress>=80)temp="+1";
+		document.getElementById("pu2").innerHTML="Increased HP gain per Stat Point "+temp+" (Level "+(pu[2]||0)+", Costs "+format(prestige_cost(2))+" PP to Level Up)";
+	}
+	if(highest_progress>=20){
+		document.getElementById("pu1").style.display="inline";
+		var temp="";
+		if(highest_progress>=120)temp="+1";
+		document.getElementById("pu1").innerHTML="More Energy "+temp+" (Level "+(pu[1]||0)+", Costs "+format(prestige_cost(1))+" PP to Level Up)";
+	}
+	if(highest_progress>=30){
+		document.getElementById("pu0").style.display="inline";
+		document.getElementById("pu0").innerHTML="More Level at the start of game (Level "+(pu[0]||0)+", Costs "+format(prestige_cost(0))+" PP to Level Up)";
+	}
+	if(highest_progress>=40){
+		document.getElementById("pu3").style.display="inline";
+		var temp="";
+		if(highest_progress>=190)temp="+4";
+		else if(highest_progress>=130)temp="+3";
+		else if(highest_progress>=100)temp="+2";
+		else if(highest_progress>=70)temp="+1";
+		document.getElementById("pu3").innerHTML="More HP "+temp+" (Level "+(pu[3]||0)+", Costs "+format(prestige_cost(3))+" PP to Level Up)";
+	}
+	if(highest_progress>=50){
+		document.getElementById("pu4").style.display="inline";
+		var temp="";
+		if(highest_progress>=150)temp="+1";
+		document.getElementById("pu4").innerHTML="Increased Boss Drops "+temp+" (Level "+(pu[4]||0)+", Costs "+format(prestige_cost(4))+" PP to Level Up)";
+	}
+	if(pu[4]>=3){
+		document.getElementById("eq_4").style.display="inline";
+	}
+	if(highest_progress>=60){
+		document.getElementById("pu5").style.display="inline";
+		document.getElementById("pu5").innerHTML="Increase the effect of Equipment Level (Level "+(pu[5]||0)+", Costs "+format(prestige_cost(5))+" PP to Level Up)";
+	}
+	if(highest_progress>=70){
+		document.getElementById("pu6").style.display="inline";
+		var temp="";
+		if(highest_progress>=170)temp="+1";
+		document.getElementById("pu6").innerHTML="You can spend more energy "+temp+" (Level "+(pu[6]||0)+", Costs "+format(prestige_cost(6))+" PP to Level Up)";
+	}
+	if(pu[6]>=1){
+		document.getElementById("energyc").style.display="inline";
+		var mxenergyc=Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1;
+		if(mxenergyc>=8&&highest_progress>=170)mxenergyc=pu[6]+5;
+		else if(mxenergyc>=9)mxenergyc=9;
+		document.getElementById("energycinput").max=Math.ceil(mxenergyc);
+		energyc=parseInt(document.getElementById("energycinput").value);
+		if(energyc<0)energyc=0;
+		if(energyc>=9)energyc=Math.floor((energyc-5)**1.5+1);
+		if(energyc>Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1)energyc=Math.floor(pu[6]**(highest_progress>=170?1.5:1))+1;
+		if(transcendlv>=10)energyc=energyc*2;
+		document.getElementById("energyc_eff").innerHTML="Spend "+energyc+" energy, get "+energyc_eff().toFixed(2)+"x EXP and equipments";
+	}else energyc=1;
+	if(highest_progress>=75){
+		document.getElementById("chall").style.display="inline";
+		document.getElementById("chall").innerHTML="You're in Challenge "+chall;
+		document.getElementById("chall_tab").style.display="inline";
+		if(!challlvs[chall] || challlvs[chall]<getlv().lv){
+			challlvs[chall]=getlv().lv;
+		}
+		document.getElementById("chall0").style.display="block";
+		document.getElementById("chall0lv").innerHTML=format(challlvs[0]||0);
+		document.getElementById("chall0eff").innerHTML=format((challeff(0)-1)*100);
+		document.getElementById("chall1").style.display="block";
+		document.getElementById("chall1lv").innerHTML=format(challlvs[1]||0);
+		document.getElementById("chall1eff").innerHTML=format((challeff(1)-1)*100);
+	}
+	if(highest_progress>=80){
+		document.getElementById("pu7").style.display="inline";
+		document.getElementById("pu7").innerHTML="More Stat Points (Level "+(pu[7]||0)+", Costs "+format(prestige_cost(7))+" PP to Level Up)";
+	}
+	if(highest_progress>=85){
+		document.getElementById("chall2").style.display="block";
+		document.getElementById("chall2lv").innerHTML=format(challlvs[2]||0);
+		document.getElementById("chall2eff").innerHTML=format(challeff(2));
+	}
+	if(highest_progress>=90){
+		document.getElementById("chall3").style.display="block";
+		document.getElementById("chall3lv").innerHTML=format(challlvs[3]||0);
+		document.getElementById("chall3eff").innerHTML=format((challeff(3)-1)*100);
+	}
+	if(highest_progress>=95){
+		document.getElementById("chall4").style.display="block";
+		document.getElementById("chall4lv").innerHTML=format(challlvs[4]||0);
+		document.getElementById("chall4eff").innerHTML=format((challeff(4)-1)*100);
+	}
+	if(highest_progress>=100){
+		document.getElementById("diffselect").style.display="block";
+		document.getElementById("diff0_disp").style.display="inline";
+		for(var i=0;i*100<=highest_progress;i++)document.getElementById("diff"+i).style.display="inline";
+	}
+	if(highest_progress>=100){
+		document.getElementById("pu8").style.display="inline";
+		document.getElementById("pu8").innerHTML="More EXP (Level "+(pu[8]||0)+", Costs "+format(prestige_cost(8))+" PP to Level Up)";
+	}
+	if(highest_progress>=105){
+		document.getElementById("chall5").style.display="block";
+		document.getElementById("chall5lv").innerHTML=format(challlvs[5]||0);
+		document.getElementById("chall5eff").innerHTML=format((challeff(5)-1)*100);
+	}
+	if(highest_progress>=125){
+		document.getElementById("pu9").style.display="inline";
+		document.getElementById("pu9").innerHTML="Quicker Battle (Level "+(pu[9]||0)+", Costs "+format(prestige_cost(9))+" PP to Level Up)";
+	}
+	if(highest_progress>=150){
+		document.getElementById("tower_tab").style.display="inline";
+		document.getElementById("challtower").style.display="block";
+		document.getElementById("tower_floor").innerHTML=tower;
+		document.getElementById("tower_floor2").innerHTML=tower*1.5;
+		document.getElementById("tower_battle").innerHTML="Start Floor "+(tower+1+towerc)+" (Rec. Power: "+format(gettowerpower())+")";
+	}
+	if(highest_progress>=170){
+		document.getElementById("chall6").style.display="block";
+		document.getElementById("chall6lv").innerHTML=format(challlvs[6]||0);
+		document.getElementById("chall6eff").innerHTML=format((challeff(6)-1)*100);
+	}
+	if(highest_progress>=190){
+		document.getElementById("pu10").style.display="inline";
+		document.getElementById("pu10").innerHTML="More Equipments (Level "+(pu[10]||0)+", Costs "+format(prestige_cost(10))+" PP to Level Up)";
+	}
+	if(highest_progress>=200){
+		document.getElementById("trans_tab").style.display="inline";
+		document.getElementById("transcend2").innerHTML=format(gettp());
+		document.getElementById("transcend3").innerHTML=format(tp);
+		document.getElementById("transcend_eff").innerHTML=Math.floor(transcend_eff()*100)/100;
+		document.getElementById("transcend_eff2").innerHTML=Math.floor(transcend_eff2()*100)/100;
+	}
+	if(highest_progress>=205){
+		document.getElementById("tab6a").style.display="block";
+		document.getElementById("transcendlv").innerHTML=format(transcendlv);
+		document.getElementById("transcendlv2").innerHTML=format(transcendlvupreq());
+		document.getElementById("transcendlv3").innerHTML=format(Math.pow(2,transcendlv));
+		document.getElementById("transcendlv_eff").innerHTML=Math.floor(Math.pow(1.1,transcendlv)*100)/100;
+		document.getElementById("transcendlv_eff2").innerHTML="";
+		if(transcendlv>=1)document.getElementById("transcendlv_eff2").innerHTML+="Level 1: You can skip floor of The Tower. Remove post-"+(transcendlv>=8?50:transcendlv>=5?70:200)+" The Tower enemy power scaling.<br>";
+		if(transcendlv>=2)document.getElementById("transcendlv_eff2").innerHTML+="Level 2: Boost Challenge 2 Effect.<br>";
+		if(transcendlv>=4){
+			document.getElementById("transcendlv_eff2").innerHTML+="Level 3: Keep 1 HP when you got fatal damage "+tlv3eff()+" times per battle.<br>";
+			document.getElementById("transcendlv_eff2").innerHTML+="Level 4: You permanently unlock all battle areas in the Normal difficulty unless you're in Challenge 2.<br>";
+		}else if(transcendlv>=3)document.getElementById("transcendlv_eff2").innerHTML+="Level 3: Keep 1 HP when you got fatal damage 1 time per battle.<br>";
+		if(transcendlv>=5){
+			document.getElementById("transcendlv_eff2").innerHTML+="Level 5: You can gain highest levels in challenges 0,1,5 at any time.<br>";
+			if(!challlvs[0] || challlvs[0]<getlv().lv){
+				challlvs[0]=getlv().lv;
+			}
+			if(!challlvs[1] || challlvs[1]<getlv().lv){
+				challlvs[1]=getlv().lv;
+			}
+			if(!challlvs[5] || challlvs[5]<getlv().lv){
+				challlvs[5]=getlv().lv;
+			}
+		}
+		if(transcendlv>=6)document.getElementById("transcendlv_eff2").innerHTML+="Level 6: Increase HP, ATK and DEF based on the level of God Of Transcend.<br>";
+		if(transcendlv>=7)document.getElementById("transcendlv_eff2").innerHTML+="Level 7: Increase EXP based on the level of God Of Transcend.<br>";
+		if(transcendlv>=8){
+			document.getElementById("transcendlv_eff2").innerHTML+="Level 8: You can gain highest levels in challenge 2 at any time.<br>";
+			if(!challlvs[2] || challlvs[2]<getlv().lv){
+				challlvs[2]=getlv().lv;
+			}
+		}
+		if(transcendlv>=9)document.getElementById("transcendlv_eff2").innerHTML+="Level 9: Gain PP when you won a battle. You permanently unlock all battle areas unless you're in Challenge 2.<br>";
+		if(transcendlv>=10)document.getElementById("transcendlv_eff2").innerHTML+="Level 10: Increase battle reward multiplier but energy cost x2.<br>";
+	}
+	if(highest_progress>=225){
+		document.getElementById("pu11").style.display="inline";
+		document.getElementById("pu11").innerHTML="More Defense (Level "+(pu[11]||0)+", Costs "+format(prestige_cost(11))+" PP to Level Up)";
+	}
+	if(highest_progress>=240){
+		document.getElementById("pu12").style.display="inline";
+		document.getElementById("pu12").innerHTML="More Attack (Level "+(pu[12]||0)+", Costs "+format(prestige_cost(12))+" PP to Level Up)";
+	}
+	if(transcendlv>=1){
+		document.getElementById("tower_skip").style.display="inline";
+		document.getElementById("towercinput").max=9;
+		towerc=parseInt(document.getElementById("towercinput").value);
+		document.getElementById("towerc_eff").innerHTML="Skip "+towerc+" floors";
+	}else towerc=0;
+}
+function battle(x){
+	if(battling){
+		alert("A battle is running");
+		return;
+	}
+	if(energy<energyc && x!='tower'){
+		alert("");
+		return;
+	}
+	if(chall==2&&energyc<=0 && x!='tower'){
+		alert("Due to the restriction of Challenge 2, battle must spend at least 1 energy!");
+		return;
+	}
+	battling=1;
+	document.getElementById("tab0").style.display="none";
+	document.getElementById("tab1").style.display="none";
+	document.getElementById("tab2").style.display="none";
+	document.getElementById("tab3").style.display="none";
+	document.getElementById("tab4").style.display="none";
+	document.getElementById("battlelog").style.display="block";
+	var curhp=gethp();
+	var enemyhp=getehp(x);
+	if(x==79&&highest_progress>=80){
+		enemyhp=Math.ceil(enemyhp/((highest_progress-x+1.5)**0.75));
+	}
+	if(x==179&&highest_progress>=180){
+		enemyhp=Math.ceil(enemyhp/((highest_progress-x+1.5)**0.75));
+	}
+	var enemyhp2=enemyhp;
+	var enemyatk=geteatk(x);
+	var enemydef=getedef(x);
+	var keep1hp=0;
+	if(transcendlv>=3)keep1hp=tlv3eff();
+	var temp_towerc=0;
+	if(x=='tower')temp_towerc=towerc;
+	var mult=1;
+	var battle_status={"log":"You encountered an enemy<br>","interval":-1};
+	if(x%5==4)battle_status.log="You encountered a BOSS, BOSS has "+format(enemyhp)+" HP<br>";
+	if(x==39||x==69||x==139||x==169)battle_status.log+="BOSS Attribute: Square-root your damage<br>";
+	if(x==49||x==99||x==149||x==199||x==249)battle_status.log+="BOSS Attribute: 23.33% Critical Chance<br>";
+	if(x==59||x==99||x==159||x==199||x==259)battle_status.log+="BOSS Attribute: 23.33% Evasion Chance<br>";
+	if(x==74&&chall==5)battle_status.log+="BOSS Attribute: Boss's second attack can instakill you<br>";
+	else if(x==74)battle_status.log+="BOSS Attribute: Boss's attack can instakill you<br>";
+	if(x==174&&chall==5)battle_status.log+="BOSS Attribute: Boss's second attack can instakill you<br>";
+	else if(x==174)battle_status.log+="BOSS Attribute: Boss's attack can instakill you<br>";
+	if(x==79&&chall==1)battle_status.log+="BOSS Attribute: Your damage is raised to a power of 0.25<br>";
+	else if(x==79)battle_status.log+="BOSS Attribute: Your damage becomes ln(damage)<br>";
+	if(x==179&&chall==1)battle_status.log+="BOSS Attribute: Your damage is raised to a power of 0.25<br>";
+	else if(x==179)battle_status.log+="BOSS Attribute: Your damage becomes ln(damage)<br>";
+	if(x==84||x==184)battle_status.log+="BOSS Attribute: Your energy affects Boss's Power<br>",enemyatk*=(1+0.15*energy),enemydef*=(1+0.15*(energy**1.5));
+	if(x==89||x==99||x==189||x==199)battle_status.log+="BOSS Attribute: Your level affects Boss's Power<br>",enemyatk*=(getlv().lv),enemydef*=(getlv().lv);
+	if(x==94||x==99||x==194||x==199)battle_status.log+="BOSS Attribute: Your weapons and armors affects Boss's Power<br>",enemyatk*=(geteqeff(1)),enemydef*=(geteqeff(0));
+	var ename="Enemy";
+	if(x%5==4)ename="BOSS";
+	if(chall==5&&x!='tower'){
+		var damage2=Math.floor(1+enemyatk*enemyatk/getdef()*rand_2()*mult);
+		damage2=Math.floor(1+damage2*(Math.log10(damage2)**1.5)*1.5);
+		curhp-=damage2;if(curhp<=0&&keep1hp>0){
+				battle_status.log+=ename+" hits you with "+format(damage2)+" damage, but you kept 1 HP when "+ename+" hits you ("+(keep1hp-1)+"times remaining)<br>";
+				curhp=1;
+				keep1hp--;
+			}else if(curhp<=0){
+			clearInterval(battle_status.interval);
+			battle_status.log+=ename+" hits you with "+format(damage2)+" damage, you lose<br><a href=\"javascript:battle("+x+");\">Try again</a>";
+			battling=0;
+		}else battle_status.log+=ename+" hits you with "+format(damage2)+" damage, you have "+format(curhp)+" HP remaining<br>";
+	}
+	document.getElementById("battlelog").innerHTML=battle_status.log;
+	var battle_turn=function(){
+		document.getElementById("tab0").style.display="none";
+		document.getElementById("tab1").style.display="none";
+		document.getElementById("battlelog").style.display="block";
+		let liferecovery=gethp()*(geteqeffs(3,11)-1);
+		if(liferecovery>gethp()-curhp)liferecovery=gethp()-curhp;
+		curhp+=liferecovery;
+		if(liferecovery>0)battle_status.log+="You recovered "+format(liferecovery)+" HP, you have "+format(curhp)+" HP remaining<br>";
+		var damage1=Math.floor(1+getatk()*getatk()/enemydef*rand_2()*mult);
+		var damage2=Math.floor(1+enemyatk*enemyatk/getdef()*rand_2()*mult);
+		if(chall==5&&x!='tower')damage2=Math.floor(1+damage2*(Math.log10(damage2)**1.5));
+		if(Math.random()+1<geteqeffs(3,2)){
+			if(Math.random()+2<geteqeffs(3,2)){
+				damage1*=2;battle_status.log+="Super ";
+			}
+			damage1*=2;battle_status.log+="Critical";
+			if(Math.random()+3<geteqeffs(3,2)){
+				damage1*=1.5;battle_status.log+="+";
+			}
+			if(Math.random()+4<geteqeffs(3,2)){
+				damage1*=1.5;battle_status.log+="+";
+			}
+			if(Math.random()+5<geteqeffs(3,2)){
+				damage1*=(4/3);battle_status.log+="+";
+			}
+			if(Math.random()+6<geteqeffs(3,2)){
+				damage1*=(4/3);battle_status.log+="+";
+			}
+			if(Math.random()+7<geteqeffs(3,2)){
+				damage1*=1.25;battle_status.log+="+";
+			}
+			battle_status.log+="! ";
+		}
+		var damage1_disp=damage1;
+		if(x==39||x==69||x==139||x==169)damage1=Math.floor(damage1**0.5);
+		if(x==79&&chall==1)damage1=Math.floor(damage1**0.25);
+		else if(x==79)damage1=Math.log(damage1);
+		if(x==179&&chall==1)damage1=Math.floor(damage1**0.25);
+		else if(x==179)damage1=Math.log(damage1);
+		if((x==59||x==99||x==159||x==199||x==259) && Math.random()<7/30)damage1=0;
+		enemyhp-=damage1;
+		if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="You hit "+ename+" with "+format(damage1)+" projected damage<br>";
+		if(enemyhp<=0){
+			if(x==79&&chall!=1)battle_status.log+="Due to BOSS attribute, BOSS got "+damage1.toFixed(2)+" damage, you win<br>";
+			else if(x==179&&chall!=1)battle_status.log+="Due to BOSS attribute, BOSS got "+damage1.toFixed(2)+" damage, you win<br>";
+			else if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="Due to BOSS attribute, BOSS got "+format(damage1)+" damage, you win<br>";
+			else battle_status.log+="You hit "+ename+" with "+format(damage1)+" damage, you win<br>";
+			clearInterval(battle_status.interval);
+			var exp_base=Math.pow(enemyatk*enemydef,0.75);
+			if(exp_base>=9e10&&highest_progress>=250)exp_base=(exp_base**0.777)*(9e10**0.223);
+			else if(exp_base>=9e10&&highest_progress>=230)exp_base=(exp_base**0.75)*(9e10**0.25);
+			else if(exp_base>=9e10&&highest_progress>=225)exp_base=(exp_base**0.7)*(9e10**0.3);
+			else if(exp_base>=9e10&&highest_progress>=210)exp_base=(exp_base**0.666)*(9e10**0.334);
+			else if(exp_base>=9e10&&highest_progress>=170)exp_base=(exp_base**0.6)*(9e10**0.4);
+			else if(exp_base>=9e10)exp_base=(exp_base**0.5)*(9e10**0.5);
+			if(exp_base>=3e13)exp_base=(exp_base**0.5)*(3e13**0.5);
+			if(highest_progress>=230&&x<=100){
+				exp_base*=(exp_data[x]+150-x);
+			}else if(highest_progress>=230&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/2);
+			}else if(highest_progress>=225&&x<=100){
+				exp_base*=(exp_data[x]+125-x);
+			}else if(highest_progress>=225&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/4);
+			}else if(highest_progress>=210&&x<=100){
+				exp_base*=(exp_data[x]+120-x);
+			}else if(highest_progress>=210&&x<=200){
+				exp_base*=(exp_data[x]+(200-x)/5);
+			}else if(highest_progress>=170&&x<=100){
+				exp_base*=(exp_data[x]+(100-x)/2);
+			}else if(highest_progress>=140&&x<=100){
+				exp_base*=(exp_data[x]+(100-x)/5);
+			}else{
+				exp_base*=exp_data[x];
+			}
+			if(highest_progress>=185)exp_base*=geteqeff(4);
+			if(transcendlv>=7)exp_base*=Math.pow(1.1,transcendlv);
+			var exp_give=Math.floor(exp_base*rand_2()*geteqeffs(3,5)*prestige_eff()*energyc_eff()*challeff(3)*Math.pow(1.2,(pu[8]||0))*(1+tower*1.5/100)*transcend_eff());
+			if(x=='tower')exp_give=0;
+			battle_status.log+="You gained "+format(exp_give)+" EXP<br>";
+			if(x!='tower')if(transcendlv>=9)battle_status.log+="You gained "+format(Math.floor(getpp()*energyc_eff()))+" PP<br>",pp+=Math.floor(getpp()*energyc_eff());
+			if(x!='tower')if(transcendlv>=10){
+				fbossdamage+=getfbossdamage()/1000*Math.min(1000,energyc_eff());
+			}
+			var level1=getlv().lv;
+			exp+=exp_give;
+			var level2=getlv().lv;
+			if(level2>level1)battle_status.log+=format(level2-level1)+" Level Up!<br>";
+			hp+=(level2-level1)*10;
+			atk+=(level2-level1);
+			def+=(level2-level1);
+			points+=(level2-level1)*(4+(pu[7]||0));
+			var give_equipments=Math.floor(equipment_data[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data[x][0]][equipment_data[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+			if(chall==4||x=='tower')give_equipments=0;
+			if(give_equipments>0){
+				battle_status.log+="You gained "+format(give_equipments)+" "+equipment_names[equipment_data[x][0]][equipment_data[x][1]];
+				equipments[equipment_data[x][0]][equipment_data[x][1]]=(equipments[equipment_data[x][0]][equipment_data[x][1]]||0)+give_equipments;
+			}
+			if(x%5==4){
+				document.getElementById("b"+x).style.display="inline";
+				while(progress<x){
+					energy+=3;
+					if(chall==2)energy-=2;
+					progress+=5;
+				}
+				if(pu[4]){
+					var rate2=1-Math.pow(0.85,pu[4]**0.75);
+					if(highest_progress>=150)rate2=1-Math.pow(0.85,pu[4]**0.85);
+					for(var j=x-((pu[4]>=6&&x>=pu[4])?pu[4]:(pu[4]>=6)?x:(pu[4]>=2&&x>=5)?5:4);j<=x;j++){
+						give_equipments=Math.floor(equipment_data[j][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data[j][0]][equipment_data[j][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*rate2*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0)battle_status.log+="<br>Due to the effect of 'Increased Boss Drops', you gained "+format(give_equipments)+" "+equipment_names[equipment_data[j][0]][equipment_data[j][1]];
+						if(give_equipments>0)equipments[equipment_data[j][0]][equipment_data[j][1]]=(equipments[equipment_data[j][0]][equipment_data[j][1]]||0)+give_equipments;
+					}
+					if(pu[4]>=2+x/10){
+						give_equipments=Math.floor(equipment_data_extra[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data_extra[x][0]][equipment_data_extra[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(highest_progress>=150)give_equipments=Math.floor(give_equipments*1.5);
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0){
+							battle_status.log+="<br>Due to the effect of 'Increased Boss Drops', you gained "+format(give_equipments)+" "+equipment_names[equipment_data_extra[x][0]][equipment_data_extra[x][1]];
+							equipments[equipment_data_extra[x][0]][equipment_data_extra[x][1]]=(equipments[equipment_data_extra[x][0]][equipment_data_extra[x][1]]||0)+give_equipments;
+						}
+					}
+					if(pu[4]>=x/10 && x>200){
+						give_equipments=Math.floor(equipment_data_extra2[x][2]*(luk**0.5+1)*(1+(eqlevels[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]||0)*0.15)*Math.random()*prestige_eff()*energyc_eff()*challeff(4)*Math.pow(1.2,(pu[10]||0))*transcend_eff());
+						if(chall==4)give_equipments=0;
+						if(give_equipments>0){
+							battle_status.log+="<br>Due to the effect of 'Increased Boss Drops', you gained "+format(give_equipments)+" "+equipment_names[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]];
+							equipments[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]=(equipments[equipment_data_extra2[x][0]][equipment_data_extra2[x][1]]||0)+give_equipments;
+						}
+					}
+				}
+			}
+			if(x!='tower')battle_status.log+="<br><a href=\"javascript:battle("+x+");\">Try again</a>";
+			if(x!='tower')energy-=energyc;else tower+=(1+temp_towerc);
+			battling=0;
+		}else{
+			if((x==59||x==99||x==159||x==199||x==259) && damage1==0)battle_status.log+=ename+" evaded, "+ename+" has "+format(enemyhp)+" HP remaining<br>";
+			else if(x==79&&chall!=1)battle_status.log+="Due to BOSS attribute, BOSS got "+damage1.toFixed(2)+" damage, "+ename+" has "+format(enemyhp)+" HP remaining<br>";
+			else if(x==179&&chall!=1)battle_status.log+="Due to BOSS attribute, BOSS got "+damage1.toFixed(2)+" damage, "+ename+" has "+format(enemyhp)+" HP remaining<br>";
+			else if(x==39||x==69||x==79||x==139||x==169||x==179)battle_status.log+="Due to BOSS attribute, BOSS got "+damage1.toFixed(2)+" damage, "+ename+" has "+format(enemyhp)+" HP remaining<br>";
+			else if(x%5==4)battle_status.log+="You hit "+ename+" with "+format(damage1)+" damage, "+ename+" has "+format(enemyhp)+" HP remaining<br>";
+			else battle_status.log+="You hit "+ename+" with "+format(damage1)+" damage, "+ename+" has "+Math.ceil(enemyhp/enemyhp2*100)+"% HP remaining<br>";
+			let lifesteal=damage1*(geteqeffs(3,7)-1);
+			if(lifesteal>gethp()-curhp)lifesteal=gethp()-curhp;
+			curhp+=lifesteal;
+			if(lifesteal>0)battle_status.log+="You recovered "+format(lifesteal)+" HP, you have "+format(curhp)+" HP remaining<br>";
+			if((x==49||x==99||x==149||x==199||x==249) && Math.random()<7/30){
+				damage2*=2;battle_status.log+="BOSS Critical Attack! ";
+			}
+			if(x==74||x==174)damage2=Infinity;
+			curhp-=damage2;
+			if(curhp<=0&&keep1hp>0){
+				battle_status.log+=ename+" hits you with "+format(damage2)+" damage, but you kept 1 HP when "+ename+" hits you ("+(keep1hp-1)+"times remaining)<br>";
+				curhp=1;
+				keep1hp--;
+			}else if(curhp<=0){
+				clearInterval(battle_status.interval);
+				if(x!='tower')battle_status.log+=ename+" hits you with "+format(damage2)+" damage, you lose<br><a href=\"javascript:battle("+x+");\">Try again</a>";
+				else battle_status.log+=ename+" hits you with "+format(damage2)+" damage, you lose";
+				battling=0;
+			}else battle_status.log+=ename+" hits you with "+format(damage2)+" damage, you have "+format(curhp)+" HP remaining<br>";
+		}
+		document.getElementById("battlelog").innerHTML=battle_status.log;
+		mult=mult*1.01;
+		if(mult>1.2)mult=mult*1.01;
+	}
+	if(curhp>0)battle_status.interval=setInterval(battle_turn,777/(geteqeff(2)+(pu[9]||0)*2));
+}
+function format(x){
+	if(x>=1e308)return "Infinity";
+	if(x>=1e93)return format2(x/1e90)+"Tg";
+	if(x>=1e63)return format2(x/1e60)+"Vg";
+	if(x>=1e33)return format2(x/1e30)+"Dc";
+	if(x>=1e12)return format2(x);
+	if(x>=1e9)return (x/1e9).toFixed(2)+"B";
+	if(x>=1e8)return (x/1e6).toFixed(2)+"M";
+	return Math.floor(x);
+}
+function formats(x){
+	if(x>=1e308)return "Infinity";
+	if(x>=1e8)return (x/(10**Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x));
+	return Math.floor(x);
+}
+function format2(x){
+	if(x>=1e30)return (x/1e30).toFixed(2)+"Nn";
+	if(x>=1e27)return (x/1e27).toFixed(2)+"Oc";
+	if(x>=1e24)return (x/1e24).toFixed(2)+"Sp";
+	if(x>=1e21)return (x/1e21).toFixed(2)+"Sx";
+	if(x>=1e18)return (x/1e18).toFixed(2)+"Qi";
+	if(x>=1e15)return (x/1e15).toFixed(2)+"Qa";
+	if(x>=1e12)return (x/1e12).toFixed(2)+"T";
+	if(x>=1e9)return (x/1e9).toFixed(2)+"D";
+	if(x>=1e6)return (x/1e6).toFixed(2)+"U";
+	return (x/1e3).toFixed(2);
+}
+</script>
+<script src="zbkc.js?1.2.7"></script>
+<script>
+importsave(localStorage.zbkc);
+setInterval(update,20);
+</script>
+</head>
+<body>
+Level: <span id="lv"></span><br>
+Power: <span id="power"></span> Energy: <span id="energy"></span> Prestige Points: <span id="prestige"></span><br>
+HP: <span id="hp"></span> <a href="javascript:add(1,0.2)">Spend 20%</a> <a href="javascript:add(1,0.5)">Spend 50%</a> <a href="javascript:add(1,1)">Spend All</a><br>
+ATK: <span id="atk"></span> <a href="javascript:add(2,0.2)">Spend 20%</a> <a href="javascript:add(2,0.5)">Spend 50%</a> <a href="javascript:add(2,1)">Spend All</a><br>
+DEF: <span id="def"></span> <a href="javascript:add(3,0.2)">Spend 20%</a> <a href="javascript:add(3,0.5)">Spend 50%</a> <a href="javascript:add(3,1)">Spend All</a><br>
+LUK: <span id="luk"></span> <a href="javascript:add(4,0.2)">Spend 20%</a> <a href="javascript:add(4,0.5)">Spend 50%</a> <a href="javascript:add(4,1)">Spend All</a><br>
+Stat Points: <span id="points"></span><br>
+<span id="chall"></span>
+<br>
+<a href="javascript:settab(0);">Battle</a> <a href="javascript:settab(1);">Equipments</a> <a href="javascript:settab(3);">Prestige</a> 
+<a href="javascript:settab(6);" style="display:none;" id="trans_tab">Transcend</a>
+<a href="javascript:settab(4);" style="display:none;" id="chall_tab">Challenges</a>
+<a href="javascript:settab(5);" style="display:none;" id="tower_tab">The Tower</a>
+<a href="javascript:settab(5);" style="display:none;" id="fboss_tab">Final Boss</a>
+<a href="javascript:settab(2);">Save</a>
+<a href="https://ko-fi.com/loader3229">Buy me a coffee in Ko-Fi.com (Donate me)</a>
+<a href="zbkc.html">中文版</a>
+<div id="tab0" style="display:none;">
+<span id="energyc" style="display:none;">Energy Cost Settings: <input id="energycinput" type="range" min="0" max="2" step="1" value="1"><span id="energyc_eff"></span><br></span>
+<div id="diffselect" style="display:none;">Select Difficulty: <a id="diff0" href="javascript:setdiff(0);">Easy</a> <a id="diff1" style="display:none;" href="javascript:setdiff(1);">Normal</a> <a id="diff2" style="display:none;" href="javascript:setdiff(2);">Hard</a></div>
+<div id="diff0div">
+<span id="diff0_disp" style="display:none;">Current Difficulty: Easy<br></span>
+<span id="diff0_chall2" style="display:none;"></span>
+<a href="javascript:battle(0);">Village 1（Rec. Power: 10）</a>
+<a href="javascript:battle(1);">Village 2（Rec. Power: 25）</a>
+<a href="javascript:battle(2);">Village 3（Rec. Power: 50）</a>
+<a href="javascript:battle(3);">Village 4（Rec. Power: 75）</a>
+<a href="javascript:battle(4);">Village BOSS 1（Rec. Power: 100）</a><br>
+<span id="b4" style="display:none;">
+<a href="javascript:battle(5);">Village 6（Rec. Power: 125）</a>
+<a href="javascript:battle(6);">Village 7（Rec. Power: 150）</a>
+<a href="javascript:battle(7);">Village 8（Rec. Power: 200）</a>
+<a href="javascript:battle(8);">Village 9（Rec. Power: 300）</a>
+<a href="javascript:battle(9);">Village BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b9" style="display:none;">
+<a href="javascript:battle(10);">Grassland 1（Rec. Power: 400）</a>
+<a href="javascript:battle(11);">Grassland 2（Rec. Power: 500）</a>
+<a href="javascript:battle(12);">Grassland 3（Rec. Power: 600）</a>
+<a href="javascript:battle(13);">Grassland 4（Rec. Power: 800）</a>
+<a href="javascript:battle(14);">Grassland BOSS 1（Rec. Power: 1000）</a>
+</span><br>
+<span id="b14" style="display:none;">
+<a href="javascript:battle(15);">Grassland 6（Rec. Power: 1000）</a>
+<a href="javascript:battle(16);">Grassland 7（Rec. Power: 1250）</a>
+<a href="javascript:battle(17);">Grassland 8（Rec. Power: 1600）</a>
+<a href="javascript:battle(18);">Grassland 9（Rec. Power: 2000）</a>
+<a href="javascript:battle(19);">Grassland BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b19" style="display:none;">
+<a href="javascript:battle(20);">Forest 1（Rec. Power: 2500）</a>
+<a href="javascript:battle(21);">Forest 2（Rec. Power: 3000）</a>
+<a href="javascript:battle(22);">Forest 3（Rec. Power: 3500）</a>
+<a href="javascript:battle(23);">Forest 4（Rec. Power: 4000）</a>
+<a href="javascript:battle(24);">Forest BOSS 1（Rec. Power: 5000）</a>
+</span><br>
+<span id="b24" style="display:none;">
+<a href="javascript:battle(25);">Forest 6（Rec. Power: 5000）</a>
+<a href="javascript:battle(26);">Forest 7（Rec. Power: 6000）</a>
+<a href="javascript:battle(27);">Forest 8（Rec. Power: 8000）</a>
+<a href="javascript:battle(28);">Forest 9（Rec. Power: 10000）</a>
+<a href="javascript:battle(29);">Forest BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b29" style="display:none;">
+<a href="javascript:battle(30);">Desert 1（Rec. Power: 16K）</a>
+<a href="javascript:battle(31);">Desert 2（Rec. Power: 20K）</a>
+<a href="javascript:battle(32);">Desert 3（Rec. Power: 24K）</a>
+<a href="javascript:battle(33);">Desert 4（Rec. Power: 30K）</a>
+<a href="javascript:battle(34);">Desert BOSS 1（Rec. Power: 40K）</a>
+</span><br>
+<span id="b34" style="display:none;">
+<a href="javascript:battle(35);">Desert 6（Rec. Power: 40K）</a>
+<a href="javascript:battle(36);">Desert 7（Rec. Power: 50K）</a>
+<a href="javascript:battle(37);">Desert 8（Rec. Power: 60K）</a>
+<a href="javascript:battle(38);">Desert 9（Rec. Power: 80K）</a>
+<a href="javascript:battle(39);">Desert BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b39" style="display:none;">
+<a href="javascript:battle(40);">Cave 1（Rec. Power: 100K）</a>
+<a href="javascript:battle(41);">Cave 2（Rec. Power: 130K）</a>
+<a href="javascript:battle(42);">Cave 3（Rec. Power: 170K）</a>
+<a href="javascript:battle(43);">Cave 4（Rec. Power: 200K）</a>
+<a href="javascript:battle(44);">Cave BOSS 1（Rec. Power: 230K）</a>
+</span><br>
+<span id="b44" style="display:none;">
+<a href="javascript:battle(45);">Cave 6（Rec. Power: 250K）</a>
+<a href="javascript:battle(46);">Cave 7（Rec. Power: 300K）</a>
+<a href="javascript:battle(47);">Cave 8（Rec. Power: 370K）</a>
+<a href="javascript:battle(48);">Cave 9（Rec. Power: 450K）</a>
+<a href="javascript:battle(49);">Cave BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b49" style="display:none;">
+<a href="javascript:battle(50);">Ocean 1（Rec. Power: 800K）</a>
+<a href="javascript:battle(51);">Ocean 2（Rec. Power: 1100K）</a>
+<a href="javascript:battle(52);">Ocean 3（Rec. Power: 1400K）</a>
+<a href="javascript:battle(53);">Ocean 4（Rec. Power: 1700K）</a>
+<a href="javascript:battle(54);">Ocean BOSS 1（Rec. Power: 2330K）</a>
+</span><br>
+<span id="b54" style="display:none;">
+<a href="javascript:battle(55);">Ocean 6（Rec. Power: 4M）</a>
+<a href="javascript:battle(56);">Ocean 7（Rec. Power: 5M）</a>
+<a href="javascript:battle(57);">Ocean 8（Rec. Power: 7M）</a>
+<a href="javascript:battle(58);">Ocean 9（Rec. Power: 10M）</a>
+<a href="javascript:battle(59);">Ocean BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b59" style="display:none;">
+<a href="javascript:battle(60);">Mountain 1（Rec. Power: 30M）</a>
+<a href="javascript:battle(61);">Mountain 2（Rec. Power: 40M）</a>
+<a href="javascript:battle(62);">Mountain 3（Rec. Power: 60M）</a>
+<a href="javascript:battle(63);">Mountain 4（Rec. Power: 80M）</a>
+<a href="javascript:battle(64);">Mountain BOSS 1（Rec. Power: 100M）</a>
+</span><br>
+<span id="b64" style="display:none;">
+<a href="javascript:battle(65);">Mountain 6（Rec. Power: 200M）</a>
+<a href="javascript:battle(66);">Mountain 7（Rec. Power: 300M）</a>
+<a href="javascript:battle(67);">Mountain 8（Rec. Power: 400M）</a>
+<a href="javascript:battle(68);">Mountain 9（Rec. Power: 500M）</a>
+<a href="javascript:battle(69);">Mountain BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b69" style="display:none;">
+<a href="javascript:battle(70);">Sky 1（Rec. Power: 1000M）</a>
+<a href="javascript:battle(71);">Sky 2（Rec. Power: 1600M）</a>
+<a href="javascript:battle(72);">Sky 3（Rec. Power: 2400M）</a>
+<a href="javascript:battle(73);">Sky 4（Rec. Power: 3200M）</a>
+<a href="javascript:battle(74);">Sky BOSS 1（Win to unlock challenges!）</a>
+</span><br>
+<span id="b74" style="display:none;">
+<a href="javascript:battle(75);">Sky 6（Rec. Power: 10B）</a>
+<a href="javascript:battle(76);">Sky 7（Rec. Power: 20B）</a>
+<a href="javascript:battle(77);">Sky 8（Rec. Power: 30B）</a>
+<a href="javascript:battle(78);">Sky 9（Rec. Power: 40B）</a>
+<a href="javascript:battle(79);">Sky BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b79" style="display:none;">
+<a href="javascript:battle(80);">Volcano 1（Rec. Power: 200B）</a>
+<a href="javascript:battle(81);">Volcano 2（Rec. Power: 300B）</a>
+<a href="javascript:battle(82);">Volcano 3（Rec. Power: 400B）</a>
+<a href="javascript:battle(83);">Volcano 4（Rec. Power: 600B）</a>
+<a href="javascript:battle(84);">Volcano BOSS 1（Win to unlock a new challenge!）</a>
+</span><br>
+<span id="b84" style="display:none;">
+<a href="javascript:battle(85);">Volcano 6（Rec. Power: 6T）</a>
+<a href="javascript:battle(86);">Volcano 7（Rec. Power: 8T）</a>
+<a href="javascript:battle(87);">Volcano 8（Rec. Power: 12T）</a>
+<a href="javascript:battle(88);">Volcano 9（Rec. Power: 15T）</a>
+<a href="javascript:battle(89);">Volcano BOSS 2（Win to unlock a new challenge!）</a>
+</span><br>
+<span id="b89" style="display:none;">
+<a href="javascript:battle(90);">Castle 1（Rec. Power: 50T）</a>
+<a href="javascript:battle(91);">Castle 2（Rec. Power: 70T）</a>
+<a href="javascript:battle(92);">Castle 3（Rec. Power: 90T）</a>
+<a href="javascript:battle(93);">Castle 4（Rec. Power: 100T）</a>
+<a href="javascript:battle(94);">Castle BOSS 1（Win to unlock a new challenge!）</a>
+</span><br>
+<span id="b94" style="display:none;">
+<a href="javascript:battle(95);">Castle 6（Rec. Power: 400T）</a>
+<a href="javascript:battle(96);">Castle 7（Rec. Power: 500T）</a>
+<a href="javascript:battle(97);">Castle 8（Rec. Power: 700T）</a>
+<a href="javascript:battle(98);">Castle 9（Rec. Power: 900T）</a>
+<a href="javascript:battle(99);">Castle BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span>
+</div>
+<div id="diff1div" style="display:none;">
+Current Difficulty: Normal<br>
+<span id="diff1_chall2" style="display:none;"><br></span>
+<span id="b99" style="display:none;">
+<a href="javascript:battle(100);">Village 1（Rec. Power: 2Qa）</a>
+<a href="javascript:battle(101);">Village 2（Rec. Power: 5Qa）</a>
+<a href="javascript:battle(102);">Village 3（Rec. Power: 10Qa）</a>
+<a href="javascript:battle(103);">Village 4（Rec. Power: 20Qa）</a>
+<a href="javascript:battle(104);">Village BOSS 1（Win to unlock a new challenge!）</a>
+</span><br>
+<span id="b104" style="display:none;">
+<a href="javascript:battle(105);">Village 6（Rec. Power: 30Qa）</a>
+<a href="javascript:battle(106);">Village 7（Rec. Power: 40Qa）</a>
+<a href="javascript:battle(107);">Village 8（Rec. Power: 50Qa）</a>
+<a href="javascript:battle(108);">Village 9（Rec. Power: 70Qa）</a>
+<a href="javascript:battle(109);">Village BOSS 2</a>
+</span><br>
+<span id="b109" style="display:none;">
+<a href="javascript:battle(110);">Grassland 1（Rec. Power: 100Qa）</a>
+<a href="javascript:battle(111);">Grassland 2（Rec. Power: 120Qa）</a>
+<a href="javascript:battle(112);">Grassland 3（Rec. Power: 140Qa）</a>
+<a href="javascript:battle(113);">Grassland 4（Rec. Power: 170Qa）</a>
+<a href="javascript:battle(114);">Grassland BOSS 1</a>
+</span><br>
+<span id="b114" style="display:none;">
+<a href="javascript:battle(115);">Grassland 6（Rec. Power: 250Qa）</a>
+<a href="javascript:battle(116);">Grassland 7（Rec. Power: 300Qa）</a>
+<a href="javascript:battle(117);">Grassland 8（Rec. Power: 400Qa）</a>
+<a href="javascript:battle(118);">Grassland 9（Rec. Power: 500Qa）</a>
+<a href="javascript:battle(119);">Grassland BOSS 2</a>
+</span><br>
+<span id="b119" style="display:none;">
+<a href="javascript:battle(120);">Forest 1（Rec. Power: 1000Qa）</a>
+<a href="javascript:battle(121);">Forest 2（Rec. Power: 1500Qa）</a>
+<a href="javascript:battle(122);">Forest 3（Rec. Power: 2000Qa）</a>
+<a href="javascript:battle(123);">Forest 4（Rec. Power: 2500Qa）</a>
+<a href="javascript:battle(124);">Forest BOSS 1（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b124" style="display:none;">
+<a href="javascript:battle(125);">Forest 6（Rec. Power: 8Qi）</a>
+<a href="javascript:battle(126);">Forest 7（Rec. Power: 10Qi）</a>
+<a href="javascript:battle(127);">Forest 8（Rec. Power: 14Qi）</a>
+<a href="javascript:battle(128);">Forest 9（Rec. Power: 18Qi）</a>
+<a href="javascript:battle(129);">Forest BOSS 2</a>
+</span><br>
+<span id="b129" style="display:none;">
+<a href="javascript:battle(130);">Desert 1（Rec. Power: 40Qi）</a>
+<a href="javascript:battle(131);">Desert 2（Rec. Power: 50Qi）</a>
+<a href="javascript:battle(132);">Desert 3（Rec. Power: 60Qi）</a>
+<a href="javascript:battle(133);">Desert 4（Rec. Power: 70Qi）</a>
+<a href="javascript:battle(134);">Desert BOSS 1</a>
+</span><br>
+<span id="b134" style="display:none;">
+<a href="javascript:battle(135);">Desert 6（Rec. Power: 100Qi）</a>
+<a href="javascript:battle(136);">Desert 7（Rec. Power: 100Qi）</a>
+<a href="javascript:battle(137);">Desert 8（Rec. Power: 150Qi）</a>
+<a href="javascript:battle(138);">Desert 9（Rec. Power: 200Qi）</a>
+<a href="javascript:battle(139);">Desert BOSS 2</a>
+</span><br>
+<span id="b139" style="display:none;">
+<a href="javascript:battle(140);">Cave 1（Rec. Power: 500Qi）</a>
+<a href="javascript:battle(141);">Cave 2（Rec. Power: 600Qi）</a>
+<a href="javascript:battle(142);">Cave 3（Rec. Power: 800Qi）</a>
+<a href="javascript:battle(143);">Cave 4（Rec. Power: 1000Qi）</a>
+<a href="javascript:battle(144);">Cave BOSS 1</a>
+</span><br>
+<span id="b144" style="display:none;">
+<a href="javascript:battle(145);">Cave 6（Rec. Power: 1200Qi）</a>
+<a href="javascript:battle(146);">Cave 7（Rec. Power: 1500Qi）</a>
+<a href="javascript:battle(147);">Cave 8（Rec. Power: 1800Qi）</a>
+<a href="javascript:battle(148);">Cave 9（Rec. Power: 2400Qi）</a>
+<a href="javascript:battle(149);">Cave BOSS 2（Win to unlock The Tower!）</a>
+</span><br>
+<span id="b149" style="display:none;">
+<a href="javascript:battle(150);">Ocean 1（Rec. Power: 4Sx）</a>
+<a href="javascript:battle(151);">Ocean 2（Rec. Power: 5Sx）</a>
+<a href="javascript:battle(152);">Ocean 3（Rec. Power: 6Sx）</a>
+<a href="javascript:battle(153);">Ocean 4（Rec. Power: 8Sx）</a>
+<a href="javascript:battle(154);">Ocean BOSS 1</a>
+</span><br>
+<span id="b154" style="display:none;">
+<a href="javascript:battle(155);">Ocean 6（Rec. Power: 15Sx）</a>
+<a href="javascript:battle(156);">Ocean 7（Rec. Power: 20Sx）</a>
+<a href="javascript:battle(157);">Ocean 8（Rec. Power: 30Sx）</a>
+<a href="javascript:battle(158);">Ocean 9（Rec. Power: 50Sx）</a>
+<a href="javascript:battle(159);">Ocean BOSS 2</a>
+</span><br>
+<span id="b159" style="display:none;">
+<a href="javascript:battle(160);">Mountain 1（Rec. Power: 100Sx）</a>
+<a href="javascript:battle(161);">Mountain 2（Rec. Power: 150Sx）</a>
+<a href="javascript:battle(162);">Mountain 3（Rec. Power: 220Sx）</a>
+<a href="javascript:battle(163);">Mountain 4（Rec. Power: 300Sx）</a>
+<a href="javascript:battle(164);">Mountain BOSS 1</a>
+</span><br>
+<span id="b164" style="display:none;">
+<a href="javascript:battle(165);">Mountain 6（Rec. Power: 500Sx）</a>
+<a href="javascript:battle(166);">Mountain 7（Rec. Power: 700Sx）</a>
+<a href="javascript:battle(167);">Mountain 8（Rec. Power: 900Sx）</a>
+<a href="javascript:battle(168);">Mountain 9（Rec. Power: 1Sp）</a>
+<a href="javascript:battle(169);">Mountain BOSS 2（Win to unlock a new challenge!）</a>
+</span><br>
+<span id="b169" style="display:none;">
+<a href="javascript:battle(170);">Sky 1（Rec. Power: 2Sp）</a>
+<a href="javascript:battle(171);">Sky 2（Rec. Power: 3Sp）</a>
+<a href="javascript:battle(172);">Sky 3（Rec. Power: 5Sp）</a>
+<a href="javascript:battle(173);">Sky 4（Rec. Power: 7Sp）</a>
+<a href="javascript:battle(174);">Sky BOSS 1</a>
+</span><br>
+<span id="b174" style="display:none;">
+<a href="javascript:battle(175);">Sky 6（Rec. Power: 10Sp）</a>
+<a href="javascript:battle(176);">Sky 7（Rec. Power: 20Sp）</a>
+<a href="javascript:battle(177);">Sky 8（Rec. Power: 30Sp）</a>
+<a href="javascript:battle(178);">Sky 9（Rec. Power: 40Sp）</a>
+<a href="javascript:battle(179);">Sky BOSS 2</a>
+</span><br>
+<span id="b179" style="display:none;">
+<a href="javascript:battle(180);">Volcano 1（Rec. Power: 50Sp）</a>
+<a href="javascript:battle(181);">Volcano 2（Rec. Power: 70Sp）</a>
+<a href="javascript:battle(182);">Volcano 3（Rec. Power: 90Sp）</a>
+<a href="javascript:battle(183);">Volcano 4（Rec. Power: 130Sp）</a>
+<a href="javascript:battle(184);">Volcano BOSS 1</a>
+</span><br>
+<span id="b184" style="display:none;">
+<a href="javascript:battle(185);">Volcano 6（Rec. Power: 1500Sp）</a>
+<a href="javascript:battle(186);">Volcano 7（Rec. Power: 2000Sp）</a>
+<a href="javascript:battle(187);">Volcano 8（Rec. Power: 2500Sp）</a>
+<a href="javascript:battle(188);">Volcano 9（Rec. Power: 3000Sp）</a>
+<a href="javascript:battle(189);">Volcano BOSS 2（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b189" style="display:none;">
+<a href="javascript:battle(190);">Castle 1（Rec. Power: 10Oc）</a>
+<a href="javascript:battle(191);">Castle 2（Rec. Power: 10Oc）</a>
+<a href="javascript:battle(192);">Castle 3（Rec. Power: 20Oc）</a>
+<a href="javascript:battle(193);">Castle 4（Rec. Power: 30Oc）</a>
+<a href="javascript:battle(194);">Castle BOSS 1</a>
+</span><br>
+<span id="b194" style="display:none;">
+<a href="javascript:battle(195);">Castle 6（Rec. Power: 130Oc）</a>
+<a href="javascript:battle(196);">Castle 7（Rec. Power: 180Oc）</a>
+<a href="javascript:battle(197);">Castle 8（Rec. Power: 230Oc）</a>
+<a href="javascript:battle(198);">Castle 9（Rec. Power: 300Oc）</a>
+<a href="javascript:battle(199);">Castle BOSS 2（Win to unlock transcend!）</a>
+</span>
+</div>
+<div id="diff2div" style="display:none;">
+Current Difficulty: Hard<br>
+<span id="diff2_chall2" style="display:none;"><br></span>
+<span id="b199" style="display:none;">
+<a href="javascript:battle(200);">Village 1（Rec. Power: 20Nn）</a>
+<a href="javascript:battle(201);">Village 2（Rec. Power: 50Nn）</a>
+<a href="javascript:battle(202);">Village 3（Rec. Power: 100Nn）</a>
+<a href="javascript:battle(203);">Village 4（Rec. Power: 200Nn）</a>
+<a href="javascript:battle(204);">Village BOSS 1（Win to unlock a transcend-related feature!）</a>
+</span><br>
+<span id="b204" style="display:none;">
+<a href="javascript:battle(205);">Village 6（Rec. Power: 700Nn）</a>
+<a href="javascript:battle(206);">Village 7（Rec. Power: 1100Nn）</a>
+<a href="javascript:battle(207);">Village 8（Rec. Power: 1500Nn）</a>
+<a href="javascript:battle(208);">Village 9（Rec. Power: 2200Nn）</a>
+<a href="javascript:battle(209);">Village BOSS 2</a>
+</span><br>
+<span id="b209" style="display:none;">
+<a href="javascript:battle(210);">Grassland 1（Rec. Power: 40Dc）</a>
+<a href="javascript:battle(211);">Grassland 2（Rec. Power: 50Dc）</a>
+<a href="javascript:battle(212);">Grassland 3（Rec. Power: 60Dc）</a>
+<a href="javascript:battle(213);">Grassland 4（Rec. Power: 80Dc）</a>
+<a href="javascript:battle(214);">Grassland BOSS 1</a>
+</span><br>
+<span id="b214" style="display:none;">
+<a href="javascript:battle(215);">Grassland 1（Rec. Power: 300Dc）</a>
+<a href="javascript:battle(216);">Grassland 2（Rec. Power: 400Dc）</a>
+<a href="javascript:battle(217);">Grassland 3（Rec. Power: 500Dc）</a>
+<a href="javascript:battle(218);">Grassland 4（Rec. Power: 600Dc）</a>
+<a href="javascript:battle(219);">Grassland BOSS 2</a>
+</span><br>
+<span id="b219" style="display:none;">
+<a href="javascript:battle(220);">Forest 1（Rec. Power: 6UDc）</a>
+<a href="javascript:battle(221);">Forest 2（Rec. Power: 7UDc）</a>
+<a href="javascript:battle(222);">Forest 3（Rec. Power: 8UDc）</a>
+<a href="javascript:battle(223);">Forest 4（Rec. Power: 10UDc）</a>
+<a href="javascript:battle(224);">Forest BOSS 1（Win to unlock a new prestige upgrade!）</a>
+</span><br>
+<span id="b224" style="display:none;">
+<a href="javascript:battle(225);">Forest 6（Rec. Power: 400UDc）</a>
+<a href="javascript:battle(226);">Forest 7（Rec. Power: 500UDc）</a>
+<a href="javascript:battle(227);">Forest 8（Rec. Power: 600UDc）</a>
+<a href="javascript:battle(228);">Forest 9（Rec. Power: 800UDc）</a>
+<a href="javascript:battle(229);">Forest BOSS 2</a>
+</span><br>
+<span id="b229" style="display:none;">
+<a href="javascript:battle(230);">Desert 1（Rec. Power: 20DDc）</a>
+<a href="javascript:battle(231);">Desert 2（Rec. Power: 30DDc）</a>
+<a href="javascript:battle(232);">Desert 3（Rec. Power: 50DDc）</a>
+<a href="javascript:battle(233);">Desert 4（Rec. Power: 70DDc）</a>
+<a href="javascript:battle(234);">Desert BOSS 1</a>
+</span><br>
+<span id="b234" style="display:none;">
+</span><br>
+<span id="b239" style="display:none;">
+</span><br>
+<span id="b244" style="display:none;">
+</span><br>
+<span id="b249" style="display:none;">
+</span><br>
+<span id="b254" style="display:none;">
+</span><br>
+<span id="b259" style="display:none;">
+</span><br>
+<span id="b264" style="display:none;">
+</span><br>
+<span id="b269" style="display:none;">
+</span><br>
+</div>
+</div>
+<div id="tab1" style="display:none;">
+<a href="javascript:eqtab=0;">Weapons</a> <a href="javascript:eqtab=1;">Armors</a> <a href="javascript:eqtab=2;">Shoes</a> <a href="javascript:eqtab=3;">Gems/Cores/Crystals</a>
+<a href="javascript:eqtab=4;" style="display:none;" id="eq_4">Pins</a><br>
+<div id="eq">
+</div>
+
+</div>
+<div id="tab2" style="display:none;">
+Your save is: <input id="save" /><br>
+<a href="javascript:load();">Load</a> <a href="javascript:softreset();">Soft Reset</a> <a href="javascript:reset();">Hard Reset</a><br>
+</div>
+<div id="tab3" style="display:none;">
+Prestige will reset your level, equipments and energy, but you will gain <span id="prestige2"></span> prestige points.
+<a href="javascript:prestige();">Prestige</a><br>
+<br>
+You have <span id="prestige3"></span> Prestige Points, gaining <span id="prestige_eff"></span>x more EXP and equipments<br>
+<a id="pu2" href="javascript:prestige_up(2);" style="display:none;"></a><br>
+<a id="pu1" href="javascript:prestige_up(1);" style="display:none;"></a><br>
+<a id="pu0" href="javascript:prestige_up(0);" style="display:none;"></a><br>
+<a id="pu3" href="javascript:prestige_up(3);" style="display:none;"></a><br>
+<a id="pu4" href="javascript:prestige_up(4);" style="display:none;"></a><br>
+<a id="pu5" href="javascript:prestige_up(5);" style="display:none;"></a><br>
+<a id="pu6" href="javascript:prestige_up(6);" style="display:none;"></a><br>
+<a id="pu7" href="javascript:prestige_up(7);" style="display:none;"></a><br>
+<a id="pu8" href="javascript:prestige_up(8);" style="display:none;"></a><br>
+<a id="pu9" href="javascript:prestige_up(9);" style="display:none;"></a><br>
+<a id="pu10" href="javascript:prestige_up(10);" style="display:none;"></a><br>
+<a id="pu11" href="javascript:prestige_up(11);" style="display:none;"></a><br>
+<a id="pu12" href="javascript:prestige_up(12);" style="display:none;"></a><br>
+</div>
+<div id="tab4" style="display:none;">
+<div id="challtower" style="display:none;">The effect of Challenge 5 won't apply in the Tower.</div>
+<div id="chall0" style="display:none;">
+Challenge 0: This challenge has no effect. <a href="javascript:startchall(0);">Start</a><br>
+Highest Level: <span id="chall0lv"></span>, Effect: +<span id="chall0eff"></span>% PP
+<hr>
+</div>
+<div id="chall1" style="display:none;">
+Challenge 1: Your HP is 1. <a href="javascript:startchall(1);">Start</a><br>
+Highest Level: <span id="chall1lv"></span>, Effect: +<span id="chall1eff"></span>% HP
+<hr>
+</div>
+<div id="chall2" style="display:none;">
+Challenge 2: Your Energy is 1, and Bosses will give 1 energy instead. <a href="javascript:startchall(2);">Start</a><br>
+Highest Level: <span id="chall2lv"></span>, Effect: +<span id="chall2eff"></span> Energy at start
+<hr>
+</div>
+<div id="chall3" style="display:none;">
+Challenge 3: EXP to Level Up is massively increased.<a href="javascript:startchall(3);">Start</a><br>
+Highest Level: <span id="chall3lv"></span>, Effect: +<span id="chall3eff"></span>% EXP
+<hr>
+</div>
+<div id="chall4" style="display:none;">
+Challenge 4: You can't gain Equipments. <a href="javascript:startchall(4);">Start</a><br>
+Highest Level: <span id="chall4lv"></span>, Effect: +<span id="chall4eff"></span>% Equipments
+<hr>
+</div>
+<div id="chall5" style="display:none;">
+Challenge 5: Enemies have increased Damage. Enemy will attack first with 1.5x Damage. <a href="javascript:startchall(5);">Start</a><br>
+Highest Level: <span id="chall5lv"></span>, Effect: +<span id="chall5eff"></span>% ATK
+<hr>
+</div>
+<div id="chall6" style="display:none;">
+Challenge 6: Your HP, ATK and DEF are Square-rooted. <a href="javascript:startchall(6);">Start</a><br>
+Highest Level: <span id="chall6lv"></span>, Effect: +<span id="chall6eff"></span>% DEF
+<hr>
+</div>
+</div>
+<div id="tab5" style="display:none;">
+Battle in the Tower don't cost any energy. You can't gain EXP and Equipments in the Tower. Progress in the Tower doesn't reset in Prestige.<br>
+Highest Floor: <span id="tower_floor"></span>, Effect: +<span id="tower_floor2"></span>% HP, EXP and PP<br>
+<a href="javascript:battle('tower');" id="tower_battle"></a><br><span id="tower_skip">Skip floor:<input id="towercinput" type="range" min="0" max="2" step="1" value="0"><span id="towerc_eff"></span></span>
+</div>
+<div id="tab6" style="display:none;">
+Transcend will reset your level, equipments, energy, prestige points and upgrades, but you will gain <span id="transcend2"></span> transcend points.<br>
+Transcend won't reset equipment levels, challenges and The Tower.<br>
+<a href="javascript:transcend();">Transcend</a><br>
+<br>
+You have <span id="transcend3"></span> Transcend Points, gaining <span id="transcend_eff"></span>x more EXP, equipments and gaining <span id="transcend_eff2"></span>x more prestige points<br>
+<div id="tab6a" style="display:none;">
+<hr>
+God Of Transcend's level is <span id="transcendlv"></span>/10, leveling up requires <span id="transcendlv2"></span> TP, costs <span id="transcendlv3"></span> TP.<br>
+God Of Transcend is multiplying your TP gain by <span id="transcendlv_eff"></span>x
+<a href="javascript:transcendlvup();">Level Up God Of Transcend</a><br>
+<br>
+Effects of God Of Transcend: <span id="transcendlv_eff2"></span>
+</div>
+</div>
+<div id="tab7" style="display:none;">
+You encountered the Final Boss. <br>
+Final Boss HP: <span id="final_boss_hp"></span><br>
+Damage dealt to Final Boss: <span id="final_boss_damage1"></span><br>
+Damage to Final Boss after Prestige (based on ATK): <span id="final_boss_damage2"></span><br>
+</div>
+<div id="battlelog">
+Welcome to "Lots of Equipments RPG" by loader3229! This is a game similar to Incremental RPG, and enemies in this game can drop lots of equipments at once!<br>
+Also, you don't lose energy when you lose a battle.<br>
+Version: 1.2.4<br>
+Endgame: Reach Floor 2200 in the Tower<br>
+The translation to English is not finished, and my English is poor. Sorry.<br>
+</div>
+</body>
+</html>
