@@ -10,3 +10,9 @@ try{
 	$("#multitree2").html(tmp);
 }catch(e){}
 
+try{
+	var tmp=0;
+	JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
+	$("#zbkc1").html(tmp);
+	$("#zbkc2").html(tmp);
+}catch(e){}
