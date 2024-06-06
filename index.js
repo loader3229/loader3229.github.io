@@ -87,7 +87,7 @@ try{
 
 
 
-
+total_points=Math.floor(total_points);
 
 try{
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
