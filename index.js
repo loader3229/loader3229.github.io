@@ -7,6 +7,7 @@ function change_language(a){
 if(localStorage.lang==1){
 	$('html').attr('lang','zh-CN');
 	$('#nav1').html('增量游戏表');
+	$('#nav3').html('以前制作的游戏');
 	//$('#nav2').html('BanG Dream! 自制谱');
 	//$('#nav3').html('其他');
 	//$('#nav4').html('捐赠');
@@ -15,12 +16,14 @@ if(localStorage.lang==1){
 }else{
 	$('html').attr('lang','en');
 	$('#nav1').html('Incremental Games');
+	$('#nav3').html('Game Prototypes');
 	//$('#nav2').html('BanG Dream! GBP Fanmade Charts');
 	//$('#nav3').html('Others');
 	//$('#nav4').html('Donate Me');
 	$('#lang-style').html('.zh{display:none;}');
 }
 $('#nav1').attr('href','/incrementalgames.html');
+$('#nav3').attr('href','/gameprototypes.html');
 $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 
 // Incremental Games
@@ -29,7 +32,7 @@ var total_points=0;
 
 try{
 	var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-	if(Number.isFinite(tmp))total_points+=(tmp*10);else tmp=0;
+	if(Number.isFinite(tmp))total_points+=(tmp*7);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#milestone1").html(tmp);
 		$("#milestone2").html(tmp);
