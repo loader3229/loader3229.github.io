@@ -215,13 +215,14 @@ function invertOOM(x){
 
 var player={
 	metapoints: new Decimal(0),
-	metaupgrades: [new Decimal(0),new Decimal(0)]
+	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0)]
 };
 
 try{
 	var player_saved=JSON.parse(atob(localStorage.metagame));
 	player.metapoints=new Decimal(player_saved.metapoints);
 	player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
+	player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2]);
 }catch(e){}
 
 var tick=Date.now();
@@ -233,15 +234,20 @@ setInterval(function(){try{
 		$("#metapoints").html(formatWhole(player.metapoints));
 		$("#metagain").html(format(metagain()));
 		$("#1level").html(formatWhole(player.metaupgrades[1]));
+		$("#2level").html(formatWhole(player.metaupgrades[2]));
 		$("#1effect").html(format(metaeffect(1)));
+		$("#2effect").html(format(metaeffect(2)));
 		$("#1cost").html(formatWhole(metacost(1)));
+		$("#2cost").html(formatWhole(metacost(2)));
 	}
 	tick=Date.now();
-}catch(e){}
+}catch(e){console.log(e);}
 },100);
 
 function metagain(){
-	return metaeffect(1);
+	let ret=metaeffect(1).mul(metaeffect(2));
+	if(sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')ret = ret.mul(3);
+	return ret;
 }
 
 function metaeffect(a){
@@ -249,11 +255,20 @@ function metaeffect(a){
 		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points,10000)+100,1))/2,player.metaupgrades[1]);
 		return ret;
 	}
+	if(a==2){
+		let ret=Decimal.pow(Decimal.log10(player.metapoints.add(100)),player.metaupgrades[2]/2.5);
+		return ret;
+	}
 }
 
 function metacost(a){
 	if(a==1){
 		let ret=Decimal.pow(1.5,player.metaupgrades[1].add(6).pow(1.1));
+		if(player.metaupgrades[1].gte(20))ret=Decimal.pow(1.5,player.metaupgrades[1].pow(1.2));
+		return ret;
+	}
+	if(a==2){
+		let ret=Decimal.pow(3,player.metaupgrades[2].add(5).pow(1.4));
 		return ret;
 	}
 }
