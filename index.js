@@ -100,3 +100,168 @@ try{
 }catch(e){}
 
 
+
+function exponentialFormat(num, precision, mantissa = true) {
+    let e = num.log10().floor()
+    let m = num.div(Decimal.pow(10, e))
+    if (m.toStringWithDecimalPlaces(precision) == 10) {
+        m = decimalOne
+        e = e.add(1)
+    }
+    e = (e.gte(1e9) ? format(e, 3) : (e.gte(10000) ? commaFormat(e, 0) : e.toStringWithDecimalPlaces(0)))
+    if (mantissa)
+        return m.toStringWithDecimalPlaces(precision) + "e" + e
+    else return "e" + e
+}
+
+function commaFormat(num, precision) {
+    if (num === null || num === undefined) return "NaN"
+    if (num.mag < 0.001) return (0).toFixed(precision)
+    let init = num.toStringWithDecimalPlaces(precision)
+    let portions = init.split(".")
+    portions[0] = portions[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
+    if (portions.length == 1) return portions[0]
+    return portions[0] + "." + portions[1]
+}
+
+
+function regularFormat(num, precision) {
+    if (num === null || num === undefined) return "NaN"
+    if (num.mag < 0.0001) return (0).toFixed(precision)
+    if (num.mag < 0.1 && precision !==0) precision = Math.max(precision, 4)
+    return num.toStringWithDecimalPlaces(precision)
+}
+
+function fixValue(x, y = 0) {
+    return x || new Decimal(y)
+}
+
+function sumValues(x) {
+    x = Object.values(x)
+    if (!x[0]) return decimalZero
+    return x.reduce((a, b) => Decimal.add(a, b))
+}
+
+function format(decimal, precision = 2, small) {
+    small = false
+    decimal = new Decimal(decimal)
+    if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
+        player.hasNaN = true;
+        return "NaN"
+    }
+    if (decimal.sign < 0) return "-" + format(decimal.neg(), precision, small)
+    if (decimal.mag == Number.POSITIVE_INFINITY) return "Infinity"
+    if (decimal.gte("eeee1000")) {
+        var slog = decimal.slog()
+        if (slog.gte(1e6)) return "F" + format(slog.floor())
+        else return Decimal.pow(10, slog.sub(slog.floor())).toStringWithDecimalPlaces(3) + "F" + commaFormat(slog.floor(), 0)
+    }
+    else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0, false)
+    else if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0)
+    else if (decimal.gte(1e9)) return exponentialFormat(decimal, precision)
+    else if (decimal.gte(1e3)) return commaFormat(decimal, 0)
+    else if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision)
+    else if (decimal.eq(0)) return (0).toFixed(precision)
+
+    decimal = invertOOM(decimal)
+    let val = ""
+    if (decimal.lt("1e1000")){
+        val = exponentialFormat(decimal, precision)
+        return val.replace(/([^(?:e|F)]*)$/, '-$1')
+    }
+    else   
+        return format(decimal, precision) + "⁻¹"
+
+}
+
+function formatWhole(decimal) {
+    decimal = new Decimal(decimal)
+    if (decimal.gte(1e9)) return format(decimal, 2)
+    if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2)
+    return format(decimal, 0)
+}
+
+function formatTime(s) {
+    if (s < 60) return format(s) + "s"
+    else if (s < 3600) return formatWhole(Math.floor(s / 60)) + "m " + format(s % 60) + "s"
+    else if (s < 86400) return formatWhole(Math.floor(s / 3600)) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60) + "s"
+    else if (s < 31536000) return formatWhole(Math.floor(s / 86400) % 365) + "d " + formatWhole(Math.floor(s / 3600) % 24) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60) + "s"
+    else return formatWhole(Math.floor(s / 31536000)) + "y " + formatWhole(Math.floor(s / 86400) % 365) + "d " + formatWhole(Math.floor(s / 3600) % 24) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60) + "s"
+}
+
+function toPlaces(x, precision, maxAccepted) {
+    x = new Decimal(x)
+    let result = x.toStringWithDecimalPlaces(precision)
+    if (new Decimal(result).gte(maxAccepted)) {
+        result = new Decimal(maxAccepted - Math.pow(0.1, precision)).toStringWithDecimalPlaces(precision)
+    }
+    return result
+}
+
+// Will also display very small numbers
+function formatSmall(x, precision=2) { 
+    return format(x, precision, true)    
+}
+
+function invertOOM(x){
+    let e = x.log10().ceil()
+    let m = x.div(Decimal.pow(10, e))
+    e = e.neg()
+    x = new Decimal(10).pow(e).times(m)
+
+    return x
+}
+
+
+var player={
+	metapoints: new Decimal(0),
+	metaupgrades: [new Decimal(0),new Decimal(0)]
+};
+
+try{
+	var player_saved=JSON.parse(atob(localStorage.metagame));
+	player.metapoints=new Decimal(player_saved.metapoints);
+	player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
+}catch(e){}
+
+var tick=Date.now();
+
+setInterval(function(){try{
+	player.metapoints=metagain().mul(Date.now()-tick).div(1000).add(player.metapoints);
+	localStorage.metagame=btoa(JSON.stringify(player));
+	if(document.location.href.indexOf("/metagame")!=-1){
+		$("#metapoints").html(formatWhole(player.metapoints));
+		$("#metagain").html(format(metagain()));
+		$("#1level").html(formatWhole(player.metaupgrades[1]));
+		$("#1effect").html(format(metaeffect(1)));
+		$("#1cost").html(formatWhole(metacost(1)));
+	}
+	tick=Date.now();
+}catch(e){}
+},100);
+
+function metagain(){
+	return metaeffect(1);
+}
+
+function metaeffect(a){
+	if(a==1){
+		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points,10000)+100,1))/2,player.metaupgrades[1]);
+		return ret;
+	}
+}
+
+function metacost(a){
+	if(a==1){
+		let ret=Decimal.pow(1.5,player.metaupgrades[1].add(6).pow(1.1));
+		return ret;
+	}
+}
+
+function metaupgrade(a){
+	var cost=metacost(a);
+	if(player.metapoints.gte(cost)){
+		player.metapoints=player.metapoints.sub(cost);
+		player.metaupgrades[a]=player.metaupgrades[a].add(1);
+	}
+}
