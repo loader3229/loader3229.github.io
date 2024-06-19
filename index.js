@@ -204,13 +204,19 @@ try{
 	var tmp=new Decimal(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*20);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#luck1").html(tmp);
-		$("#luck2").html(tmp);
+		$("#luck1").html(tmp.toFixed(4));
+		$("#luck2").html(tmp.toFixed(4));
 	}
 }catch(e){}
 
-
-
+try{
+	var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).totalmoney).add(1).log10().add(1).log10().toNumber();
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
+	if(document.location.href.indexOf("/incrementalgames")!=-1){
+		$("#ngm4r1").html(tmp.toFixed(4));
+		$("#ngm4r2").html(tmp.toFixed(4));
+	}
+}catch(e){}
 
 
 try{
