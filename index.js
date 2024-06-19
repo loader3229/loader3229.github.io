@@ -240,34 +240,37 @@ try{
 	player.stat=(player_saved.stat || 0);
 }catch(e){}
 
-setInterval(function(){try{
-	var player_saved=JSON.parse(atob(localStorage.metagame));
-	if(player_saved.stat>player.stat){
-		player.metapoints=new Decimal(player_saved.metapoints);
-		player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
-		player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2]);
-		player.tick=(player_saved.tick || Date.now());
-		player.stat=(player_saved.stat || 0);
-	}
-	player.metapoints=metagain().mul(Date.now()-player.tick).div(1000).add(player.metapoints);
-	localStorage.metagame=btoa(JSON.stringify(player));
-	if(document.location.href.indexOf("/metagame")!=-1){
-		player.stat = Math.max(player.stat,1);
-		$("#metapoints").html(formatWhole(player.metapoints));
-		$("#metagain").html(format(metagain()));
-		$("#1level").html(formatWhole(player.metaupgrades[1]));
-		$("#2level").html(formatWhole(player.metaupgrades[2]));
-		$("#1effect").html(format(metaeffect(1)));
-		$("#2effect").html(format(metaeffect(2)));
-		$("#1cost").html(formatWhole(metacost(1)));
-		$("#2cost").html(formatWhole(metacost(2)));
-	}
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()));
-		$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()));
-	}
-	player.tick=Date.now();
-}catch(e){console.log(e);}
+setInterval(function(){
+	try{
+		try{
+			var player_saved=JSON.parse(atob(localStorage.metagame));
+			if(player_saved.stat>player.stat){
+				player.metapoints=new Decimal(player_saved.metapoints);
+				player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
+				player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2]);
+				player.tick=(player_saved.tick || Date.now());
+				player.stat=(player_saved.stat || 0);
+			}
+		}catch(e){}
+		player.metapoints=metagain().mul(Date.now()-player.tick).div(1000).add(player.metapoints);
+		localStorage.metagame=btoa(JSON.stringify(player));
+		if(document.location.href.indexOf("/metagame")!=-1){
+			player.stat = Math.max(player.stat,1);
+			$("#metapoints").html(formatWhole(player.metapoints));
+			$("#metagain").html(format(metagain()));
+			$("#1level").html(formatWhole(player.metaupgrades[1]));
+			$("#2level").html(formatWhole(player.metaupgrades[2]));
+			$("#1effect").html(format(metaeffect(1)));
+			$("#2effect").html(format(metaeffect(2)));
+			$("#1cost").html(formatWhole(metacost(1)));
+			$("#2cost").html(formatWhole(metacost(2)));
+		}
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()));
+			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()));
+		}
+		player.tick=Date.now();
+	}catch(e){console.log(e);}
 },100);
 
 function metagain(){
