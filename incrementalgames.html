@@ -62,13 +62,13 @@
 
 <hr>
 <h3><span class=en>Luck Incremental NG+</span><span class=zh>幸运增量NG+</span></h3>
-<p class=en>This is an extension of Luck Incremental by MrRedShark77. Your goal is roll higher rarity with your luck! <br>log10(Highest Rarity)：<span id=luck1>0</span><br><a href="/Luck-Incremental" class="btn btn-primary">Play Now</a></p>
-<p class=zh>幸运增量NG+，提升你的幸运值就可以抽出更高稀有度的物品哦~<br>log10(最高稀有度)：<span id=luck2>0</span><br><a href="/Luck-Incremental" class="btn btn-primary">英文版</a></p>
+<p class=en>This is an extension of Luck Incremental by MrRedShark77. Your goal is roll higher rarity with your luck! <br>Highest Rarity：<span id=luck1>0</span><br><a href="/Luck-Incremental" class="btn btn-primary">Play Now</a></p>
+<p class=zh>幸运增量NG+，提升你的幸运值就可以抽出更高稀有度的物品哦~<br>最高稀有度：<span id=luck2>0</span><br><a href="/Luck-Incremental" class="btn btn-primary">英文版</a></p>
 
 <hr>
 <h3><span class=en>Antimatter Dimensions NG-4 Respecced</span><span class=zh>反物质维度NG-4R</span></h3>
-<p class=en>This is a rewrite of Aarex's Antimatter Dimensions NG-4, that includes a new feature called Timeless. <br>log10(log10(Antimatter))：<span id=ngm4r1>0</span><br><a href="/ng-4respecced" class="btn btn-primary">Play Now</a></p>
-<p class=zh>反物质维度NG-4R，NG-4的重新平衡版本，并且增加了一个新的部分：Timeless。<br>log10(log10(反物质))：<span id=ngm4r2>0</span><br><a href="/ng-4respecced" class="btn btn-primary">英文版</a></p>
+<p class=en>This is a rewrite of Aarex's Antimatter Dimensions NG-4, that includes a new feature called Timeless. <br>Total Antimatter：<span id=ngm4r1>0</span><br><a href="/ng-4respecced" class="btn btn-primary">Play Now</a></p>
+<p class=zh>反物质维度NG-4R，NG-4的重新平衡版本，并且增加了一个新的部分：Timeless。<br>总反物质：<span id=ngm4r2>0</span><br><a href="/ng-4respecced" class="btn btn-primary">英文版</a></p>
 
 <hr>
 <h3><span class=en>Incremental Mass Rewritten v0.5 NG+</span><span class=zh>质量增量 v0.5 NG+</span></h3>
@@ -78,11 +78,25 @@
 </div>
 
 
-<script src="jquery.min.js"></script>
+
+<script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
 <script src="bootstrap/bootstrap.min.js"></script>
 <script src="break_eternity.js"></script>
 <script src="expantanum.js"></script>
 <script src="lz-string.js"></script>
 <script src="index.js"></script>
+<link rel="stylesheet" type="text/css" href="l2d.css"/>
+<div class="waifu">
+        <div class="waifu-tips"></div>
+<canvas id="live2d" class="live2d"></canvas>
+        <div class="waifu-tool">
+            <span class="fui-chat"></span>
+            <span class="fui-star"></span>
+            <!--span class="fui-folder"></span>
+            <!--span class="fui-video"></span-->
+            <!--span class="fui-gear"></span-->
+            <span class="fui-info-circle"></span>
+            <span class="fui-cmd"></span>
+        </div>
 </body>
 </html>
