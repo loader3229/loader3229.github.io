@@ -210,7 +210,7 @@ try{
 }catch(e){}
 
 try{
-	var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).totalmoney).add(1).log10().add(1).log10().toNumber();
+	var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#ngm4r1").html(tmp.toFixed(4));
