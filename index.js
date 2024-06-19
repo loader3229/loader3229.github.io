@@ -287,15 +287,14 @@ function metaeffect(a){
 		return ret;
 	}
 	if(a==2){
-		let ret=Decimal.pow(Decimal.log10(player.metapoints.add(100)),player.metaupgrades[2]/2.5);
+		let ret=Decimal.pow(Decimal.log10(player.metapoints.add(100)),player.metaupgrades[2].pow(0.75).div(2));
 		return ret;
 	}
 }
 
 function metacost(a){
 	if(a==1){
-		let ret=Decimal.pow(1.5,player.metaupgrades[1].add(6).pow(1.1));
-		if(player.metaupgrades[1].gte(20))ret=Decimal.pow(1.5,player.metaupgrades[1].pow(1.2));
+		let ret=Decimal.pow(1.5,player.metaupgrades[1].pow(1.15).add(6));
 		return ret;
 	}
 	if(a==2){
