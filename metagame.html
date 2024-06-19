@@ -32,8 +32,8 @@
 
 <div class='container'><h1><span class=en>Secret Page</span><span class=zh>秘密页</span></h1>
 <hr>
-<span class=zh>你有</span><span class=en>You have</span> <span id="metapoints">0</span> <span class=zh>元点数。</span><span class=en>Metapoints.</span><br>
-<span class=zh>你得到</span><span class=en>You will gain</span> <span id="metagain">0</span> <span class=zh>元点数每秒。</span><span class=en>Metapoints per second.</span><br>
+<span class=zh>您有</span><span class=en>You have</span> <span id="metapoints">0</span> <span class=zh>元点数。</span><span class=en>Metapoints.</span><br>
+<span class=zh>您得到</span><span class=en>You will gain</span> <span id="metagain">0</span> <span class=zh>元点数每秒。</span><span class=en>Metapoints per second.</span><br>
 <hr>
 <span class=zh>总游戏分数增加元点数获取。等级：</span><span class=en>Total Game Score boost Metapoints gain. Level: </span><span id="1level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="1cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="1effect"></span>x<br>
@@ -42,12 +42,34 @@
 <span class=zh>元点数增加元点数获取。等级：</span><span class=en>Metapoints boost Metapoints gain. Level: </span><span id="2level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="2cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="2effect"></span>x<br>
 <a href=javascript:void(metaupgrade(2));><span class=zh>升级！</span><span class=en>Upgrade!</span></a>
-<script src="jquery.min.js"></script>
+<hr>
+<span class=zh>您对户山香澄的好感度增加元点数获取。等级：</span><span class=en>Your Intimacy Points to Kasumi boost Metapoints gain. Level: </span><span id="3level"></span><br>
+<span class=zh>价格：</span><span class=en>Cost: </span><span id="3cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="3effect"></span>x<br>
+<a href=javascript:void(metaupgrade(3));><span class=zh>升级！</span><span class=en>Upgrade!</span></a>
+<div id="prestige" style="display:none;"><hr>
+<span class=zh>转生以得到</span><span class=en>Prestige for </span><span id="presgain"></span><span class=zh>元转生点</span><span class=en> Metaprestige</span><br>
+<span class=zh>您有</span><span class=en>You have</span> <span id="metaprestige">0</span> <span class=zh>元转生点。</span><span class=en>Metaprestige.</span><br>
+<span class=zh>效果：元点数获取变为原来的</span><span class=en>Effect: Metapoints gain is multiplied by </span><span id="preseffect"></span>x<br>
+<a href=javascript:void(metaprestige());><span class=zh>转生！</span><span class=en>Prestige!</span></a></div>
+
+<script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
 <script src="bootstrap/bootstrap.min.js"></script>
 <script src="break_eternity.js"></script>
 <script src="expantanum.js"></script>
 <script src="lz-string.js"></script>
 <script src="index.js"></script>
-<script src="sha512.js"></script>
+<link rel="stylesheet" type="text/css" href="l2d.css"/>
+<div class="waifu">
+        <div class="waifu-tips"></div>
+<canvas id="live2d" class="live2d"></canvas>
+        <div class="waifu-tool">
+            <span class="fui-chat"></span>
+            <span class="fui-star"></span>
+            <!--span class="fui-folder"></span>
+            <!--span class="fui-video"></span-->
+            <!--span class="fui-gear"></span-->
+            <span class="fui-info-circle"></span>
+            <span class="fui-cmd"></span>
+        </div>
 </body>
 </html>
