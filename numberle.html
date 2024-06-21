@@ -1,0 +1,135 @@
+<meta charset=utf-8>本页面基于aquamarine309的反物质维度mod ADPuzzle，生成猜算式题目。<br>
+<script>
+const operators = [
+  {
+    name: "+",
+    fn: (a, b) => a + b,
+    genBase: r => {
+      const a = randomInt(r);
+      const b = r - a;
+      return [a, b];
+    },
+    canGen: r => r > 1,
+    priority: 0
+  },
+  {
+    name: "-",
+    fn: (a, b) => a - b,
+    genBase: r => {
+      const b = randomInt(20);
+      const a = b + r;
+      return [a, b];
+    },
+    canGen: () => true,
+    priority: 0
+  },
+  {
+    name: "*",
+    fn: (a, b) => a * b,
+    genBase: r => {
+      let a, b;
+      for (let i = 2; i * i <= r; i++) {
+        if (Number.isInteger(r / i)) {
+          a = i;
+          b = r / i
+          if (randomIn(Math.pow(r, 2))) break;
+        }
+      }
+      return [a, b];
+    },
+    canGen: r => {
+      if (r <= 1) return false;
+      for (let i = 2; i * i <= r; i++) {
+        if (Number.isInteger(r / i)) return true;
+      }
+      return false;
+    },
+    priority: 1
+  },
+  {
+    name: "/",
+    fn: (a, b) => a / b,
+    priority: 1,
+    genBase: r => {
+      const b = randomInt(8) + 2;
+      const a = b * r;
+      return [a, b];
+    },
+    canGen: r => r > 0,
+  }
+];
+
+const randomInt = x => Math.floor(Math.random() * x);
+const randomIn = x => Math.random() < 1 / x;
+
+function baseEquationGenerator(canOnlyNumber = false, answer = randomInt(10)) {
+  if (canOnlyNumber && Math.random() > 0.1) {
+    return {
+      equation: answer.toString(),
+      result: answer,
+      priority: Number.MAX_VALUE * Math.sign(answer)
+    }
+  }
+  let operator = operators[Math.floor(Math.random()*4)];
+  while (!operator.canGen(answer)) {
+    operator = operators[Math.floor(Math.random()*4)];
+  }
+  const numbers = operator.genBase(answer);
+  const result = operator.fn(...numbers);
+  const equation = `${numbers.map(n => n >= 0 ? n : formatBracket(n)).join(operator.name)}`
+  return {
+    equation,
+    result,
+    priority: operator.priority
+  }
+};
+
+function formatBracket(x) {
+  return `(${x})`;
+}
+
+function secondEquationGenerator(answer = randomInt(10)) {
+  if (Math.random() < 0.1) {
+    return {
+      equation: answer.toString(),
+      result: answer,
+      priority: Number.MAX_VALUE * Math.sign(answer)
+    }
+  }
+  let operator = operators[Math.floor(Math.random()*4)];
+  while (!operator.canGen(answer)) {
+    operator = operators[Math.floor(Math.random()*4)];
+  }
+  const number = operator.genBase(answer);
+  const base1 = baseEquationGenerator(true, number[0]);
+  if (operator.priority > base1.priority) {
+    base1.equation = formatBracket(base1.equation);
+  }
+  const base2 = baseEquationGenerator(true, number[1]);
+  if (operator.priority > base2.priority) {
+    base2.equation = formatBracket(base2.equation);
+  }
+  const result = operator.fn(base1.result, base2.result);
+  const equation = `${base1.equation}${operator.name}${base2.equation}`;
+  return {
+    equation,
+    result,
+    priority: operator.priority
+  }
+}
+
+function questionGenerator() {
+  const answer = randomInt(9) + 1;
+  let question;
+  do {
+    const  e1  = secondEquationGenerator(answer);
+    const  e2  = secondEquationGenerator(answer);
+    question = `${e1.equation}=${e2.equation}`;
+  } while (question.length > 10 || question.length < 5 || question.indexOf('(')!=-1 || question.indexOf(')')!=-1);
+  return question;
+}
+
+var question=btoa(questionGenerator());
+//setTimeout(window.open.bind(window,"https://numberle.org/?challenge="+question),500);
+</script>
+<a href="https://numberle.org/?challenge=MSsyPTM=" onclick="this.href='https://numberle.org/?challenge='+btoa(questionGenerator())" target="_blank">开始生成（每次点击都是不一样的题目哦~）</a>
