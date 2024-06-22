@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=1250">
+<title>loader3229's New Homepage -- Kasumi's Profile</title><script>zhtitle='loader3229的新主页 -- loader3229的香澄档案';</script>
+<link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+<style id="lang-style"></style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="/">loader3229</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item"><a class="nav-link" id="nav1"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav2"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav3"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav4"></a></li>
+</ul>
+<a class="nav-link" id="discord">Discord</a>
+<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">语言/Language</a>
+<div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="javascript:change_language(1);">简体中文</a><a class="dropdown-item" href="javascript:change_language(0);">English</a></div>
+</div>
+</div>
+</nav>
+<noscript>Please Enable Javascript.</noscript>
+
+
+<div class='container'><h1><span class=en>loader3229's Kasumi's Profile</span><span class=zh>loader3229的香澄档案</span></h1>
+<hr>
+<img src="ksm.png" width="700"><br>
+<span class=zh>我是闪闪发光、心动不已的户山香澄（loader3229的“闪闪发光”版本）！而且，因为loader3229，我和其他的户山香澄不一样！</span>
+<span class=en>Sparkling, Heart-Pounding, I'm Kasumi Toyama from Poppin'Party! Also, because of loader3229, I have extra abilities now!</span>
+<br>
+<span class=zh>我除了会唱歌、弹吉他外，我还会跳舞、打音游！</span>
+<span class=en>Because of loader3229, I can dance and play Music Games like BanG Dream! Girls Band Party!</span>
+<br>
+<span class=zh>我已经ALL PERFECT了BanG Dream!少女乐团派对！所有的官谱，包括33级的<a href="https://bestdori.com/tool/chart/486/special" onclick=addIntimacy(2)>HELL! or HELL? 超难SPECIAL</a>。</span>
+<span class=en>Also, I All-Perfected All Official charts of BanG Dream! Girls Band Party!, includes <a href="https://bestdori.com/tool/chart/486/special" onclick=addIntimacy(2)>HELL! or HELL? Super-Hard SPECIAL</a>。</span>
+<br>
+<span class=zh>我还ALL PERFECT了loader3229制作的大部分自制谱，包括<a href="https://bestdori.com/community/charts/73910" onclick=addIntimacy(2)>qualia -ideaesthesia- [ANOTHER 35]</a>（Bestdori ID 73910）。</span><br>
+<span class=en>loader3229 made some BanG Dream! Girls Band Party! fanmade charts, and I All-Perfected many of them includes <a href="https://bestdori.com/community/charts/73910" onclick=addIntimacy(2)>qualia -ideaesthesia- [ANOTHER 35]</a>.</span>
+<br>
+<span class=zh>我现在的年龄是</span><span class=en>I'm </span><span id="age">16</span><span class=zh>岁，年级是高二。（年龄显示取决于本地系统时间）</span><span class=en> years old now (based on local computer time), and in Class 2-A of Hanasakigawa Girls' High School.</span><br>
+<span class=zh>我已经陪了loader3229 <span id="day"></span>天了。</span><br>
+<span id="randtext"></span><hr>
+<a href="javascript:void(start_live());" id="live_link"></a>
+<div style="display:none;"><audio id=live_audio src="live.mp3" preload></div>
+<script>
+function getage(){
+	let y=new Date().getFullYear();
+	let d=new Date(y,6,14).valueOf();
+	if(Date.now()>=d){
+		let d1=new Date(y+1,6,14).valueOf();
+		return y-2003+(Date.now()-d)/(d1-d);
+	}else{
+		let d1=new Date(y-1,6,14).valueOf();
+		return y-2004+(Date.now()-d1)/(d-d1);
+	}
+}
+function getday(){
+	let d=new Date(2020,3,5).valueOf();
+	return Math.floor((Date.now()-d)/86400000);
+}
+function getday3(){
+	let d=new Date(2019,4,5).valueOf();
+	return Math.floor((Date.now()-d)/86400000);
+}
+if(localStorage.lang==1)setTimeout("document.getElementById('randtext').innerHTML=['和我一起闪闪发光、心动不已吧！','KiraKira就是KiraKira，而DokiDoki就是DokiDoki！','我也想像彩学姐一样学会更多的舞蹈动作！','loader3229送给我一把崭新的RANDOM STAR，我非常喜欢它！（这个RANDOM STAR仅限我的旧版本使用，我的新版本不能使用这个RANDOM STAR）','loader3229给我送星星贴纸了！','loader3229说：“小香澄，可不可以打一下我新制作的自制谱？” 我说：“好的！” 然后我打出了一个初见ALL PERFECT。','交互、纵连、多押、换手，这些对我来说都不是问题！','偷偷告诉你，loader3229除了喜欢Poppin\\'Party之外，还喜欢Pastel＊Palettes。','角色技能发动！我的所有★4及以下卡牌，卡技能加分+15%，卡综合力+5%！（对★5卡牌无效）'][Math.floor(Math.random()*9)];",100);
+
+var live_running=0;
+setInterval(function(){
+	document.getElementById('age').innerHTML=getage().toFixed(7);
+	document.getElementById('day').innerHTML=getday();
+	
+	if(can_live()){
+		var mult=(parseInt(localStorage.kasumiLivecount)+3)/(parseInt(localStorage.kasumiLivecount)+2);
+		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="让loader3229的户山香澄开始演出。将会获得大量好感度，并且以后所有好感度获取变为"+(mult.toFixed(4))+"倍。";
+		else document.getElementById("live_link").innerHTML="Let loader3229's Kasumi start a live show. You will gain a lot of Kasumi's Intimacy Points, and gain a permanent x"+(mult.toFixed(4))+" Intimacy Points gain.";
+	}else if(live_running){
+		var stat=document.getElementById("live_audio").currentTime/30*100;
+		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄正在进行演出……（"+(stat.toFixed(1))+"%）";
+		else document.getElementById("live_link").innerHTML="loader3229's Kasumi is doing a live show... "+(stat.toFixed(1))+"%";
+	}else{
+		var time=(3600000-Date.now()+parseInt(localStorage.kasumilastlive))/1000;
+		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄暂时不能进行演出……请等待"+(time.toFixed(1))+"秒。";
+		else document.getElementById("live_link").innerHTML="loader3229's Kasumi can't start a live show... Cooldown: "+(time.toFixed(1))+"s";
+	}
+	
+	if(live_running && document.getElementById("live_audio").currentTime>=30){
+		live_running=0;
+		if(can_live()){
+			localStorage.kasumiLivecount=(parseInt(localStorage.kasumiLivecount)+1);
+			localStorage.kasumilastlive=Date.now();
+			addIntimacy(714);
+		}
+	}
+},50);
+
+function can_live(){
+	if(live_running)return false;
+	if(!isFinite(parseInt(localStorage.kasumilastlive))){
+		localStorage.kasumilastlive=0;
+	}
+	return (Date.now()-parseInt(localStorage.kasumilastlive))>=3600000;
+}
+
+function start_live(){
+	if(!can_live())return;
+	live_running=1;
+	showMessage(['A Sparkling Live Show has STARted!','让我们进行一场闪闪发光、心动不已的演出吧！'][localStorage.lang],30000,2);
+	document.getElementById('live_audio').currentTime=0;
+	document.getElementById('live_audio').play();
+}
+</script>
+<br>
+</div>
+
+
+<script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
+<script src="bootstrap/bootstrap.min.js"></script>
+<script src="break_eternity.js"></script>
+<script src="expantanum.js"></script>
+<script src="lz-string.js"></script>
+<script src="index.js"></script><script>addIntimacy(2);</script>
+<link rel="stylesheet" type="text/css" href="l2d.css"/>
+<div class="waifu">
+        <div class="waifu-tips"></div>
+<canvas id="live2d" class="live2d"></canvas>
+        <div class="waifu-tool">
+            <span class="fui-chat"></span>
+            <span class="fui-star"></span>
+            <span class="fui-folder"></span>
+            <!--span class="fui-video"></span-->
+            <!--span class="fui-gear"></span-->
+            <span class="fui-info-circle"></span>
+            <span class="fui-cmd"></span>
+        </div>
+</body>
+</html>
