@@ -360,8 +360,10 @@ function metaprestige(){
 
 l2d_force_change='';
 localStorage.kasumiIntimacy=localStorage.kasumiIntimacy || '0';
+localStorage.kasumiLivecount=localStorage.kasumiLivecount || '0';
 function addIntimacy(a){
-	localStorage.kasumiIntimacy=Math.min(parseFloat(localStorage.kasumiIntimacy)+a,1e10); 
+	a=a*(parseInt(localStorage.kasumiLivecount)/2+1);
+	localStorage.kasumiIntimacy=Math.min(parseFloat(localStorage.kasumiIntimacy)+a,1e12);
 }
 
 
@@ -370,6 +372,8 @@ if(localStorage.l2dv!='1'){
 	localStorage.l2dmv='0';
 	localStorage.l2dm=localStorage.l2dm || '/l2d_models/kasumievent130.json';
 }
+
+if(localStorage.lang!='1')localStorage.lang='0';
 
 var live2d_messages={
 	chat: ['Do you want to know the other side of me?','想要了解不一样的我吗？'],
@@ -408,6 +412,7 @@ var live2d_messages={
 			'你知道吗？在loader3229的MikuMikuDance 9.31里面，可以同时存在至少10个我。',
 		]
 	],
+	profile: ['Do you want to see my profile?','想看一下我的档案吗？'],
 	motion: ['Do you want to activate my Live2D motion?','想让我做Live2D动作吗？'],
 	info: ['Do you want to know my information?','想看关于我的信息吗？'],
 	fix: ['Do you want to fix my Live2D display problem?','想修复我的Live2D模型显示问题吗？'],
@@ -458,13 +463,13 @@ function initl2d(){
 		if(l2d_force_change!='0'&&l2d_force_change!='')return alert('该版本暂不支持此操作');
 		if(l2d_force_change!='0'&&localStorage.l2dmv!='0')return alert('该版本暂不支持此操作');
 		window.open('/ksm/MMDPicM/MMDPicM'+Math.floor(Math.random()*2)+'.png');
-	});
+	});*/
 	$('.waifu-tool .fui-folder').hover(function (){
-		showMessage('想看一下我的档案吗？',3000);
+		showMessage(live2d_messages.profile[localStorage.lang],3000);
 	});
 	$('.waifu-tool .fui-folder').click(function (){
-		document.location.href='/ksm/'+(l2d_force_change=='0'?'':l2d_force_change=='1'?'index-v7.html':localStorage.l2dmv=='0'?'':'index-v7.html');
-	});
+		document.location.href='/ksm.html';
+	});/*
 	$('.waifu-tool .fui-gear').hover(function (){
 		showMessage('想切换我的Live2D服装吗？',3000);
 	});
@@ -547,26 +552,31 @@ function setl2dv(a){
 setTimeout(initl2d,500);
 //window.l2de.startMotion('c',0);
 
+var message_time=0,message_force=0,message_stat=0;
+setInterval(function(){
+	if(Date.now()<message_time && message_stat==0){
+		$('.waifu-tips').fadeTo(200, 1);message_stat=1;
+	}else if(Date.now()>message_time && message_stat==1){
+		$('.waifu-tips').fadeTo(200, 0);message_stat=0;message_force=0;
+	}
+},50);
 
 function showMessage(text, timeout, flag) {
-    if(flag || sessionStorage.getItem('waifu-text') === '' || sessionStorage.getItem('waifu-text') === null){
+	if(flag==true)flag=1;
+	flag=parseInt(flag);
+	if(!isFinite(flag))flag=0;
+    if(flag >= message_force){
         if(Array.isArray(text)) text = text[Math.floor(Math.random() * text.length + 1)-1];
         console.log('[Message]', text.replace(/<[^<>]+>/g,''));
-        
-        if(flag) sessionStorage.setItem('waifu-text', text);
-        
-        $('.waifu-tips').stop();
-        $('.waifu-tips').html(text).fadeTo(200, 1);
+		message_force=flag;
+        $('.waifu-tips').html(text);
         if (timeout === undefined) timeout = 5000;
         hideMessage(timeout);
     }
 }
 
 function hideMessage(timeout) {
-    $('.waifu-tips').stop().css('opacity',1);
-    if (timeout === undefined) timeout = 5000;
-    window.setTimeout(function() {sessionStorage.removeItem('waifu-text')}, timeout);
-    $('.waifu-tips').delay(timeout).fadeTo(200, 0);
+	message_time=Date.now()+timeout;
 }
 
 window.l2da=new Audio();
