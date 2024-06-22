@@ -47,7 +47,9 @@
 <br>
 <span class=zh>我现在的年龄是</span><span class=en>I'm </span><span id="age">16</span><span class=zh>岁，年级是高二。（年龄显示取决于本地系统时间）</span><span class=en> years old now (based on local computer time), and in Class 2-A of Hanasakigawa Girls' High School.</span><br>
 <span class=zh>我已经陪了loader3229 <span id="day"></span>天了。</span><br>
-<span id="randtext"></span><hr>
+<span id="randtext"></span><hr><!--好感度显示-->
+<span class=zh>您对香澄的好感度等级：</span><span class=en>Kasumi's Intimacy Level: </span><span id="intimacy_level"></span>
+<span class=zh>，升级进度：</span><span class=en>, Progress to next level: </span><progress id="intimacy_progress" value="0" max="1"></progress><br>
 <a href="javascript:void(start_live());" id="live_link"></a>
 <div style="display:none;"><audio id=live_audio src="live.mp3" preload></div>
 <script>
@@ -99,6 +101,13 @@ setInterval(function(){
 			addIntimacy(714);
 		}
 	}
+	
+	var intimacy_point=parseFloat(localStorage.kasumiIntimacy);
+	var intimacy_level=(Math.log10(10000+intimacy_point)-4)*25;
+	var intimacy_progress=intimacy_level-Math.floor(intimacy_level);
+	intimacy_level=Math.floor(intimacy_level);
+	document.getElementById("intimacy_level").innerHTML=(intimacy_level);
+	document.getElementById("intimacy_progress").value=(intimacy_progress);
 },50);
 
 function can_live(){
@@ -126,7 +135,7 @@ function start_live(){
 <script src="break_eternity.js"></script>
 <script src="expantanum.js"></script>
 <script src="lz-string.js"></script>
-<script src="index.js"></script><script>addIntimacy(2);</script>
+<script src="index.js"></script><script>addIntimacy(3);</script>
 <link rel="stylesheet" type="text/css" href="l2d.css"/>
 <div class="waifu">
         <div class="waifu-tips"></div>
