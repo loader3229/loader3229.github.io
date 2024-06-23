@@ -376,9 +376,14 @@ function metaprestige(){
 l2d_force_change='';
 localStorage.kasumiIntimacy=localStorage.kasumiIntimacy || '0';
 localStorage.kasumiLivecount=localStorage.kasumiLivecount || '0';
-function addIntimacy(a){
+
+function getIntimacyGain(a){
 	a=a*(parseInt(localStorage.kasumiLivecount)/2+1);
-	localStorage.kasumiIntimacy=Math.min(parseFloat(localStorage.kasumiIntimacy)+a,1e12);
+	return a;
+}
+
+function addIntimacy(a){
+	localStorage.kasumiIntimacy=Math.min(parseFloat(localStorage.kasumiIntimacy)+getIntimacyGain(a),1e12);
 }
 
 

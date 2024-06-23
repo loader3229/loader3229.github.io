@@ -52,6 +52,8 @@
 <span class=zh>，升级进度：</span><span class=en>, Progress to next level: </span><progress id="intimacy_progress" value="0" max="1"></progress><br>
 <a href="javascript:void(start_live());" id="live_link"></a>
 <div style="display:none;"><audio id=live_audio src="live.mp3" preload></div>
+<hr>
+<a href="/ksm_mmdpic2.png" onclick=addIntimacy(8)><span class=en>This is a photo of me, which is taken by loader3229. Click to view it! (Made using MMD9)</span><span id="zh">这是loader3229给我拍的照片哦~点击即可查看！ （使用MMD9制作）</span></a><br>
 <script>
 function getage(){
 	let y=new Date().getFullYear();
@@ -86,7 +88,7 @@ setInterval(function(){
 	}else if(live_running){
 		var stat=document.getElementById("live_audio").currentTime/30*100;
 		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄正在进行演出……（"+(stat.toFixed(1))+"%）";
-		else document.getElementById("live_link").innerHTML="loader3229's Kasumi is doing a live show... "+(stat.toFixed(1))+"%";
+		else document.getElementById("live_link").innerHTML="loader3229's Kasumi is performing a live show... "+(stat.toFixed(1))+"%";
 	}else{
 		var time=(3600000-Date.now()+parseInt(localStorage.kasumilastlive))/1000;
 		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄暂时不能进行演出……请等待"+(time.toFixed(1))+"秒。";
@@ -103,6 +105,10 @@ setInterval(function(){
 	}
 	
 	var intimacy_point=parseFloat(localStorage.kasumiIntimacy);
+	if(live_running){
+		var stat=document.getElementById("live_audio").currentTime/30*100;
+		intimacy_point+=getIntimacyGain(stat)*10;
+	}
 	var intimacy_level=(Math.log10(10000+intimacy_point)-4)*25;
 	var intimacy_progress=intimacy_level-Math.floor(intimacy_level);
 	intimacy_level=Math.floor(intimacy_level);
