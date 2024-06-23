@@ -309,7 +309,11 @@ function metaeffect(a){
 		return ret;
 	}
 	if(a==3){
-		let ret=Decimal.pow(Math.log10(Math.min(parseFloat(localStorage.kasumiIntimacy),1e10)+10),player.metaupgrades[3].pow(0.75).div(4));
+		var intimacy=parseFloat(localStorage.kasumiIntimacy);
+		if(!isFinite(intimacy))intimacy = 0;
+		if(intimacy>1e12)intimacy=1e12;
+		localStorage.kasumiIntimacy=intimacy;
+		let ret=Decimal.pow(Math.log10(intimacy+10),player.metaupgrades[3].pow(0.75).div(4));
 		return ret;
 	}
 }
