@@ -106,8 +106,7 @@ setInterval(function(){
 	
 	var intimacy_point=parseFloat(localStorage.kasumiIntimacy);
 	if(live_running){
-		var stat=document.getElementById("live_audio").currentTime/30*100;
-		intimacy_point+=getIntimacyGain(stat)*10;
+		intimacy_point+=getIntimacyGain(document.getElementById("live_audio").currentTime)*10;
 	}
 	var intimacy_level=(Math.log10(10000+intimacy_point)-4)*25;
 	var intimacy_progress=intimacy_level-Math.floor(intimacy_level);
