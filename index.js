@@ -235,6 +235,7 @@ var player={
 	metaprestige: new Decimal(0),
 	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)],
 	tick: Date.now(),
+	lastprestige: Date.now(),
 	stat: 0,
 };
 
@@ -246,6 +247,7 @@ try{
 	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
 	player.metaprestige=new Decimal(player_saved.metaprestige);
 	player.tick=(player_saved.tick || Date.now());
+	player.lastprestige=(player_saved.lastprestige || Date.now());
 	player.stat=(player_saved.stat || 0);
 }catch(e){}
 
@@ -260,6 +262,7 @@ setInterval(function(){
 				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
 				player.metaprestige=new Decimal(player_saved.metaprestige);
 				player.tick=(player_saved.tick || Date.now());
+				player.lastprestige=(player_saved.lastprestige || Date.now());
 				player.stat=(player_saved.stat || 0);
 			}
 		}catch(e){}
@@ -281,10 +284,13 @@ setInterval(function(){
 			$("#prestige").css("display",(player.metaprestige.gt(0)||player.metapoints.gte(1010903229))?"":"none");
 			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#milestone1").css("display",(player.metaprestige.gte(50))?"":"none");
-			$("#next_milestone").css("display",(player.metaprestige.lt(50))?"":"none");
+			$("#milestone2").css("display",(player.metaprestige.gte(200))?"":"none");
+			$("#next_milestone").css("display",(player.metaprestige.lt(200))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#preseffect").html(format(preseffect()));
+			$("presmilestone2").html(50);
+			if(player.metaprestige.gte(50))$("presmilestone2").html(200);
 		}
 		if(player.metaprestige.gte(50)){
 			for(var i=1;i<=3;i++){
@@ -293,6 +299,9 @@ setInterval(function(){
 					player.stat=Date.now();
 				}
 			}
+		}
+		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
+			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
@@ -367,7 +376,7 @@ function metaprestige(){
 	player.metaprestige=player.metaprestige.add(presgain());
 	player.metapoints=new Decimal(0);
 	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
-	player.stat=Date.now();
+	player.stat=player.lastprestige=Date.now();
 	localStorage.metagame=btoa(JSON.stringify(player));
 }
 
