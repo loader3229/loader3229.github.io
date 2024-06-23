@@ -279,9 +279,9 @@ setInterval(function(){
 			$("#2cost").html(formatWhole(metacost(2)));
 			$("#3cost").html(formatWhole(metacost(3)));
 			$("#prestige").css("display",(player.metaprestige.gt(0)||player.metapoints.gte(1010903229))?"":"none");
-			$("#prestige_milestone").css("display",(player.metaprestige.gt(0));
-			$("#milestone1").css("display",(player.metaprestige.gte(50));
-			$("#next_milestone").css("display",(player.metaprestige.lt(50));
+			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
+			$("#milestone1").css("display",(player.metaprestige.gte(50))?"":"none");
+			$("#next_milestone").css("display",(player.metaprestige.lt(50))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#preseffect").html(format(preseffect()));
