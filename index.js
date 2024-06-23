@@ -279,9 +279,20 @@ setInterval(function(){
 			$("#2cost").html(formatWhole(metacost(2)));
 			$("#3cost").html(formatWhole(metacost(3)));
 			$("#prestige").css("display",(player.metaprestige.gt(0)||player.metapoints.gte(1010903229))?"":"none");
+			$("#prestige_milestone").css("display",(player.metaprestige.gt(0));
+			$("#milestone1").css("display",(player.metaprestige.gte(50));
+			$("#next_milestone").css("display",(player.metaprestige.lt(50));
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#preseffect").html(format(preseffect()));
+		}
+		if(player.metaprestige.gte(50)){
+			for(var i=1;i<=3;i++){
+				if(player.metapoints.gte(metacost(i))){
+					player.metaupgrades[i]=player.metaupgrades[i].add(1);
+					player.stat=Date.now();
+				}
+			}
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
@@ -336,7 +347,7 @@ function metacost(a){
 function metaupgrade(a){
 	var cost=metacost(a);
 	if(player.metapoints.gte(cost)){
-		player.metapoints=player.metapoints.sub(cost);
+		if(player.metaprestige.lt(50))player.metapoints=player.metapoints.sub(cost);
 		player.metaupgrades[a]=player.metaupgrades[a].add(1);
 		player.stat=Date.now();
 		localStorage.metagame=btoa(JSON.stringify(player));
