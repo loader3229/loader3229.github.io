@@ -82,7 +82,7 @@ setInterval(function(){
 	document.getElementById('day').innerHTML=getday();
 	
 	if(can_live()){
-		var mult=(parseInt(localStorage.kasumiLivecount)+3)/(parseInt(localStorage.kasumiLivecount)+2);
+		var mult=1+1/(parseInt(localStorage.kasumiLivecount)+2);
 		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="让loader3229的户山香澄开始演出。将会获得大量好感度，并且以后所有好感度获取变为"+(mult.toFixed(4))+"倍。";
 		else document.getElementById("live_link").innerHTML="Let loader3229's Kasumi start a live show. You will gain a lot of Kasumi's Intimacy Points, and gain a permanent x"+(mult.toFixed(4))+" Intimacy Points gain.";
 	}else if(live_running){
@@ -106,7 +106,8 @@ setInterval(function(){
 	
 	var intimacy_point=parseFloat(localStorage.kasumiIntimacy);
 	if(live_running){
-		intimacy_point+=getIntimacyGain(document.getElementById("live_audio").currentTime)*10;
+		var mult=1+1/(parseInt(localStorage.kasumiLivecount)+2);
+		intimacy_point+=getIntimacyGain(document.getElementById("live_audio").currentTime)*10*mult;
 	}
 	var intimacy_level=(Math.log10(10000+intimacy_point)-4)*25;
 	var intimacy_progress=intimacy_level-Math.floor(intimacy_level);
