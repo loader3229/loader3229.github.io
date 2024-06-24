@@ -9,7 +9,7 @@ const operators = [
       const b = r - a;
       return [a, b];
     },
-    canGen: r => r > 1,
+    canGen: r => r > 0,
     priority: 0
   },
   {
@@ -119,12 +119,13 @@ function secondEquationGenerator(answer = randomInt(10)) {
 }
 
 function questionGenerator() {
-  const answer = randomInt(9) + 1;
+  const answer = randomInt(16);
   let question;
   do {
     const  e1  = secondEquationGenerator(answer);
     const  e2  = secondEquationGenerator(answer);
     question = `${e1.equation}=${e2.equation}`;
+	if(eval(e1.equation)!=eval(e2.equation))continue;
   } while (question.length > 10 || question.length < 7 || question.indexOf('(')!=-1 || question.indexOf(')')!=-1);
   return question;
 }
@@ -138,6 +139,8 @@ setInterval(function(){
 </script>
 <a href="https://numberle.org/?challenge=MSsyPTM=" onclick="this.href='https://numberle.org/?challenge='+btoa(questionGenerator())" target="_blank" id="g1">开始生成（每次点击都是不一样的题目哦~）</a>
 <br>由于ADPuzzle的生成方式和Numberle默认生成方式不一样，请确保Numberle下面显示“Challenge Mode”之后再开始！每次完成之后需要重新点击本页面中的生成！<br><br>
-This page will generating Numberle puzzles based on aquamarine309's Antimatter Dimensions Puzzling.<br>
+This page will generate Numberle puzzles based on aquamarine309's Antimatter Dimensions Puzzling.<br>
 <a href="https://numberle.org/?challenge=MSsyPTM=" onclick="this.href='https://numberle.org/?challenge='+btoa(questionGenerator())" target="_blank" id="g2">Generate a new puzzle (Each time, the puzzle will be different!)</a><br>
-<br>Because ADPuzzle's generator and Numberle Default generator is different please let Numberle display "Challenge Mode" each time. Please re-click the link ON THIS PAGE when you completed a puzzle.<br>
+<br>Because ADPuzzle's generator and Numberle Default generator are different please let Numberle display "Challenge Mode" each time. Please re-click the link ON THIS PAGE when you completed a puzzle.<br>
+<br>
+<br>Param Used: Min Length=7, Max Length=10, Min Result=0, Max Result=15

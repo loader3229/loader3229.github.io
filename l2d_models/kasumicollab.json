@@ -1,0 +1,16 @@
+{"version":"1.0.0",
+"model":"1-644.moc",
+"textures":["1-644.png"],
+"physics":"1-644.json",
+"layout":{"center_x":0,"center_y":-0.05,"width":2},
+"motions":{"idle":[{"file":"motion/idle01.mtn"}],
+"c":[{"file":"motion/jaan01.mtn"}],
+"c2":[{"file":"motion/smile02.mtn"}],
+"c3":[{"file":"motion/smile01.mtn"}],
+"c4":[{"file":"motion/kime01.mtn"}],
+"c5":[{"file":"motion/oowarai01.mtn"}],
+"c6":[{"file":"motion/surprised01.mtn"}],
+"c7":[{"file":"motion/gattsu01.mtn"}]
+},
+"hit_areas_custom":{}
+}
