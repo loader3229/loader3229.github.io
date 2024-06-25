@@ -145,7 +145,7 @@ var total_points=0;
 
 try{
 	var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-	if(Number.isFinite(tmp))total_points+=(tmp*7);else tmp=0;
+	if(Number.isFinite(tmp))total_points+=(tmp*6.5);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#milestone1").html(tmp);
 		$("#milestone2").html(tmp);
@@ -192,7 +192,7 @@ try{
 	let game=JSON.parse(atob(localStorage.tower));
 	let rank=EN(1);
 	let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
-	if(Number.isFinite(tmp))total_points+=(tmp*10);else tmp=0;
+	if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#towers1").html(Math.round(tmp*10)/10+"%");
 		$("#towers2").html(Math.round(tmp*10)/10+"%");
@@ -276,7 +276,17 @@ setInterval(function(){
 				player.stat=(player_saved.stat || 0);
 			}
 		}catch(e){}
-		player.metapoints=metagain().mul(Date.now()-player.tick).div(1000).add(player.metapoints);
+		for(var q=1;q<=10;q++){
+			player.metapoints=metagain().mul(Date.now()-player.tick).div(10000).add(player.metapoints);
+			if(player.metaprestige.gte(50)){
+				for(var i=1;i<=4;i++){
+					if(player.metapoints.gte(metacost(i))){
+						player.metaupgrades[i]=player.metaupgrades[i].add(1);
+						player.stat=Date.now();
+					}
+				}
+			}
+		}
 		localStorage.metagame=btoa(JSON.stringify(player));
 		if(document.location.href.indexOf("/metagame")!=-1){
 			player.stat = Math.max(player.stat,1);
@@ -303,16 +313,8 @@ setInterval(function(){
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#preseffect").html(format(preseffect()));
-			$("presmilestone2").html(50);
-			if(player.metaprestige.gte(50))$("presmilestone2").html(200);
-		}
-		if(player.metaprestige.gte(50)){
-			for(var i=1;i<=4;i++){
-				if(player.metapoints.gte(metacost(i))){
-					player.metaupgrades[i]=player.metaupgrades[i].add(1);
-					player.stat=Date.now();
-				}
-			}
+			$("#presmilestone2").html(50);
+			if(player.metaprestige.gte(50))$("#presmilestone2").html(200);
 		}
 		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
@@ -323,7 +325,7 @@ setInterval(function(){
 		}
 		player.tick=Date.now();
 	}catch(e){console.log(e);}
-},100);
+},50);
 
 function metagain(){
 	if(player.stat == 0)return new Decimal(0);
