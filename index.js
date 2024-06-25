@@ -217,6 +217,15 @@ try{
 	}
 }catch(e){}
 
+try{
+	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1).log10().add(1).log10().add(1).log10().toNumber();
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,1000);else tmp=0;
+	if(document.location.href.indexOf("/incrementalgames")!=-1){
+		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)).sub(1)));
+		$("#imr2").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)).sub(1)));
+	}
+}catch(e){}
+
 
 try{
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
