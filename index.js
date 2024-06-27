@@ -145,10 +145,10 @@ var total_points=0;
 
 try{
 	var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-	if(Number.isFinite(tmp))total_points+=(tmp*6.5);else tmp=0;
+	if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#milestone1").html(tmp);
-		$("#milestone2").html(tmp);
+		$("#milestone2").html(tmp*6);
 	}
 }catch(e){}
 
@@ -158,7 +158,7 @@ try{
 	if(Number.isFinite(tmp))total_points+=(tmp*10);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#multitree1").html(tmp);
-		$("#multitree2").html(tmp);
+		$("#multitree2").html(tmp*10);
 	}
 }catch(e){}
 
@@ -177,7 +177,7 @@ try{
 	if(Number.isFinite(tmp))total_points+=(tmp*3);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#trimps1").html(tmp);
-		$("#trimps2").html(tmp);
+		$("#trimps2").html(tmp*3);
 	}
 }catch(e){}
 
@@ -204,7 +204,7 @@ try{
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*20);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#luck1").html(format(Decimal.pow(10,tmp).sub(1)));
-		$("#luck2").html(format(Decimal.pow(10,tmp).sub(1)));
+		$("#luck2").html(Math.floor(tmp*20));
 	}
 }catch(e){}
 
@@ -213,16 +213,16 @@ try{
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#ngm4r1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-		$("#ngm4r2").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
+		$("#ngm4r2").html(Math.floor(tmp*tmp*10));
 	}
 }catch(e){}
 
 try{
 	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1).log10().add(1).log10().add(1).log10().toNumber();
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,1000);else tmp=0;
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)).sub(1)));
-		$("#imr2").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)).sub(1)));
+		$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
 	}
 }catch(e){}
 
@@ -320,6 +320,7 @@ setInterval(function(){
 			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
 			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
 			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
 		}
