@@ -309,15 +309,16 @@ setInterval(function(){
 			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#milestone1").css("display",(player.metaprestige.gte(50))?"":"none");
 			$("#milestone2").css("display",(player.metaprestige.gte(200))?"":"none");
-			$("#next_milestone").css("display",(player.metaprestige.lt(200))?"":"none");
+			$("#milestone3").css("display",(player.metaprestige.gte(1e4))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#preseffect").html(format(preseffect()));
-			$("#presmilestone2").html(50);
-			if(player.metaprestige.gte(50))$("#presmilestone2").html(200);
 		}
 		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
+		}
+		if(player.metaprestige.gte(1e4)&&document.location.href.indexOf("/metagame")!=-1){
+			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(10)));
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
@@ -413,6 +414,7 @@ localStorage.kasumiLivecount=localStorage.kasumiLivecount || '0';
 
 function getIntimacyGain(a){
 	a=a*(parseInt(localStorage.kasumiLivecount)/2+1);
+	a=a*(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(10).toNumber());
 	return a;
 }
 
