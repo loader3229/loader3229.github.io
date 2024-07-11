@@ -355,7 +355,7 @@ function metaeffect(a){
 		return ret;
 	}
 	if(a==4){
-		let ret=Decimal.pow(Math.log10(Date.now()-player.lastprestige+1),player.metaupgrades[4].pow(0.8).div(5));
+		let ret=Decimal.pow(Math.log10(Date.now()-player.lastprestige+1),player.metaupgrades[4].pow(0.8).div(player.metaprestige.gte(1e6)?Math.max(5-(Math.log10(Date.now()-player.lastprestige+1)/2)**1.5,1.5):5));
 		return ret;
 	}
 }
