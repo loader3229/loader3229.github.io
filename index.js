@@ -241,6 +241,7 @@ try{
 var player={
 	metapoints: new Decimal(0),
 	metaprestige: new Decimal(0),
+	metatranscension: new Decimal(0),
 	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)],
 	tick: Date.now(),
 	lastprestige: Date.now(),
@@ -255,6 +256,7 @@ try{
 	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
 	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4]);
 	player.metaprestige=new Decimal(player_saved.metaprestige);
+	player.metatranscension=new Decimal(player_saved.metatranscension);
 	player.tick=(player_saved.tick || Date.now());
 	player.lastprestige=(player_saved.lastprestige || Date.now());
 	player.stat=(player_saved.stat || 0);
@@ -271,6 +273,7 @@ setInterval(function(){
 				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
 				player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4]);
 				player.metaprestige=new Decimal(player_saved.metaprestige);
+				player.metatranscension=new Decimal(player_saved.metatranscension);
 				player.tick=(player_saved.tick || Date.now());
 				player.lastprestige=(player_saved.lastprestige || Date.now());
 				player.stat=(player_saved.stat || 0);
@@ -305,14 +308,23 @@ setInterval(function(){
 			$("#3cost").html(formatWhole(metacost(3)));
 			$("#4cost").html(formatWhole(metacost(4)));
 			$("#prestige").css("display",(player.metaprestige.gt(0)||player.metapoints.gte(1010903229))?"":"none");
+			$("#trans").css("display",(player.metatranscension.gt(0)||player.metaprestige.gte(1e9))?"":"none");
 			$("#upg4").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
+			$("#trans_milestone").css("display",(player.metatranscension.gt(0))?"":"none");
+			$("#milestone0").css("display",(player.metaprestige.gte(1))?"":"none");
 			$("#milestone1").css("display",(player.metaprestige.gte(50))?"":"none");
 			$("#milestone2").css("display",(player.metaprestige.gte(200))?"":"none");
 			$("#milestone3").css("display",(player.metaprestige.gte(1e4))?"":"none");
+			$("#milestone4").css("display",(player.metaprestige.gte(1e6))?"":"none");
+			$("#milestone5").css("display",(player.metaprestige.gte(1e9))?"":"none");
+			$("#milestone6").css("display",(player.metatranscension.gte(1))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
+			$("#transgain").html(formatWhole(transgain()));
+			$("#metatranscension").html(formatWhole(player.metatranscension));
 			$("#preseffect").html(format(preseffect()));
+			$("#transeffect").html(format(transeffect()));
 		}
 		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
@@ -331,7 +343,7 @@ setInterval(function(){
 
 function metagain(){
 	if(player.stat == 0)return new Decimal(0);
-	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(preseffect());
+	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(preseffect()).mul(transeffect());
 	if(window.sha512_256 === undefined)return ret;
 	if(sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')ret = ret.mul(3);
 	return ret;
@@ -390,16 +402,36 @@ function metaupgrade(a){
 }
 
 function presgain(){
+	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect());
 	if(player.metapoints.lt(1010903229))return new Decimal(0);
 	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3));
 }
 
 function preseffect(){
+	if(player.metatranscension.gte(1))return player.metaprestige.add(1);
 	return player.metaprestige.add(1).sqrt();
 }
 
 function metaprestige(){
 	player.metaprestige=player.metaprestige.add(presgain());
+	player.metapoints=new Decimal(0);
+	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
+	player.stat=player.lastprestige=Date.now();
+	localStorage.metagame=btoa(JSON.stringify(player));
+}
+
+function transgain(){
+	if(player.metaprestige.lt(1e9))return new Decimal(0);
+	return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3));
+}
+
+function transeffect(){
+	return player.metatranscension.add(1);
+}
+
+function metatranscension(){
+	player.metatranscension=player.metatranscension.add(transgain());
+	player.metaprestige=new Decimal(0);
 	player.metapoints=new Decimal(0);
 	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=Date.now();
