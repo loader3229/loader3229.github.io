@@ -1,3 +1,6 @@
+var decimalZero=new Decimal(0);
+var decimalOne=new Decimal(1);
+
 /** Number Formatting */
 
 
@@ -336,6 +339,9 @@ setInterval(function(){
 			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
 			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
 			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
+		}
+		if(document.location.href.indexOf("/b.html")!=-1){
+			$("#result").html((sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')?"Supporter Code Valid!":"Supporter Code Invalid or you did not input it!");
 		}
 		player.tick=Date.now();
 	}catch(e){console.log(e);}

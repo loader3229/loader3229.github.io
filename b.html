@@ -1,24 +1,85 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>Supporter Code Input</title>
-<script src="sha512.js"></script>
+<meta charset=utf-8>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=1250">
+<title>loader3229's New Homepage -- Supporter Code Input</title><script>zhtitle='loader3229的新主页 -- 输入捐赠码';</script>
+<link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+<style id="lang-style"></style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="/">loader3229</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item"><a class="nav-link" id="nav1"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav2"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav3"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav4"></a></li>
+</ul>
+<a class="nav-link" id="discord">Discord</a>
+<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">语言/Language</a>
+<div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="javascript:change_language(1);">简体中文</a><a class="dropdown-item" href="javascript:change_language(0);">English</a></div>
+</div>
+</div>
+</nav>
+<noscript>Please Enable Javascript.</noscript>
+
+
+<div class='container'>
+<span class="en">Input Correct Supporter Code to gain bonuses to my incremental games!<br></span><span class="zh">输入正确的捐赠码可以为我的增量游戏提供加成！<br></span>
+<input id="code">
+<a href="javascript:void(save_code());"><span class="en">Save</span><span class="zh">保存</span></a><br>
+<br>
+<span class="en">Supporter Code Bonuses: <br>
+10x 1st Milestone effect, 2x Prestige Points and 2x All Passive Reset Gains in The Milestone Tree<br>
+3x Metapoints in Metagame<br>
+<br>
+If you don't have it, <a href=https://patreon.com/user?u=56328626 target=_blank>Patreon Donation</a> and go to <a href=https://discord.gg/jztUReQ2vT target=_blank>my Discord server</a> to get!
+<br>
+For Chinese users, donate me in <a href=https://afdian.net/@loader3229 target=_blank>https://Afdian.net/@loader3229</a> and contact me to get!
+</span>
+
+<span class="zh">捐赠码加成：<br>
+里程碑之树：10倍点数、2倍转生点数、2倍所有被动获取<br>
+元-游戏：3倍元-点数<br>
+<br>
+在<a href=https://afdian.net/@loader3229 target=_blank>爱发电</a>上给我捐赠，然后用QQ联系我（QQ号1010903229）即可获得捐赠码！
+</span>
+
+<span id="result"></span>
+
+</div>
+
+<script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
 <script>
 function save_code(){
 	let code=document.getElementById("code").value;
 	localStorage.supporterCode = sha512_256(code + "abcdefg").substr(16) + sha512_256(code + "abcdefgh").substr(16) + sha512_256(code + "abcdefghi").substr(16) + sha512_256(code + "abcdefghij").substr(16);
 }
 </script>
-</head>
-<body>
-Input Correct Supporter Code to gain bonuses to my incremental games!<br>
-<input id="code">
-<a href="javascript:void(save_code());">Save</a><br>
-<br>
-Supporter Code Bonuses: <br>
-10x 1st Milestone effect, 2x Prestige Points and 2x All Passive Reset Gains in The Milestone Tree<br>
-<br>
-If you don't have it, <a href=https://patreon.com/user?u=56328626 target=_blank>Patreon Donation</a> and go to <a href=https://discord.gg/jztUReQ2vT target=_blank>my Discord server</a> to get!
-<br>
-For Chinese users, donate me in <a href=https://afdian.net/@loader3229 target=_blank>https://Afdian.net/@loader3229</a> and contact me to get!
+<script src="bootstrap/bootstrap.min.js"></script>
+<script src="break_eternity.js"></script>
+<script src="expantanum.js"></script>
+<script src="lz-string.js"></script>
+<script src="index.js"></script>
+<link rel="stylesheet" type="text/css" href="l2d.css"/>
+<div class="waifu">
+        <div class="waifu-tips"></div>
+<canvas id="live2d" class="live2d"></canvas>
+        <div class="waifu-tool">
+            <span class="fui-chat"></span>
+            <span class="fui-star"></span>
+            <span class="fui-folder"></span>
+            <!--span class="fui-video"></span-->
+            <!--span class="fui-gear"></span-->
+            <span class="fui-info-circle"></span>
+            <span class="fui-cmd"></span>
+        </div>
 </body>
 </html>
+
