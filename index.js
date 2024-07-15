@@ -157,11 +157,11 @@ try{
 
 try{
 	var tmp=0;
-	for(var i=1;i<=7;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
-	if(Number.isFinite(tmp))total_points+=(tmp*10);else tmp=0;
+	for(var i=1;i<=8;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
+	if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#multitree1").html(tmp);
-		$("#multitree2").html(tmp*10);
+		$("#multitree2").html(tmp*9);
 	}
 }catch(e){}
 
