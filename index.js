@@ -336,9 +336,9 @@ setInterval(function(){
 			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(10)));
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
-			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
-			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber()));
+			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
+			$("#total_points1").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
+			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
 		}
 		if(document.location.href.indexOf("/b.html")!=-1){
 			$("#result").html((sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')?"Supporter Code Valid!":"Supporter Code Invalid or you did not input it!");
@@ -357,7 +357,7 @@ function metagain(){
 
 function metaeffect(a){
 	if(a==1){
-		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(10).toNumber(),20000)+100,1))/2,player.metaupgrades[1]);
+		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber(),20000)+100,1))/2,player.metaupgrades[1]);
 		return ret;
 	}
 	if(a==2){
