@@ -341,7 +341,7 @@ setInterval(function(){
 			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
 		}
 		if(document.location.href.indexOf("/b.html")!=-1){
-			$("#result").html((sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')?"Supporter Code Valid!":"Supporter Code Invalid or you did not input it!");
+			$("#result").html((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?["<br>Supporter Code Valid!","<br>捐赠码输入正确！"][localStorage.lang]:["<br>Supporter Code Invalid or you did not input it!","<br>捐赠码输入错误或者没有输入捐赠码！"][localStorage.lang]);
 		}
 		player.tick=Date.now();
 	}catch(e){console.log(e);}
@@ -351,7 +351,7 @@ function metagain(){
 	if(player.stat == 0)return new Decimal(0);
 	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(preseffect()).mul(transeffect());
 	if(window.sha512_256 === undefined)return ret;
-	if(sha512_256(localStorage.supporterCode+"milestone").slice(1) == '91e43d5c20c41cc3b9da6da2a2aadc9ce35b27605ecb39c86a29bccbce145bf')ret = ret.mul(3);
+	if(sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')ret = ret.mul(3);
 	return ret;
 }
 
