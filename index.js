@@ -177,10 +177,10 @@ try{
 
 try{
 	var tmp=JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
-	if(Number.isFinite(tmp))total_points+=(tmp*3);else tmp=0;
+	if(Number.isFinite(tmp))total_points+=Math.min(tmp*3,1500);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#trimps1").html(tmp);
-		$("#trimps2").html(tmp*3);
+		$("#trimps2").html(Math.floor(Math.min(tmp*3,1500)));
 	}
 }catch(e){}
 
@@ -198,7 +198,7 @@ try{
 	if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#towers1").html(Math.round(tmp*10)/10+"%");
-		$("#towers2").html(Math.round(tmp*10)/10+"%");
+		$("#towers2").html(Math.round(tmp*10));
 	}
 }catch(e){console.log(e);}
 
