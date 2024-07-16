@@ -204,10 +204,10 @@ try{
 
 try{
 	var tmp=new Decimal(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*20);else tmp=0;
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#luck1").html(format(Decimal.pow(10,tmp).sub(1)));
-		$("#luck2").html(Math.floor(tmp*20));
+		$("#luck2").html(Math.floor(Math.min(tmp*20,1000)));
 	}
 }catch(e){}
 
@@ -221,10 +221,10 @@ try{
 }catch(e){}
 
 try{
-	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1).log10().add(1).log10().add(1).log10().toNumber();
+	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)).sub(1)));
+		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
 		$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
 	}
 }catch(e){}
