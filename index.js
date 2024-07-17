@@ -248,20 +248,24 @@ var player={
 	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)],
 	tick: Date.now(),
 	lastprestige: Date.now(),
+	lasttranscension: Date.now(),
+	metaprestigeps: new Decimal(0),
 	stat: 0,
 };
 
 try{
 	var player_saved=JSON.parse(atob(localStorage.metagame));
-	player.metapoints=new Decimal(player_saved.metapoints);
-	player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
-	player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2]);
-	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
-	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4]);
-	player.metaprestige=new Decimal(player_saved.metaprestige);
-	player.metatranscension=new Decimal(player_saved.metatranscension);
+	player.metapoints=new Decimal(player_saved.metapoints || 0);
+	player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1] || 0);
+	player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
+	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
+	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
+	player.metaprestige=new Decimal(player_saved.metaprestige || 0);
+	player.metatranscension=new Decimal(player_saved.metatranscension || 0);
 	player.tick=(player_saved.tick || Date.now());
 	player.lastprestige=(player_saved.lastprestige || Date.now());
+	player.lasttranscension=(player_saved.lasttranscension || Date.now());
+	player.metaprestigeps=new Decimal(player_saved.metaprestigeps || 0);
 	player.stat=(player_saved.stat || 0);
 }catch(e){}
 
@@ -270,20 +274,25 @@ setInterval(function(){
 		try{
 			var player_saved=JSON.parse(atob(localStorage.metagame));
 			if(player_saved.stat>player.stat){
-				player.metapoints=new Decimal(player_saved.metapoints);
-				player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1]);
-				player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2]);
-				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3]);
-				player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4]);
-				player.metaprestige=new Decimal(player_saved.metaprestige);
-				player.metatranscension=new Decimal(player_saved.metatranscension);
+				player.metapoints=new Decimal(player_saved.metapoints || 0);
+				player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1] || 0);
+				player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
+				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
+				player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
+				player.metaprestige=new Decimal(player_saved.metaprestige || 0);
+				player.metatranscension=new Decimal(player_saved.metatranscension || 0);
 				player.tick=(player_saved.tick || Date.now());
 				player.lastprestige=(player_saved.lastprestige || Date.now());
+				player.lasttranscension=(player_saved.lasttranscension || Date.now());
+				player.metaprestigeps=new Decimal(player_saved.metaprestigeps || 0);
 				player.stat=(player_saved.stat || 0);
 			}
 		}catch(e){}
 		for(var q=1;q<=10;q++){
 			player.metapoints=metagain().mul(Date.now()-player.tick).div(10000).add(player.metapoints);
+			if(player.metatranscension.gte(50)){
+				player.metaprestige=player.metaprestigeps.add(100).mul(Date.now()-player.tick).div(10000).add(player.metaprestige);
+			}
 			if(player.metaprestige.gte(50)){
 				for(var i=1;i<=4;i++){
 					if(player.metapoints.gte(metacost(i))){
@@ -322,6 +331,8 @@ setInterval(function(){
 			$("#milestone4").css("display",(player.metaprestige.gte(1e6))?"":"none");
 			$("#milestone5").css("display",(player.metaprestige.gte(1e9))?"":"none");
 			$("#milestone6").css("display",(player.metatranscension.gte(1))?"":"none");
+			$("#milestone7").css("display",(player.metatranscension.gte(50))?"":"none");
+			$("#milestone8").css("display",(player.metatranscension.gte(200))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#transgain").html(formatWhole(transgain()));
@@ -329,11 +340,19 @@ setInterval(function(){
 			$("#preseffect").html(format(preseffect()));
 			$("#transeffect").html(format(transeffect()));
 		}
+		let mpps=presgain().mul(1000).div(Date.now()-player.lastprestige+111);
+		player.metaprestigeps=player.metaprestigeps.max(mpps);
 		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
-			$("#milestone2display").html(format(presgain()*1000/(Date.now()-player.lastprestige)));
+			$("#milestone2display").html(format(mpps));
 		}
 		if(player.metaprestige.gte(1e4)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(30)));
+		}
+		if(player.metatranscension.gte(50)&&document.location.href.indexOf("/metagame")!=-1){
+			$("#milestone7display").html(format(player.metaprestigeps.add(100)));
+		}
+		if(player.metatranscension.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
+			$("#milestone8display").html(format(transgain().mul(1000).div(Date.now()-player.lasttranscension+111)));
 		}
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			if(player.stat>=1)$("#metagamelink").html((localStorage.lang==1?"元-游戏 -- 分数：":"Metagame -- Points: ")+Math.floor(player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
@@ -408,9 +427,9 @@ function metaupgrade(a){
 }
 
 function presgain(){
-	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect());
+	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?2:1);
 	if(player.metapoints.lt(1010903229))return new Decimal(0);
-	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3));
+	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?2:1);
 }
 
 function preseffect(){
@@ -440,7 +459,7 @@ function metatranscension(){
 	player.metaprestige=new Decimal(0);
 	player.metapoints=new Decimal(0);
 	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
-	player.stat=player.lastprestige=Date.now();
+	player.stat=player.lastprestige=player.lasttranscension=Date.now();
 	localStorage.metagame=btoa(JSON.stringify(player));
 }
 
