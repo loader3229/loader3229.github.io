@@ -457,6 +457,7 @@ function transeffect(){
 function metatranscension(){
 	player.metatranscension=player.metatranscension.add(transgain());
 	player.metaprestige=new Decimal(0);
+	player.metaprestigeps=new Decimal(0);
 	player.metapoints=new Decimal(0);
 	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=player.lasttranscension=Date.now();
