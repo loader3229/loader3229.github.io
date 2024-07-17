@@ -70,6 +70,10 @@ function submit_save(){
 			flag=1;
 		}
 	}catch(e){}
+	if(!flag){
+		alert(["This is not a valid Trimps Extension or Towers of Googology Mod save!","这不是一个合法的loader3229的脆皮MOD或大数塔MOD存档！"][localStorage.lang]);
+	}
+	return false;
 }
 </script>
 <script src="bootstrap/bootstrap.min.js"></script>
