@@ -319,20 +319,25 @@ setInterval(function(){
 			$("#2cost").html(formatWhole(metacost(2)));
 			$("#3cost").html(formatWhole(metacost(3)));
 			$("#4cost").html(formatWhole(metacost(4)));
-			$("#prestige").css("display",(player.metaprestige.gt(0)||player.metapoints.gte(1010903229))?"":"none");
 			$("#trans").css("display",(player.metatranscension.gt(0)||player.metaprestige.gte(1e9))?"":"none");
-			$("#upg4").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#trans_milestone").css("display",(player.metatranscension.gt(0))?"":"none");
-			$("#milestone0").css("display",(player.metaprestige.gte(1))?"":"none");
-			$("#milestone1").css("display",(player.metaprestige.gte(50))?"":"none");
-			$("#milestone2").css("display",(player.metaprestige.gte(200))?"":"none");
-			$("#milestone3").css("display",(player.metaprestige.gte(1e4))?"":"none");
-			$("#milestone4").css("display",(player.metaprestige.gte(1e6))?"":"none");
-			$("#milestone5").css("display",(player.metaprestige.gte(1e9))?"":"none");
-			$("#milestone6").css("display",(player.metatranscension.gte(1))?"":"none");
-			$("#milestone7").css("display",(player.metatranscension.gte(50))?"":"none");
-			$("#milestone8").css("display",(player.metatranscension.gte(200))?"":"none");
+			$("#milestone0").css("display",(player.metapoints.gte(1e4)||player.metaupgrades[2].gte(1))?"":"none");
+			$("#upg2").css("display",(player.metapoints.gte(1e4)||player.metaupgrades[2].gte(1))?"":"none");
+			$("#milestone1").css("display",(player.metapoints.gte(1e6)||player.metaupgrades[3].gte(1))?"":"none");
+			$("#upg3").css("display",(player.metapoints.gte(1e6)||player.metaupgrades[3].gte(1))?"":"none");
+			$("#milestone2").css("display",(player.metapoints.gte(1e9)||player.metaprestige.gte(1)||player.metatranscension.gte(1))?"":"none");
+			$("#prestige").css("display",(player.metapoints.gte(1e9)||player.metaprestige.gte(1)||player.metatranscension.gte(1))?"":"none");
+			$("#milestone3").css("display",(player.metaprestige.gte(1))?"":"none");
+			$("#upg4").css("display",(player.metaprestige.gte(1))?"":"none");
+			$("#milestone4").css("display",(player.metaprestige.gte(50))?"":"none");
+			$("#milestone5").css("display",(player.metaprestige.gte(200))?"":"none");
+			$("#milestone6").css("display",(player.metaprestige.gte(1e4))?"":"none");
+			$("#milestone7").css("display",(player.metaprestige.gte(1e6))?"":"none");
+			$("#milestone8").css("display",(player.metaprestige.gte(1e9))?"":"none");
+			$("#milestone9").css("display",(player.metatranscension.gte(1))?"":"none");
+			$("#milestone10").css("display",(player.metatranscension.gte(50))?"":"none");
+			$("#milestone11").css("display",(player.metatranscension.gte(200))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#transgain").html(formatWhole(transgain()));
@@ -428,7 +433,7 @@ function metaupgrade(a){
 
 function presgain(){
 	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?2:1);
-	if(player.metapoints.lt(1010903229))return new Decimal(0);
+	if(player.metapoints.lt(1e9))return new Decimal(0);
 	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?2:1);
 }
 
