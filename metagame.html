@@ -38,14 +38,14 @@
 <span class=zh>总游戏分数增加元-点数获取。等级：</span><span class=en>Total Game Score boost Metapoints gain. Level: </span><span id="1level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="1cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="1effect"></span>x<br>
 <a href=javascript:void(metaupgrade(1));><span class=zh>升级！</span><span class=en>Upgrade!</span></a>
-<hr>
+<div id="upg2" style="display:none;"><hr>
 <span class=zh>元-点数增加元-点数获取。等级：</span><span class=en>Metapoints boost Metapoints gain. Level: </span><span id="2level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="2cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="2effect"></span>x<br>
-<a href=javascript:void(metaupgrade(2));><span class=zh>升级！</span><span class=en>Upgrade!</span></a>
-<hr>
+<a href=javascript:void(metaupgrade(2));><span class=zh>升级！</span><span class=en>Upgrade!</span></a></div>
+<div id="upg3" style="display:none;"><hr>
 <span class=zh>您对户山香澄的好感度增加元-点数获取。等级：</span><span class=en>Your Intimacy Points to Kasumi boost Metapoints gain. Level: </span><span id="3level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="3cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="3effect"></span>x<br>
-<a href=javascript:void(metaupgrade(3));><span class=zh>升级！</span><span class=en>Upgrade!</span></a>
+<a href=javascript:void(metaupgrade(3));><span class=zh>升级！</span><span class=en>Upgrade!</span></a></div>
 <div id="upg4" style="display:none;"><hr>
 <span class=zh>本次元-转生时间增加元-点数获取。等级：</span><span class=en>Time in this Metaprestige boost Metapoints gain. Level: </span><span id="4level"></span><br>
 <span class=zh>价格：</span><span class=en>Cost: </span><span id="4cost"></span>  <span class=zh>效果：</span><span class=en>Effect: </span><span id="4effect"></span>x<br>
@@ -60,18 +60,20 @@
 <span class=zh>您有</span><span class=en>You have</span> <span id="metatranscension">0</span> <span class=zh>元-超越点。</span><span class=en>Meta-Transcension.</span><br>
 <span class=zh>效果：元-点数和元-转生点获取变为原来的</span><span class=en>Effect: Metapoints and Metaprestige gain is multiplied by </span><span id="transeffect"></span>x<br>
 <a href=javascript:void(metatranscension());><span class=zh>超越！</span><span class=en>Transcend!</span></a></div>
-<div id="prestige_milestone" style="display:none;"><hr>
-<span class=zh>里程碑在1、50、200、1e4、1e6、1e9元-转生点</span><span class=en>Milestones at 1, 50, 200, 1e4, 1e6, 1e9 Metaprestige</span><span id="trans_milestone" style="display:none;"><span class=zh>以及1、50、200元-超越点</span><span class=en>and 1, 50, 200 Meta-Transcension</span></span><span class=zh>时出现</span><br>
-<span id="milestone0"><span class=zh>1元-转生点：解锁升级4。</span><span class=en>1 Metaprestige: Unlock Upgrade 4.</span><br></span>
-<span id="milestone1"><span class=zh>50元-转生点：自动购买元-点数升级且不消耗元-点数。</span><span class=en>50 Metaprestige: Autobuy Metapoint Upgrades without spending Metapoints.</span><br></span>
-<span id="milestone2"><span class=zh>200元-转生点：显示元-转生点每秒。当前元-转生点每秒：</span><span class=en>200 Metaprestige: Display Metaprestige gain per second. Currently: </span><span id=milestone2display></span><br></span>
-<span id="milestone3"><span class=zh>1e4元-转生点：元-转生点增加户山香澄的好感度获取。当前：</span><span class=en>1e4 Metaprestige: Metaprestige boost Kasumi's Intimacy Points. Currently: </span><span id=milestone3display></span><br></span>
-<span id="milestone4"><span class=zh>1e6元-转生点：增加升级4的效果。</span><span class=en>1e6 Metaprestige: Upgrade 4 is better.</span><br></span>
-<span id="milestone5"><span class=zh>1e9元-转生点：解锁元-超越。</span><span class=en>1e9 Metaprestige: Unlock Meta-Transcension.</span><br></span>
-<span id="milestone6"><span class=zh>1元-超越点：元-转生点的效果变为原来的平方。</span><span class=en>1 Meta-Transcension: Square Metaprestige effect.</span><br></span>
-<span id="milestone7"><span class=zh>50元-超越点：每秒获得本次元-超越最高元-转生点数的100%，然后再获得100元-转生点数。当前：</span><span class=en>50 Meta-Transcension: Gain 100% of highest Metaprestige/s in this Meta-Transcension, plus 100 Metaprestige per second. Currently: </span><span id=milestone7display></span><br></span>
-<span id="milestone8"><span class=zh>200元-超越点：显示元-超越点每秒。当前元-超越点每秒：</span><span class=en>200 Meta-Transcension: Display Meta-Transcension gain per second. Currently: </span><span id=milestone8display></span><br></span>
-</div>
+<hr>
+<span class=zh>里程碑在1e4、1e6、1e9元-点数</span><span class=en>Milestones at 1e4, 1e6, 1e9 Metapoints</span><span id="prestige_milestone" style="display:none;"><span class=zh>，1、50、200、1e4、1e6、1e9元-转生点</span><span class=en>, 1, 50, 200, 1e4, 1e6, 1e9 Metaprestige</span><span id="trans_milestone" style="display:none;"><span class=zh>以及1、50、200元-超越点</span><span class=en>and 1, 50, 200 Meta-Transcension</span></span><span class=zh>时出现</span><br>
+<span id="milestone0"><span class=zh>1e4元-点数：解锁升级2。</span><span class=en>1e4 Metapoints: Unlock Upgrade 2.</span><br></span>
+<span id="milestone1"><span class=zh>1e6元-点数：解锁升级3。</span><span class=en>1e6 Metapoints: Unlock Upgrade 3.</span><br></span>
+<span id="milestone2"><span class=zh>1e9元-点数：解锁元-转生。</span><span class=en>1e9 Metapoints: Unlock Metaprestige.</span><br></span>
+<span id="milestone3"><span class=zh>1元-转生点：解锁升级4。</span><span class=en>1 Metaprestige: Unlock Upgrade 4.</span><br></span>
+<span id="milestone4"><span class=zh>50元-转生点：自动购买元-点数升级且不消耗元-点数。</span><span class=en>50 Metaprestige: Autobuy Metapoint Upgrades without spending Metapoints.</span><br></span>
+<span id="milestone5"><span class=zh>200元-转生点：显示元-转生点每秒。当前元-转生点每秒：</span><span class=en>200 Metaprestige: Display Metaprestige gain per second. Currently: </span><span id=milestone2display></span><br></span>
+<span id="milestone6"><span class=zh>1e4元-转生点：元-转生点增加户山香澄的好感度获取。当前：</span><span class=en>1e4 Metaprestige: Metaprestige boost Kasumi's Intimacy Points. Currently: </span><span id=milestone3display></span><br></span>
+<span id="milestone7"><span class=zh>1e6元-转生点：增加升级4的效果。</span><span class=en>1e6 Metaprestige: Upgrade 4 is better.</span><br></span>
+<span id="milestone8"><span class=zh>1e9元-转生点：解锁元-超越。</span><span class=en>1e9 Metaprestige: Unlock Meta-Transcension.</span><br></span>
+<span id="milestone9"><span class=zh>1元-超越点：元-转生点的效果变为原来的平方。</span><span class=en>1 Meta-Transcension: Square Metaprestige effect.</span><br></span>
+<span id="milestone10"><span class=zh>50元-超越点：每秒获得本次元-超越最高元-转生点数的100%，然后再获得100元-转生点数。当前：</span><span class=en>50 Meta-Transcension: Gain 100% of highest Metaprestige/s in this Meta-Transcension, plus 100 Metaprestige per second. Currently: </span><span id=milestone7display></span><br></span>
+<span id="milestone11"><span class=zh>200元-超越点：显示元-超越点每秒。当前元-超越点每秒：</span><span class=en>200 Meta-Transcension: Display Meta-Transcension gain per second. Currently: </span><span id=milestone8display></span><br></span>
 
 <script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
 <script src="bootstrap/bootstrap.min.js"></script>
