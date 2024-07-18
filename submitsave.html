@@ -47,7 +47,7 @@ function submit_save(){
 		var tmp=JSON.parse(LZString.decompressFromBase64(save)).global.highestRadonLevelCleared;
 		if(isFinite(tmp)){
 			if(confirm(["You imported a valid Trimps Extension save. Highest U2 Zone Cleared: ","您导入了一个合法的脆皮MOD存档。宇宙2最高通过区域："][localStorage.lang]+tmp+end1)){
-				localStorage.trimpsSave1=save;
+				localStorage.trimpSave1=save;
 			}
 			flag=1;
 		}
