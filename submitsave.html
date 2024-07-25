@@ -34,7 +34,12 @@
 <hr>
 <p class=en>You can Submit Trimps Extension or Towers of Googology Mod save here.</p>
 <p class=zh>您可以在此提交loader3229的脆皮MOD或大数塔MOD存档。</p>
-<form onsubmit="return submit_save();"><textarea name="save" id="save"></textarea><br><input type="submit" value="Submit Save"></form>
+<form onsubmit="return submit_save();"><div class="input-group mb-3">
+  <input type="text" class="form-control" name="save" id="save" required placeholder="Input Your Save" aria-label="Input Your Save" aria-describedby="submit_button">
+  <div class="input-group-append">
+    <input type="submit" class="btn btn-primary" type="button" value="Submit Save" id="submit_button"></button>
+  </div>
+</form>
 </div>
 
 <script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
