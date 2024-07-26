@@ -32,8 +32,12 @@
 
 <div class='container'>
 <span class="en">Input Correct Supporter Code to gain bonuses to my incremental games!<br></span><span class="zh">输入正确的捐赠码可以为我的增量游戏提供加成！<br></span>
-<input id="code">
-<a href="javascript:void(save_code());"><span class="en">Save</span><span class="zh">保存</span></a><br>
+<form onsubmit="return save_code();"><div class="input-group mb-3">
+  <input type="text" class="form-control" name="code" id="code" required placeholder="Input Supporter Code" aria-label="Input Supporter Code" aria-describedby="submit_button">
+  <div class="input-group-append">
+    <input type="submit" class="btn btn-primary" type="button" value="Save" id="submit_button"></button>
+  </div>
+</form>
 <br>
 <span class="en">Supporter Code Bonuses: <br>
 <!--10x 1st Milestone effect, 2x Prestige Points and 2x All Passive Reset Gains in The Milestone Tree<br-->
@@ -62,6 +66,7 @@ For Chinese users, donate me in <a href=https://afdian.com/@loader3229 target=_b
 function save_code(){
 	let code=document.getElementById("code").value;
 	localStorage.supporterCode = sha512_256(code + "abcdefg").substr(16) + sha512_256(code + "abcdefgh").substr(16) + sha512_256(code + "abcdefghi").substr(16) + sha512_256(code + "abcdefghij").substr(16);
+	return false;
 }
 </script>
 <script src="bootstrap/bootstrap.min.js"></script>
