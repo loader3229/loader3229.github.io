@@ -223,9 +223,12 @@ try{
 try{
 	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
 	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
+	if(localStorage.imr_secret_badge1=="1")total_points+=200;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
 		$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
+		if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+200);
+		if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1200);
 	}
 }catch(e){}
 
