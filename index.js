@@ -256,10 +256,10 @@ try{
 		}
 	}
 	if(tmp>1e10)tmp=1e10;
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*tmp,1000);else tmp=0;
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*Math.sqrt(1000),1000);else tmp=0;
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#ibsim1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-		$("#ibsim2").html(Math.floor(Math.min(tmp*tmp,1000)));
+		$("#ibsim2").html(Math.floor(Math.min(tmp*Math.sqrt(1000),1000)));
 	}
 }catch(e){}
 
