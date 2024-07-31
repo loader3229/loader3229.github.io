@@ -153,7 +153,9 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 var total_points=0;
 
 function update_total_points(){
-		
+	
+	total_points=0;
+	
 	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
 		if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
