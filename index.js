@@ -240,12 +240,36 @@ try{
 
 
 try{
+	var m=JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;var tmp=0;
+	if(m.sign==1){
+		if(m.array[0]<0)m.array[0]=0;
+		if(m.array[2]>0){
+			tmp=1e10;
+		}else if(m.array[1]>=3){
+			tmp=1e10;
+		}else if(m.array[1]==2){
+			tmp=m.array[0];
+		}else if(m.array[1]==1){
+			tmp=Math.log10(m.array[0]+1);
+		}else if(m.array[1]==0 || m.array[1] === undefined){
+			tmp=Math.log10(Math.log10(m.array[0]+1)+1);
+		}
+	}
+	if(tmp>1e10)tmp=1e10;
+	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*tmp,1000);else tmp=0;
+	if(document.location.href.indexOf("/incrementalgames")!=-1){
+		$("#ibsim1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
+		$("#ibsim2").html(Math.floor(Math.min(tmp*tmp,1000)));
+	}
+}catch(e){}
+
+
+try{
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
 		$("#total_points1").html(Math.floor(total_points));
 		$("#total_points2").html(Math.floor(total_points));
 	}
 }catch(e){}
-
 
 
 /** Metagame */
