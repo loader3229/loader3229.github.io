@@ -152,117 +152,122 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 
 var total_points=0;
 
-try{
-	var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-	if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#milestone1").html(tmp);
-		$("#milestone2").html(tmp*6);
-	}
-}catch(e){}
-
-try{
-	var tmp=0;
-	for(var i=1;i<=8;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
-	if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#multitree1").html(tmp);
-		$("#multitree2").html(tmp*9);
-	}
-}catch(e){}
-
-try{
-	var tmp=0;
-	JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
-	if(Number.isFinite(tmp))total_points+=tmp;else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#zbkc1").html(tmp);
-		$("#zbkc2").html(tmp);
-	}
-}catch(e){}
-
-try{
-	var tmp=JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
-	if(Number.isFinite(tmp))total_points+=Math.min(tmp*3,1500);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#trimps1").html(tmp);
-		$("#trimps2").html(Math.floor(Math.min(tmp*3,1500)));
-	}
-}catch(e){}
-
-try{
-	function calc_rank(a,b){
-		a=EN(a);
-		if(a.lte(1))return EN(0);
-		let ret=a.slog().pow(2).mul(a.log10().div(a.log10().add(b)));
-		if(ret.gte(16))ret=ret.mul(6.25).log10().div(2).slog().pow(2).mul(10).add(16);
-		return ret.min(9999/7);
-	}
-	let game=JSON.parse(atob(localStorage.tower));
-	let rank=EN(1);
-	let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
-	if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,1000);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#towers1").html(Math.round(tmp*10)/10+"%");
-		$("#towers2").html(Math.round(tmp*10));
-	}
-}catch(e){console.log(e);}
-
-try{
-	var tmp=new Decimal(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,1000);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#luck1").html(format(Decimal.pow(10,tmp).sub(1)));
-		$("#luck2").html(Math.floor(Math.min(tmp*20,1000)));
-	}
-}catch(e){}
-
-try{
-	var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#ngm4r1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-		$("#ngm4r2").html(Math.floor(tmp*tmp*10));
-	}
-}catch(e){}
-
-try{
-	var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
-	if(localStorage.imr_secret_badge1=="1")total_points+=200;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
-		$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
-		if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+200);
-		if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1200);
-	}
-}catch(e){}
-
-
-try{
-	var m=JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;var tmp=0;
-	if(m.sign==1){
-		if(m.array[0]<0)m.array[0]=0;
-		if(m.array[2]>0){
-			tmp=1e10;
-		}else if(m.array[1]>=3){
-			tmp=1e10;
-		}else if(m.array[1]==2){
-			tmp=m.array[0];
-		}else if(m.array[1]==1){
-			tmp=Math.log10(m.array[0]+1);
-		}else if(m.array[1]==0 || m.array[1] === undefined){
-			tmp=Math.log10(Math.log10(m.array[0]+1)+1);
+function update_total_points(){
+		
+	try{
+		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
+		if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#milestone1").html(tmp);
+			$("#milestone2").html(tmp*6);
 		}
-	}
-	if(tmp>1e10)tmp=1e10;
-	if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*Math.sqrt(1000),1000);else tmp=0;
-	if(document.location.href.indexOf("/incrementalgames")!=-1){
-		$("#ibsim1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-		$("#ibsim2").html(Math.floor(Math.min(tmp*Math.sqrt(1000),1000)));
-	}
-}catch(e){}
+	}catch(e){}
 
+	try{
+		var tmp=0;
+		for(var i=1;i<=8;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
+		if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#multitree1").html(tmp);
+			$("#multitree2").html(tmp*9);
+		}
+	}catch(e){}
+
+	try{
+		var tmp=0;
+		JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
+		if(Number.isFinite(tmp))total_points+=tmp;else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#zbkc1").html(tmp);
+			$("#zbkc2").html(tmp);
+		}
+	}catch(e){}
+
+	try{
+		var tmp=JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp*3,1500);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#trimps1").html(tmp);
+			$("#trimps2").html(Math.floor(Math.min(tmp*3,1500)));
+		}
+	}catch(e){}
+
+	try{
+		function calc_rank(a,b){
+			a=EN(a);
+			if(a.lte(1))return EN(0);
+			let ret=a.slog().pow(2).mul(a.log10().div(a.log10().add(b)));
+			if(ret.gte(16))ret=ret.mul(6.25).log10().div(2).slog().pow(2).mul(10).add(16);
+			return ret.min(9999/7);
+		}
+		let game=JSON.parse(atob(localStorage.tower));
+		let rank=EN(1);
+		let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,1000);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#towers1").html(Math.round(tmp*10)/10+"%");
+			$("#towers2").html(Math.round(tmp*10));
+		}
+	}catch(e){console.log(e);}
+
+	try{
+		var tmp=new Decimal(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,1000);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#luck1").html(format(Decimal.pow(10,tmp).sub(1)));
+			$("#luck2").html(Math.floor(Math.min(tmp*20,1000)));
+		}
+	}catch(e){}
+
+	try{
+		var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#ngm4r1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
+			$("#ngm4r2").html(Math.floor(tmp*tmp*10));
+		}
+	}catch(e){}
+
+	try{
+		var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
+		if(localStorage.imr_secret_badge1=="1")total_points+=200;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
+			$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
+			if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+200);
+			if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1200);
+		}
+	}catch(e){}
+
+
+	try{
+		var m=JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;var tmp=0;
+		if(m.sign==1){
+			if(m.array[0]<0)m.array[0]=0;
+			if(m.array[2]>0){
+				tmp=1e10;
+			}else if(m.array[1]>=3){
+				tmp=1e10;
+			}else if(m.array[1]==2){
+				tmp=m.array[0];
+			}else if(m.array[1]==1){
+				tmp=Math.log10(m.array[0]+1);
+			}else if(m.array[1]==0 || m.array[1] === undefined){
+				tmp=Math.log10(Math.log10(m.array[0]+1)+1);
+			}
+		}
+		if(tmp>1e10)tmp=1e10;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*Math.sqrt(1000),1000);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#ibsim1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
+			$("#ibsim2").html(Math.floor(Math.min(tmp*Math.sqrt(1000),1000)));
+		}
+	}catch(e){}
+
+}
+
+update_total_points();
 
 try{
 	if(document.location.href.indexOf("/incrementalgames")!=-1){
@@ -321,6 +326,7 @@ setInterval(function(){
 				player.stat=(player_saved.stat || 0);
 			}
 		}catch(e){}
+		update_total_points();
 		for(var q=1;q<=10;q++){
 			player.metapoints=metagain().mul(Date.now()-player.tick).div(10000).add(player.metapoints);
 			if(player.metatranscension.gte(50)){
