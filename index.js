@@ -141,7 +141,10 @@ function change_language(a){
 	}
 }
 
-if(localStorage.lang === undefined)localStorage.lang=0;
+if(localStorage.lang === undefined){
+	localStorage.lang=0;
+	if((navigator.language || "").toString().indexOf("zh")!=-1)localStorage.lang=1;
+}
 change_language(localStorage.lang);
 $('#nav1').attr('href','/incrementalgames.html');
 $('#nav3').attr('href','/gameprototypes.html');
