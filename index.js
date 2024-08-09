@@ -292,7 +292,6 @@ var player={
 	tick: Date.now(),
 	lastprestige: Date.now(),
 	lasttranscension: Date.now(),
-	metaprestigeps: new Decimal(0),
 	stat: 0,
 };
 
@@ -308,7 +307,6 @@ try{
 	player.tick=(player_saved.tick || Date.now());
 	player.lastprestige=(player_saved.lastprestige || Date.now());
 	player.lasttranscension=(player_saved.lasttranscension || Date.now());
-	player.metaprestigeps=new Decimal(player_saved.metaprestigeps || 0);
 	player.stat=(player_saved.stat || 0);
 }catch(e){}
 
@@ -327,15 +325,14 @@ setInterval(function(){
 				player.tick=(player_saved.tick || Date.now());
 				player.lastprestige=(player_saved.lastprestige || Date.now());
 				player.lasttranscension=(player_saved.lasttranscension || Date.now());
-				player.metaprestigeps=new Decimal(player_saved.metaprestigeps || 0);
 				player.stat=(player_saved.stat || 0);
 			}
 		}catch(e){}
 		update_total_points();
-		for(var q=1;q<=10;q++){
-			player.metapoints=metagain().mul(Date.now()-player.tick).div(10000).add(player.metapoints);
+		for(var q=1;q<=20;q++){
+			player.metapoints=metagain().mul(Date.now()-player.tick).div(20000).add(player.metapoints);
 			if(player.metatranscension.gte(50)){
-				player.metaprestige=player.metaprestigeps.add(100).mul(Date.now()-player.tick).div(10000).add(player.metaprestige);
+				player.metaprestige=presgain().add(100).mul(Date.now()-player.tick).div(20000).add(player.metaprestige);
 			}
 			if(player.metaprestige.gte(50)){
 				for(var i=1;i<=4;i++){
@@ -398,7 +395,7 @@ setInterval(function(){
 			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(30)));
 		}
 		if(player.metatranscension.gte(50)&&document.location.href.indexOf("/metagame")!=-1){
-			$("#milestone7display").html(format(player.metaprestigeps.add(100)));
+			$("#milestone7display").html(format(presgain().add(100)));
 		}
 		if(player.metatranscension.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone8display").html(format(transgain().mul(1000).div(Date.now()-player.lasttranscension+111)));
