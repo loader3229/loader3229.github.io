@@ -160,6 +160,15 @@ function update_total_points(){
 	total_points=0;
 	
 	try{
+		var tmp=new Decimal(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp,1024);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#ifl1").html(format(Decimal.pow(2,tmp).sub(1)));
+			$("#ifl2").html(Math.floor(Math.min(tmp,1024)));
+		}
+	}catch(e){}
+
+	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
 		if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
@@ -387,7 +396,6 @@ setInterval(function(){
 			$("#transeffect").html(format(transeffect()));
 		}
 		let mpps=presgain().mul(1000).div(Date.now()-player.lastprestige+111);
-		player.metaprestigeps=player.metaprestigeps.max(mpps);
 		if(player.metaprestige.gte(200)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone2display").html(format(mpps));
 		}
@@ -503,7 +511,6 @@ function transeffect(){
 function metatranscension(){
 	player.metatranscension=player.metatranscension.add(transgain());
 	player.metaprestige=new Decimal(0);
-	player.metaprestigeps=new Decimal(0);
 	player.metapoints=new Decimal(0);
 	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=player.lasttranscension=Date.now();
