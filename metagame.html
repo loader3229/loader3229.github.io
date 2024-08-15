@@ -61,7 +61,7 @@
 <span class=zh>效果：元-点数和元-转生点获取变为原来的</span><span class=en>Effect: Metapoints and Metaprestige gain is multiplied by </span><span id="transeffect"></span>x<br>
 <a href=javascript:void(metatranscension());><span class=zh>超越！</span><span class=en>Transcend!</span></a></div>
 <hr>
-<span class=zh>里程碑在1e4、1e6、1e9元-点数</span><span class=en>Milestones at 1e4, 1e6, 1e9 Metapoints</span><span id="prestige_milestone" style="display:none;"><span class=zh>，1、50、200、1e4、1e6、1e9元-转生点</span><span class=en>, 1, 50, 200, 1e4, 1e6, 1e9 Metaprestige</span></span><span id="trans_milestone" style="display:none;"><span class=zh>以及1、50、200元-超越点</span><span class=en>and 1, 50, 200 Meta-Transcension</span></span><span class=zh>时出现</span><br>
+<span class=zh>里程碑在1e4、1e6、1e9、1.8e308元-点数</span><span class=en>Milestones at 1e4, 1e6, 1e9, 1.8e308 Metapoints</span><span id="prestige_milestone" style="display:none;"><span class=zh>，1、50、200、1e4、1e6、1e9元-转生点</span><span class=en>, 1, 50, 200, 1e4, 1e6, 1e9 Metaprestige</span></span><span id="trans_milestone" style="display:none;"><span class=zh>以及1、50、200、1e4元-超越点</span><span class=en>and 1, 50, 200, 1e4 Meta-Transcension</span></span><span class=zh>时出现</span><br>
 <span id="milestone0"><span class=zh>1e4元-点数：解锁升级2。</span><span class=en>1e4 Metapoints: Unlock Upgrade 2.</span><br></span>
 <span id="milestone1"><span class=zh>1e6元-点数：解锁升级3。</span><span class=en>1e6 Metapoints: Unlock Upgrade 3.</span><br></span>
 <span id="milestone2"><span class=zh>1e9元-点数：解锁元-转生。</span><span class=en>1e9 Metapoints: Unlock Metaprestige.</span><br></span>
@@ -74,6 +74,14 @@
 <span id="milestone9"><span class=zh>1元-超越点：元-转生点的效果变为原来的平方。</span><span class=en>1 Meta-Transcension: Square Metaprestige effect.</span><br></span>
 <span id="milestone10"><span class=zh>50元-超越点：每秒获得重置时可以获得的元-转生点数的100%，然后再获得100元-转生点数。当前：</span><span class=en>50 Meta-Transcension: Gain 100% of Metaprestige gain plus 100 Metaprestige per second. Currently: </span><span id=milestone7display></span><br></span>
 <span id="milestone11"><span class=zh>200元-超越点：显示元-超越点每秒。当前元-超越点每秒：</span><span class=en>200 Meta-Transcension: Display Meta-Transcension gain per second. Currently: </span><span id=milestone8display></span><br></span>
+<span id="milestone12"><span class=zh>1e4元-超越点：总游戏分数增加50元-超越点里程碑效果。</span><span class=en>1e4 Meta-Transcension: Total Game Score boost 50 Meta-Transcension Milestone. Currently: </span><span id=milestone9display></span><br></span>
+<span id="milestone13"><span class=zh>1.8e308元-点数：解锁元-无限。</span><span class=en>1.8e308 Metapoints: Unlock Meta-Infinity.</span><hr>
+<span class=zh>元-无限以得到</span><span class=en>Infinity for </span><span id="infgain"></span><span class=zh>元-无限点</span><span class=en> Meta-Infinity</span><br>
+<span class=zh>您有</span><span class=en>You have</span> <span id="metainf">0</span> <span class=zh>元-无限点。</span><span class=en>Meta-Infinity.</span><br>
+<span class=zh>效果：元-点数、元-转生点和元-超越点获取变为原来的</span><span class=en>Effect: Metapoints, Metaprestige and Meta-Transcension gain are multiplied by </span><span id="metainfeffect"></span>x<br>
+<span class=zh>每秒获得元-超越点（基于总游戏分数）：</span><span class=en>Meta-Transcension Per Second (Based on Total Game Score): </span><span id="metainfeffect2"></span><br>
+<a href=javascript:void(metainf());><span class=zh>元-无限！</span><span class=en>Infinity Reset!</span></a></div>
+</span>
 
 <script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
 <script src="bootstrap/bootstrap.min.js"></script>
