@@ -400,6 +400,7 @@ setInterval(function(){
 			$("#metatranscension").html(formatWhole(player.metatranscension));
 			$("#preseffect").html(format(preseffect()));
 			$("#transeffect").html(format(transeffect()));
+			$("#metainf").html(formatWhole(player.metainf));
 			$("#metainfeffect").html(format(metainfeffect()));
 			$("#metainfeffect2").html(format(metainfeffect2()));
 		}
@@ -408,7 +409,7 @@ setInterval(function(){
 			$("#milestone2display").html(format(mpps));
 		}
 		if(player.metaprestige.gte(1e4)&&document.location.href.indexOf("/metagame")!=-1){
-			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(30)));
+			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(50)));
 		}
 		if(player.metatranscension.gte(50)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone7display").html(format(presgain().add(100).mul(player.metatranscension.gte(1e4)?(1+((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10000)**3):1)));
@@ -561,7 +562,7 @@ localStorage.kasumiLivecount=localStorage.kasumiLivecount || '0';
 
 function getIntimacyGain(a){
 	a=a*(parseInt(localStorage.kasumiLivecount)/2+1);
-	a=a*(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(30).toNumber());
+	a=a*(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(50).toNumber());
 	return a;
 }
 
