@@ -314,7 +314,7 @@ try{
 	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
 	player.metaprestige=new Decimal(player_saved.metaprestige || 0);
 	player.metatranscension=new Decimal(player_saved.metatranscension || 0);
-	player.metatinf=new Decimal(player_saved.metainf || 0);
+	player.metainf=new Decimal(player_saved.metainf || 0);
 	player.tick=(player_saved.tick || Date.now());
 	player.lastprestige=(player_saved.lastprestige || Date.now());
 	player.lasttranscension=(player_saved.lasttranscension || Date.now());
