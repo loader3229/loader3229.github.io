@@ -392,7 +392,8 @@ setInterval(function(){
 			$("#milestone10").css("display",(player.metatranscension.gte(50))?"":"none");
 			$("#milestone11").css("display",(player.metatranscension.gte(200))?"":"none");
 			$("#milestone12").css("display",(player.metatranscension.gte(1e4))?"":"none");
-			$("#milestone13").css("display",(player.metapoints.gte(Number.MAX_VALUE))?"":"none");
+			$("#milestone13").css("display",(player.metatranscension.gte(1e6))?"":"none");
+			$("#milestone14").css("display",(player.metapoints.gte(Number.MAX_VALUE))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#transgain").html(formatWhole(transgain()));
@@ -458,7 +459,7 @@ function metaeffect(a){
 		return ret;
 	}
 	if(a==4){
-		let ret=Decimal.pow(Math.log10(Date.now()-player.lastprestige+1),player.metaupgrades[4].pow(0.8).div(player.metaprestige.gte(1e6)?Math.max(5-(Math.log10(Date.now()-player.lastprestige+1)/2)**1.5,2):5));
+		let ret=Decimal.pow(Math.log10(Date.now()-player.lastprestige+1),player.metaupgrades[4].pow(0.8).div(player.metaprestige.gte(1e6)?Math.max(5-(Math.log10(Date.now()-player.lastprestige+1)/2)**1.5,player.metatranscension.gte(1e6)?1.5:2):5));
 		return ret;
 	}
 }
