@@ -1,8 +1,11 @@
 var decimalZero=new Decimal(0);
 var decimalOne=new Decimal(1);
 
-/** Number Formatting */
+var b=parseFloat(localStorage.pageopencount)+1;
+if(!isFinite(b) || b<=0)localStorage.pageopencount=1;
+else localStorage.pageopencount=b;
 
+/** Number Formatting */
 
 function exponentialFormat(num, precision, mantissa = true) {
     let e = num.log10().floor()
@@ -831,3 +834,26 @@ getLSV("systemProfile_001_2",11);
 getLSV("systemProfile_001_3",11);
 getLSV("systemProfile_001_4",11);
 getLSV("systemProfile_001_5",11);
+
+
+// Page Level
+
+var plstyle=document.createElement('style');
+plstyle.innerHTML='#plbar{position:fixed;height:10px;bottom:0px;left:0px;background-color:#0000ff;}#pldisp{position:fixed;bottom:10px;left:0px;user-select:none;}#pldiv{height:40px;}';
+document.head.append(plstyle);
+var plbar=document.createElement('div');
+plbar.id='plbar';
+document.body.append(plbar);
+var pldisp=document.createElement('div');
+pldisp.id='pldisp';
+document.body.append(pldisp);
+var pldiv=document.createElement('div');
+pldiv.id='pldiv';
+document.body.append(pldiv);
+
+setInterval(function(){
+	var pl=(Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1))**1.5;
+	pl=pl*2+1;
+	pldisp.innerHTML="Level "+Math.floor(pl);
+	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
+},10);
