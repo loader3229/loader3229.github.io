@@ -836,7 +836,82 @@ getLSV("systemProfile_001_4",11);
 getLSV("systemProfile_001_5",11);
 
 
-// Page Level
+// Page Level and Programming Contest
+
+var programming_problems=[["Math Programming Problem","Basic Programming Problem","Dynamic Programming Problem","Binary Indexed Tree Problem","Balanced Binary Tree Problem","FFT Problem","Number Theory Problem","Segment Tree Problem","Constant Optimizing Problem","Interactive Programming Problem"],["数学题","基础题","动态规划题","树状数组题","平衡树题","FFT题","数论题","线段树题","卡常题","交互题"]];
+
+var programming_rating=[0,0,0,0,0,0,0,0,0,0];
+var ratingLastUpdate=0;
+var problemLastUpdate=0;
+function getProblems(){
+	var seed=Math.floor(Date.now()/3600000);
+	var p1=Math.floor(Math.sin(seed/2)*1000000+2000000)%10;
+	var p2=Math.floor(Math.cos(seed/2)*1000000+2000000)%9;
+	var p3=Math.floor(Math.sin(seed/3)*1000000+2000000)%8;
+	if(p2>=p1){
+		p2++;
+	}else{
+		let p4=p1;p1=p2;p2=p4;
+	}
+	if(p3>=p1)p3++;if(p3>=p2)p3++;
+	return [p1,p2,p3];
+}
+
+function updateRating(){
+	if(localStorage.programming_rating)programming_rating=JSON.parse(atob(localStorage.programming_rating));
+	if(localStorage.ratingLastUpdate)ratingLastUpdate=parseFloat(localStorage.ratingLastUpdate);
+	if(localStorage.problemLastUpdate)problemLastUpdate=parseFloat(localStorage.problemLastUpdate);
+	var b=Date.now();
+	for(var i=0;i<10;i++)programming_rating[i]/=Math.pow(1.00003,(b-ratingLastUpdate)/1000);
+	localStorage.programming_rating=btoa(JSON.stringify(programming_rating));
+	localStorage.ratingLastUpdate=ratingLastUpdate=b;
+	localStorage.problemLastUpdate=problemLastUpdate;
+}
+
+function saveRating(){
+	localStorage.programming_rating=btoa(JSON.stringify(programming_rating));
+	localStorage.ratingLastUpdate=ratingLastUpdate=Date.now();
+	localStorage.problemLastUpdate=problemLastUpdate;
+}
+
+function doProblem(x){
+	x=getProblems()[x];
+	if(!isFinite(x))return;
+	if(Date.now()-problemLastUpdate<3600000){
+		if(localStorage.lang==1)alert("loader3229还在做上一道题目，请稍候！");
+		else alert("loader3229 is solving last problem, please wait!");
+		return;
+	}
+	updateRating();
+	var rating1=Math.random()*10+10;
+	programming_rating[x]+=rating1;
+	localStorage.problemLastUpdate=problemLastUpdate=Date.now();
+	saveRating();
+	if(localStorage.lang==1)alert("loader3229开始做题目了，编程能力+"+Math.floor(rating1));
+	else alert("loader3229's Programming Ability+"+Math.floor(rating1));
+}
+
+function getTotalRating(){
+	updateRating();
+	var r=1777;
+	for(var i=0;i<10;i++)r+=programming_rating[i];
+	return r;
+}
+
+var programming_contest_mode=0;
+
+
+function init_programming_contest(){
+	programming_contest_mode=1;
+	$("#zh_span_2").html("<a href=javascript:doProblem(0); id=zh_link_1></a>");
+	$("#en_span_2").html("<a href=javascript:doProblem(0); id=en_link_1></a>");
+	$("#zh_link_2").attr("href","javascript:doProblem(1);");
+	$("#en_link_2").attr("href","javascript:doProblem(1);");
+	$("#zh_link_3").attr("href","javascript:doProblem(2);");
+	$("#en_link_3").attr("href","javascript:doProblem(2);");
+	$("#zh_link_3").css("display","");
+	$("#en_link_3").css("display","");
+}
 
 var plstyle=document.createElement('style');
 plstyle.innerHTML='#plbar{position:fixed;height:10px;bottom:0px;left:0px;background-color:#0000ff;}#pldisp{position:fixed;bottom:10px;left:0px;user-select:none;}#pldiv{height:40px;}';
@@ -852,8 +927,19 @@ pldiv.id='pldiv';
 document.body.append(pldiv);
 
 setInterval(function(){
-	var pl=(Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1))**1.5;
+	var pl=(Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100)**1.5;
 	pl=pl*2+1;
 	pldisp.innerHTML="Level "+Math.floor(pl);
 	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
+	
+	if(programming_contest_mode){
+		$("#zh_span_1").html("loader3229的编程能力大约在Codeforces Rating "+Math.floor(getTotalRating()));
+		$("#en_span_1").html("loader3229's programming ability: Codeforces Rating "+Math.floor(getTotalRating()));
+		$("#zh_link_1").html("让loader3229开始做"+programming_problems[1][getProblems()[0]]);
+		$("#en_link_1").html("Let loader3229 solve a "+programming_problems[0][getProblems()[0]]);
+		$("#zh_link_2").html("让loader3229开始做"+programming_problems[1][getProblems()[1]]);
+		$("#en_link_2").html("Let loader3229 solve a "+programming_problems[0][getProblems()[1]]);
+		$("#zh_link_3").html("让loader3229开始做"+programming_problems[1][getProblems()[2]]);
+		$("#en_link_3").html("Let loader3229 solve a "+programming_problems[0][getProblems()[2]]);
+	}
 },10);
