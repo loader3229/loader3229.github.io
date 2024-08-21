@@ -929,7 +929,7 @@ document.body.append(pldiv);
 setInterval(function(){
 	var pl=(Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100)**1.5;
 	pl=pl*2+1;
-	pldisp.innerHTML="Level "+Math.floor(pl);
+	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor((Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100)*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
 	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
 	
 	if(programming_contest_mode){
