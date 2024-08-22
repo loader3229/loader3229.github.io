@@ -517,9 +517,9 @@ function metaprestige(){
 }
 
 function transgain(){
-	if(player.metainf.gte(1))return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul(metainfeffect());
+	if(player.metainf.gte(1))return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul(metainfeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1.5:1);
 	if(player.metaprestige.lt(1e9))return new Decimal(0);
-	return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3));
+	return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1.5:1);
 }
 
 function transeffect(){
@@ -927,9 +927,9 @@ pldiv.id='pldiv';
 document.body.append(pldiv);
 
 setInterval(function(){
-	var pl=(Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1:0))**1.5;
+	var pl=((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1:0))**1.5;
 	pl=pl*2+1;
-	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor((Math.log10(parseFloat(localStorage.pageopencount)/10+1)+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
+	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor(((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '97b4061c3a44e2950549613ba148eff34250441a9b3121698a15fcefdb4f5a')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
 	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
 	
 	if(programming_contest_mode){
