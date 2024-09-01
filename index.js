@@ -164,10 +164,10 @@ function update_total_points(){
 	
 	try{
 		var tmp=new Decimal(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp,1024);else tmp=0;
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp,1500);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#ifl1").html(format(Decimal.pow(2,tmp).sub(1)));
-			$("#ifl2").html(Math.floor(Math.min(tmp,1024)));
+			$("#ifl2").html(Math.floor(Math.min(tmp,1500)));
 		}
 	}catch(e){}
 
