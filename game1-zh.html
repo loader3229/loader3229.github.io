@@ -1,0 +1,1252 @@
+<!doctype html>
+<!-- loader3229's First Incremental Game. (c) 2018 loader3229. -->
+<html>
+
+<!--  v2.4.37  -->
+<script>var gmversion="2.4.37"</script>
+
+<head>
+<meta charset="utf-8">
+<script>
+Math.log10=Math.log10||function(a){return Math.log(a)*Math.LOG10E;}
+Math.sign=Math.sign||function(a){if(a==0)return Math.sign(1/a)==1?0:-0;if(a>0)return 1;if(a<0)return -1;return NaN;}
+Number.isFinite=Number.isFinite||function(a){return a<=Number.MAX_VALUE && a>=-Number.MAX_VALUE;}
+</script>
+
+<script src="multitree/break_eternity.js" type="text/javascript"></script>
+
+<script>
+var kfsj=1539273600000;
+var tiers=23;
+var base=[0,0.99999,1e5,1e11,1e18,1e26,1e35,1e46,1e58,1e71,1e85,1e100,"1e300","1e700","1e1500","1e3100","1e6300","1e12700","1e25500","1e51100","1e102300","1e204700","1e409500","1e819100"];
+var gold=new Decimal(1);
+var exp=new Decimal(0);
+var elevel=1;
+var level=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var level2=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var bmul=[1,1,1,1,1,1,1,1,1,1,1,1];
+bmul.push(Decimal.pow(5.1400e-7,1).div(10));
+bmul.push(Decimal.pow(5.1403e-7,3).div(9));
+bmul.push(Decimal.pow(5.1406e-7,7).div(8));
+bmul.push(Decimal.pow(5.1409e-7,15).div(7));
+bmul.push(Decimal.pow(5.1412e-7,31).div(6));
+bmul.push(Decimal.pow(5.1415e-7,63).div(5));
+bmul.push(Decimal.pow(5.1418e-7,127).div(4));
+bmul.push(Decimal.pow(5.1421e-7,255).div(3));
+bmul.push(Decimal.pow(5.1424e-7,511).div(2));
+bmul.push(Decimal.pow(5.1427e-7,1023));
+bmul.push(Decimal.pow(5.1430e-7,2047));
+bmul.push(Decimal.pow(5.1433e-7,4095));
+var mul=[1,1,1,1,1,1,1,1,1,1,1,1];
+mul.push(Decimal.pow(5.1400e-7,1).div(10));
+mul.push(Decimal.pow(5.1403e-7,3).div(9));
+mul.push(Decimal.pow(5.1406e-7,7).div(8));
+mul.push(Decimal.pow(5.1409e-7,15).div(7));
+mul.push(Decimal.pow(5.1412e-7,31).div(6));
+mul.push(Decimal.pow(5.1415e-7,63).div(5));
+mul.push(Decimal.pow(5.1418e-7,127).div(4));
+mul.push(Decimal.pow(5.1421e-7,255).div(3));
+mul.push(Decimal.pow(5.1424e-7,511).div(2));
+mul.push(Decimal.pow(5.1427e-7,1023));
+mul.push(Decimal.pow(5.1430e-7,2047));
+mul.push(Decimal.pow(5.1433e-7,4095));
+//var bmul=[1,1,1,1,1,1,1,1,1,1,1,1,"1e-7","1e-21","1e-49","1e-105","1e-217","1e-441","1e-889","1e-1785","1e-3577"];
+//bmul[12]=(*)5.1438274515677924422647340712917e-7
+var bs=new Decimal(1);
+var tt=new Decimal(1e9);
+var sp=new Decimal(0);
+var sp2=new Decimal(0);
+var score=0;
+var lastticktime=Date.now();
+var end1=0;
+var force_sci=0;
+var yjflag=0;
+var autoupg=0;
+var autoupgsp=0;
+var ts=[];
+var spsati=new Decimal(0);
+var hiddengenerator=0;
+
+var ssp=new Decimal(0);
+function SPUpgrade(cost,available,maxlevel){
+	this.cost=cost;
+	this.available=available;
+	this.level=new Decimal(0);
+	this.maxlevel=maxlevel;
+}
+SPUpgrade.prototype.total=function(){
+	if(this.cost(new Decimal(10))==1){
+		return this.level;
+	}
+	let sum=new Decimal(0);
+	for(let i=this.level-100;i<this.level;i++){
+		if(i<0)i=0;
+		if(i>=this.level)return sum;
+		sum=sum.plus(this.cost(new Decimal(i)));
+	}
+	return sum;
+};
+SPUpgrade.prototype.buy=function(){
+	if(this.level.gte(this.maxlevel))return false;
+	display();
+	if(sp.gte(this.cost(this.level))){
+		sp=sp.sub(this.cost(this.level));
+		this.level=this.level.plus(1);
+		return true;
+	}
+	return false;
+};
+SPUpgrade.prototype.buyMax=function(){
+	if(this.level.gte(this.maxlevel))return false;
+	if(this.cost(new Decimal(10))==1){
+		this.level=this.level.plus(sp),sp=new Decimal(0);
+		if(this.level.gte(this.maxlevel)){
+			sp=sp.add(this.level.sub(this.maxlevel));
+			this.level=new Decimal(this.maxlevel);
+		}
+		return;
+	}
+	while(this.buy());
+	return;
+};
+var SPUpgrades=[];
+SPUpgrades[0]=new SPUpgrade(function(a){return Infinity;},function(a){return 0;},0);
+SPUpgrades[1]=new SPUpgrade(function(a){return 1;},function(a){return 1;},Infinity);
+SPUpgrades[2]=new SPUpgrade(function(a){return 1;},function(a){return SPUpgrades[1].level>0;},1e100);
+SPUpgrades[3]=new SPUpgrade(function(a){return 1e3;},function(a){return SPUpgrades[2].level>0;},1);
+SPUpgrades[4]=new SPUpgrade(function(a){return 3e4;},function(a){return SPUpgrades[3].level>0;},1);
+SPUpgrades[5]=new SPUpgrade(function(a){return Decimal.floor(Decimal.pow(a.mul(0.1).plus(3),(a.gte(250)?Decimal.pow(1.004,a.sub(250)).mul(250):a)).mul(1e8));},function(a){return SPUpgrades[4].level>0;},100000);
+SPUpgrades[6]=new SPUpgrade(function(a){return a.gte(10)?Decimal.floor(Decimal.pow(2,a.plus(100))):Decimal.floor(Decimal.pow(10,a.plus(6)));},function(a){return SPUpgrades[4].level>0;},100);
+SPUpgrades[7]=new SPUpgrade(function(a){return Decimal.floor(Decimal.pow(1.24,a).mul(1e6));},function(a){return SPUpgrades[4].level>0;},100);
+SPUpgrades[8]=new SPUpgrade(function(a){return a.gte(20)?new Decimal(Number.MAX_VALUE):Decimal.floor(Decimal.pow(10,17+a*(a.plus(10))/10));},function(a){return SPUpgrades[5].level>0;},21);
+SPUpgrades[9]=new SPUpgrade(function(a){return a.gte(4)?Decimal.floor(Decimal.pow(10,a*a+a*4+13)):Decimal.floor(Decimal.pow(10,20+a*6));},function(a){return SPUpgrades[8].level>0;},100000);
+SPUpgrades[10]=new SPUpgrade(function(a){return Decimal.pow(1e25,(a.gte(1000)?Decimal.pow(1.001,a.sub(1000)).mul(1000):a)).mul(1e25);},function(a){return SPUpgrades[9].level>0;},100000);
+SPUpgrades[11]=new SPUpgrade(function(a){return a.gte(3)?Decimal.pow(10,Decimal.pow(1.5,a.plus(-2)).mul(200)):Decimal.pow(1e65,a).mul(1e70);},function(a){return SPUpgrades[10].level>0;},100000);
+SPUpgrades[12]=new SPUpgrade(function(a){return Decimal.pow(1e5,(a.gte(1000)?Decimal.pow(1.001,a.sub(1000)).mul(1000):a)).mul(1e185);},function(a){return SPUpgrades[11].level>0;},100000);
+function SSPUpgrade(cost,available,maxlevel){
+	this.cost=cost;
+	this.available=available;
+	this.level=new Decimal(0);
+	this.maxlevel=maxlevel;
+}
+SSPUpgrade.prototype.total=function(){
+	if(this.cost(new Decimal(10))==1){
+		return this.level;
+	}
+	let sum=new Decimal(0);
+	for(let i=this.level-100;i<this.level;i++){
+		if(i<0)i=0;
+		if(i>=this.level)return sum;
+		sum=sum.plus(this.cost(new Decimal(i)));
+	}
+	return sum;
+};
+SSPUpgrade.prototype.buy=function(){
+	if(this.level.gte(this.maxlevel))return false;
+	display();
+	if(ssp.gte(this.cost(this.level))){
+		ssp=ssp.sub(this.cost(this.level));
+		this.level=this.level.plus(1);
+		return true;
+	}
+	return false;
+};
+SSPUpgrade.prototype.buyMax=function(){
+	if(this.level.gte(this.maxlevel))return false;
+	if(this.cost(new Decimal(10))==1){
+		this.level=this.level.plus(ssp),ssp=new Decimal(0);
+		if(this.level.gte(this.maxlevel)){
+			ssp=ssp.add(this.level.sub(this.maxlevel));
+			this.level=new Decimal(this.maxlevel);
+		}
+		return;
+	}
+	while(this.buy());
+	return;
+};
+var SSPUpgrades=[];
+SSPUpgrades[0]=new SSPUpgrade(function(a){return Infinity;},function(a){return 0;},0);
+SSPUpgrades[1]=new SSPUpgrade(function(a){return 1;},function(a){return 1;},Infinity);
+SSPUpgrades[2]=new SSPUpgrade(function(a){return 1e4;},function(a){return SSPUpgrades[1].level>0;},1);
+SSPUpgrades[3]=new SSPUpgrade(function(a){return 1;},function(a){return 1;},Infinity);
+SSPUpgrades[4]=new SSPUpgrade(function(a){return Decimal.pow(2,a).mul(1e4);},function(a){return SSPUpgrades[2].level>0;},1000);
+SSPUpgrades[5]=new SSPUpgrade(function(a){return Decimal.pow(2,a).mul(1e4);},function(a){return SSPUpgrades[2].level>0;},1000);
+SSPUpgrades[6]=new SSPUpgrade(function(a){return Decimal.floor(Decimal.pow(a.mul(0.1).plus(3),(a.gte(250)?Decimal.pow(1.004,a.sub(250)).mul(250):a)).mul(1e3));},function(a){return SSPUpgrades[1].level>0;},1000);
+SSPUpgrades[7]=new SSPUpgrade(function(a){return Decimal.pow(5,a).mul(1e4);},function(a){return SSPUpgrades[2].level>0;},1000);
+SSPUpgrades[8]=new SSPUpgrade(function(a){return 1e6;},function(a){return SSPUpgrades[6].level>0;},1);
+SSPUpgrades[9]=new SSPUpgrade(function(a){return Decimal.pow(10,a).mul(2e16);},function(a){return SSPUpgrades[1].level.gte(5e15);},1000);
+SSPUpgrades[10]=new SSPUpgrade(function(a){return 1e17;},function(a){return SSPUpgrades[6].level>0;},1);
+SSPUpgrades[11]=new SSPUpgrade(function(a){return Decimal.pow(1e10,a).mul(1e90);},function(a){return SSPUpgrades[6].level>0;},1000);
+SSPUpgrades[12]=new SSPUpgrade(function(a){return Decimal.pow(1e10,a).mul(1e90);},function(a){return SSPUpgrades[6].level>0;},1000);
+
+
+function up(a,b){
+	if(SPUpgrades[7].level==100){
+		return;
+	}
+	if(b===undefined)b=1;
+	while(b--)if(gold.gte(base[a].mul(new Decimal(1.2).pow(level[a])).floor())){
+		gold=gold.plus(new Decimal(-1).mul(base[a]).mul(new Decimal(1.2).pow(level[a])).mul((100-SPUpgrades[7].level)/100).ceil()).floor();
+		level[a]++;
+		mul[a]=mul[a].mul(1.01);
+		if(level[a]%10==0)mul[a]=mul[a].mul(2);
+		if(level[a]%50==0)mul[a]=mul[a].mul(2.5);
+		if(level[a]%100==0)mul[a]=mul[a].mul(200);
+		if(level[a]%200==0)mul[a]=mul[a].mul(3);
+		if(level[a]%400==0)mul[a]=mul[a].mul(333);
+		if(level[a]%1000==0)mul[a]=mul[a].mul(100);
+		if(level[a]%2000==0)mul[a]=mul[a].mul(3);
+		if(level[a]%4000==0)mul[a]=mul[a].mul(5);
+		if(level[a]%10000==0)mul[a]=mul[a].mul(5);
+		if(level[a]%20000==0)mul[a]=mul[a].mul(20);
+		if(level[a]%40000==0)mul[a]=mul[a].mul(10);
+		if(level[a]%50000==0)mul[a]=mul[a].mul(10);
+		if(level[a]%100000==0)mul[a]=mul[a].mul(15);
+		if(level[a]%200000==0){
+			mul[a]=bs.mul(glv(level[a])).mul(bmul[a]);
+		}
+	}
+	display();
+}
+function glv2(a){
+	var gl=Decimal.pow(2,a).mul(
+	Decimal.pow(2.5,Math.floor(a/5))).mul(
+	Decimal.pow(200,Math.floor(a/10))).mul(
+	Decimal.pow(3,Math.floor(a/20))).mul(
+	Decimal.pow(333,Math.floor(a/40))).mul(
+	Decimal.pow(100,Math.floor(a/100))).mul(
+	Decimal.pow(3,Math.floor(a/200))).mul(
+	Decimal.pow(5,Math.floor(a/400))).mul(
+	Decimal.pow(5,Math.floor(a/1000))).mul(
+	Decimal.pow(20,Math.floor(a/2000))).mul(
+	Decimal.pow(10,Math.floor(a/4000))).mul(
+	Decimal.pow(10,Math.floor(a/5000))).mul(
+	Decimal.pow(15,Math.floor(a/10000)));
+	return gl;
+}
+for(var I=0;I<=20000;I++)ts.push(glv2(I));
+var fct1=[1];
+for(var I=1;I<=100;I++)fct1.push(fct1[I-1]*I);
+function fct(a,b){
+	if(a>b){
+		return new Decimal(fct1[b]).mul(Decimal.pow(b,a-b));
+	}
+	return new Decimal(fct1[a>0?a:0]);
+}
+function transg(){
+	var thre=new Decimal(200).plus(Decimal.pow(SSPUpgrades[11].level.mul(15),1.1)).plus(Decimal.pow(SSPUpgrades[11].level.mul(4),1.5));
+	if(gold.lte(Decimal.pow(10,Decimal.pow(10,thre)))) return gold;
+	var t=gold.log10().log10().div(thre).mul(200);
+	t=Decimal.pow(t,0.99).mul(1.065062528366350355206718045867).add(-2.0202020202020202020202020201939);
+	t=t.div(200).mul(thre);
+	return Decimal.pow(10,Decimal.pow(10,t));
+}
+function glv(a){
+	if(a>=1e100){
+		return Decimal.pow("1e+15340",Decimal.log(transg(),1.2).mul(1/200000));
+	}
+	if(a>=100000000){
+		return Decimal.pow("1e+15340",a/200000).mul(a);
+	}
+	var tm=Math.floor(a/200000);
+	a-=tm*200000;
+	return (Decimal.pow(1.01,a)).mul(Decimal.pow("1e+15338",tm)).mul(fct(tm,100)).mul(ts[Math.floor(a/10)]);
+	//cost unprestige:1.2
+	//in:1.19316361150367308978343194185
+	//0.96866371557057282762270770502806
+	//633628442
+}
+function yj(a){
+	if(a && yjflag)return;
+	yjflag=1;
+	var flag=0;
+	if(SPUpgrades[7].level==100){
+		return;
+	}
+	for(var i=1;i<=tiers;i++){
+		if(gold.mul(1e-9/(100-SPUpgrades[7].level)).gte(base[i].mul(new Decimal(1.2).pow(level[i])).floor())){
+			up(i,100);flag=1;
+		}
+	}
+	for(var i=1;i<=tiers;i++){
+		if(gold.mul(0.01/(100-SPUpgrades[7].level)).gte(base[i].mul(new Decimal(1.2).pow(level[i])).floor())){
+			up(i,10);flag=1;
+		}
+	}
+	for(var i=1;i<=tiers;i++){
+		if(gold.mul(1/(100-SPUpgrades[7].level)).gte(base[i].mul(new Decimal(1.2).pow(level[i])).floor())){
+			up(i);flag=1;
+		}
+	}
+	for(var i=1;i<=tiers;i++){
+		if(level[i]%100>=93){
+			up(i,7);flag=1;
+		}
+	}
+	if(flag)setTimeout(yj,10);else yjflag=0;
+}
+function total(){
+	var sum=new Decimal(0);
+	for(var i=1;i<=tiers;i++){
+		sum=sum.plus(mul[i].mul(level[i]).mul(base[i]).pow(Decimal.pow(1.2,SSPUpgrades[12].level)).floor());
+	}
+	return sum;
+}
+function totalsp(){
+	var sum=sp;
+	for(var i=1;i<SPUpgrades.length;i++){
+		sum=sum.plus(SPUpgrades[i].total());
+	}
+	return sum;
+}
+function getbs(g){
+	if(g === undefined)g=total();
+	if(g.plus(2).log(2).gt(950))return g.plus(2).log(2).mul(2).mul(g.plus(2).log(2).mul(2).pow(getp2lv2()*150)).mul(getp2lv1bsn()).mul(getelevelbs()).mul(getScoreMultiplier()).mul(getSSPMultiplier()).mul(g.div(new Decimal(Math.pow(2,350))).pow(0.02+getp2lv2())).mul(g.div(new Decimal(Math.pow(2,950))).pow(0.005)).sub(1);
+	if(g.plus(2).log(2).gt(350))return g.plus(2).log(2).mul(2).mul(g.plus(2).log(2).mul(2).pow(getp2lv2()*150)).mul(getp2lv1bsn()).mul(getelevelbs()).mul(getScoreMultiplier()).mul(getSSPMultiplier()).mul(g.div(new Decimal(Math.pow(2,350))).pow(0.02+getp2lv2())).sub(1);
+	return g.plus(2).log(2).mul(2).mul(g.plus(2).log(2).mul(2).pow(getp2lv2()*150)).mul(getp2lv1bsn()).mul(getelevelbs()).mul(getScoreMultiplier()).mul(getSSPMultiplier()).sub(1);
+}
+function getelevelbs_1(){
+	var elevel=Decimal.log(exp.add(1),1.04).mul(SPUpgrades[10].level.plus(1));
+	if(elevel.lte(1001))return Decimal.pow(elevel.div(1001),SPUpgrades[10].level.mul(0.5).plus(1));
+	return Decimal.pow(elevel.sub(1000),SPUpgrades[10].level.mul(0.5).plus(1));
+}
+function getelevelbs_2(){
+	var elevel=Decimal.log(exp.add(1),1.04).mul(SPUpgrades[10].level.plus(1));
+	if(elevel.lte(101000))return new Decimal(2);
+	else if(elevel.lte(1001000))return new Decimal(5);
+	else if(elevel.lte(10001000))return new Decimal(8);
+	else if(elevel.lte(30001000))return new Decimal(15);
+	else if(SSPUpgrades[7].level.lt(100))return Decimal.min(Decimal.pow(elevel.div(30000000),1.2).add(14),Decimal.max(SPUpgrades[10].level.mul(Decimal.max(Decimal.pow(SSPUpgrades[7].level.mul(2).plus(1),3),1).mul(50))));
+	else return Decimal.min(Decimal.pow(elevel.div(30000000),1.2).add(14),Decimal.max(SPUpgrades[10].level.mul(Decimal.max(Decimal.pow(SSPUpgrades[7].level.mul(2).plus(1),3),1).mul(50))).pow(SSPUpgrades[7].level.div(5)));
+}
+function getelevelbs_3(){
+	var elevel=Decimal.log(exp.add(1),1.04).mul(SPUpgrades[10].level.plus(1));
+	if(elevel.lte(101000))return new Decimal(1e4);
+	else if(elevel.lte(1001000))return new Decimal(1e19);
+	else if(elevel.lte(10001000))return new Decimal(1e37);
+	else if(elevel.lte(1e9))return new Decimal(1e86);
+	else if(elevel.lte(1e52))return new Decimal(1e104).div(elevel).div(elevel);
+	else return new Decimal(1);
+}
+function getelevelbs(){
+	return Decimal.pow(getelevelbs_1(),getelevelbs_2()).div(getelevelbs_3()).plus(1);
+}
+function getScoreMultiplier(){
+	if(SPUpgrades[12].level.gte(7500))return Decimal.pow(10,(getSSPMultiplier().plus(getp2lv1bsn())).log10().mul(SPUpgrades[12].level.sub(2500).div(10)).mul(score/1e9).mul(score/1e10).mul(score/1e10));
+	if(SPUpgrades[12].level.gte(2500))return Decimal.pow(10,Decimal.pow(10,score/1e10).mul(SPUpgrades[12].level.sub(100)).mul(SPUpgrades[12].level.sub(100)).plus(getSSPMultiplier().log10().mul(SPUpgrades[12].level.sub(2500).div(10)).mul(score/1e10).mul(score/1e10)));
+	if(SPUpgrades[12].level.gte(100))return Decimal.pow(10,SPUpgrades[12].level.mul(score).div(1e6)).mul(Decimal.pow(10,Decimal.pow(10,score/1e10).mul(SPUpgrades[12].level.sub(100)).mul(SPUpgrades[12].level.sub(100))));
+	return Decimal.pow(10,SPUpgrades[12].level.mul(score).div(1e6));
+}
+function getSSPMultiplier(){
+	if(SSPUpgrades[1].level.gte(1e9))return Decimal.pow(10,Decimal.pow(10,Decimal.pow(Decimal.log10(SSPUpgrades[1].level),1.5).div(3)));
+	return Decimal.pow(10,SSPUpgrades[1].level);
+}
+function getp2lv1bsn3(){
+	if(SPUpgrades[1].level.lte(99))return SPUpgrades[1].level.plus(1).pow(Decimal.pow(2,0.8+SPUpgrades[11].level*0.2));
+	return Decimal.pow(10,Decimal.pow(Decimal.log10(SPUpgrades[1].level),1.8+SPUpgrades[11].level*0.2));
+}
+function getp2lv1bsn1(){
+	if(SPUpgrades[1].level.gte(1e200))temp=1e200;else temp=SPUpgrades[1].level*1;
+	return new Decimal(temp+1).mul(temp+1).mul((temp+1)>=1e7?Decimal.pow((temp+1)*Math.log10((temp+1)),Math.log10((temp+1))-7).div(Decimal.pow(10,((Math.log10((temp+1))-7)*(Math.log10((temp+1))-7)+15*(Math.log10((temp+1))-7))/2)):1);
+}
+function getp2lv1bsn(){
+	if(SSPUpgrades[9].level)return (SPUpgrades[11].level.gte(1)?getp2lv1bsn3():getp2lv1bsn1()).mul(Decimal.pow(10,getSSPMultiplier().log10().mul(0.1+SPUpgrades[11].level*0.1).mul(Decimal.pow(SPUpgrades[1].level.plus(200).log10().log10(),(1+SPUpgrades[11].level*0.1)*(1+SSPUpgrades[9].level*0.1))).mul(SSPUpgrades[9].level)));
+	if(SPUpgrades[11].level.gte(1))return getp2lv1bsn3();else return getp2lv1bsn1();
+}
+function getp2lv2bs(g){
+	if(g === undefined)g=total();
+	if(g.plus(2).log(2).gt(350))return g.plus(2).log(2).mul(2).pow(getp2lv2()*150).mul(g.div(new Decimal(Math.pow(2,350))).pow(getp2lv2()));
+	return g.plus(2).log(2).mul(2).pow(getp2lv2()*150);
+}
+function getp2lv2o(){
+	if(SPUpgrades[2].level.gte(1e100))return 0.00625;
+	if(SPUpgrades[2].level.gte(1e40))return 0.006+Math.pow(Decimal.log10(SPUpgrades[2].level),0.2)*0.000097;
+	if(SPUpgrades[2].level.gte(1e20))return 0.00592+Math.pow(0.05*Decimal.log10(SPUpgrades[2].level),0.5)*0.0002;
+	if(SPUpgrades[2].level.gte(1e8))return 0.00592+0.00001*Decimal.log10(SPUpgrades[2].level);
+	if(0.005+SPUpgrades[2].level*1e-11>0.006)return 0.006;
+	var b=0.005*Math.pow(0.9,SPUpgrades[2].level);
+	return 0.005-b+SPUpgrades[2].level*1e-11;
+}
+function getp2lv2(){
+	if(SSPUpgrades[5].level>=250)return getp2lv2o()+0.00006+0.0000001*SSPUpgrades[5].level;
+	if(SSPUpgrades[5].level>=50)return getp2lv2o()+0.00008-0.00005*Math.pow(0.99,SSPUpgrades[5].level);
+	return getp2lv2o()+0.00005-0.00005*Math.pow(0.9,SSPUpgrades[5].level);
+}
+function getp2lv6(){
+	return Decimal.floor(Decimal.max(total(),tt).log(1e300).pow(1.3+0.15*((SPUpgrades[5].level>1000)?(SPUpgrades[5].level*SPUpgrades[5].level*SPUpgrades[5].level/1e6):(SPUpgrades[5].level))).mul(Decimal.log(100+exp,1.04)).mul(SPUpgrades[6].level*(10+SPUpgrades[6].level)).div(1000).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(SSPUpgrades[3].level.plus(1)));
+}
+function getsp(){
+	if(SPUpgrades[4].level.gte(1))return Decimal.floor(Decimal.max(total(),tt).log(1e300).pow(1.3+0.15*((SPUpgrades[5].level>1000)?(SPUpgrades[5].level*SPUpgrades[5].level*SPUpgrades[5].level/1e6):(SPUpgrades[5].level))).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(Decimal.pow(10,SPUpgrades[9].level)).mul(SSPUpgrades[3].level.plus(1)));
+	return Decimal.floor(Decimal.max(total(),tt).mul(1e-290).log(1e6).pow(1.03).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(SSPUpgrades[3].level.plus(1)));
+}
+function getsp0(){
+	if(SPUpgrades[4].level.gte(1))return Decimal.add(Decimal.floor(Decimal.max(total(),tt).mul(1e-290).log(1e6).pow(1.03).mul(Decimal.max(total(),tt).log(1e300).pow(0.15*((SPUpgrades[5].level>1000)?(SPUpgrades[5].level*SPUpgrades[5].level*SPUpgrades[5].level/1e6):(SPUpgrades[5].level)))).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(SSPUpgrades[3].level.plus(1))),Decimal.floor(Decimal.max(total(),tt).log(1e300).pow(1.3+0.15*((SPUpgrades[5].level>1000)?(SPUpgrades[5].level*SPUpgrades[5].level*SPUpgrades[5].level/1e6):(SPUpgrades[5].level))).mul(Decimal.log(100+exp,1.04)).mul(SPUpgrades[6].level*(10+SPUpgrades[6].level)).div(1000).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(SSPUpgrades[3].level.plus(1))));
+	return Decimal.floor(Decimal.max(total(),tt).mul(1e-290).log(1e6).pow(1.03).mul(Decimal.pow(spsati.plus(1),getspmul1())).mul(SSPUpgrades[3].level.plus(1)));
+}
+function getsp3(){
+	return Decimal.floor(Decimal.max(total(),tt).log(1e300).pow(0.15*((SPUpgrades[5].level>1000)?(SPUpgrades[5].level*SPUpgrades[5].level*SPUpgrades[5].level/1e6):(SPUpgrades[5].level))).mul(1000)).mul(0.001);
+}
+function prestige(){
+	if(SPUpgrades[3].level.gte(1)){
+		tt=total().plus(2);
+		var bs2=getbs();
+		for(var i=1;i<=tiers;i++){
+			mul[i]=mul[i].div(bs).mul(bs2);
+		}
+		bs=bs2;
+		display();
+		return;
+	}
+	tt=total().plus(2);
+	bs=getbs();
+	gold=new Decimal(1);
+	for(var i=1;i<=tiers;i++){
+		level[i]=0;mul[i]=bs.mul(bmul[i]);
+	}
+	display();
+}
+function prestige2(a){
+	if(a||confirm('二级重置在金币产生速度大于1.8e+308(180UCe)时可用。你将失去金币，产生器和倍数，但是可以获得'+getsp0()+'技能点。确定吗？')){
+		var tmpt=SPUpgrades[3].level;SPUpgrades[3].level=new Decimal(0);
+		var tmpg=gold;
+		sp=sp.plus(getsp0());
+		prestige();
+		prestige();
+		SPUpgrades[3].level=tmpt;
+		if(SPUpgrades[8].level<=20)gold=Decimal.pow(tmpg,Decimal.pow(SPUpgrades[8].level,1.2).mul(0.01));else gold=tmpg;
+		bs=new Decimal(1);
+		tt=new Decimal(2.9);
+		for(var i=1;i<=tiers;i++){
+			mul[i]=new Decimal(bmul[i]);
+		}
+		exp=new Decimal(0);
+	}
+	display();
+}
+function prestige3(){
+	if(confirm('你将失去金币，产生器，倍数和绝大部分技能点，但是可以保留'+disp(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()),0.5))+'技能点。同时将获得一些技能点倍数'+/*与金币倍数加成*/'。确定吗？')){
+		spsati=spsati.plus(totalsp()).plus(getsp0());
+		for(var i=1;i<SPUpgrades.length;i++){
+			SPUpgrades[i].level=new Decimal(0);
+		}
+		sp=Decimal.floor(Decimal.pow(spsati,0.5));
+		spsati=spsati.sub(sp);
+		prestige();
+		prestige();
+		gold=new Decimal(1);
+		bs=new Decimal(1);
+		tt=new Decimal(2.9);
+		for(var i=1;i<=tiers;i++){
+			mul[i]=new Decimal(bmul[i]);
+		}
+		exp=new Decimal(0);
+	}
+	display();
+}
+function prestige4(){
+	if(confirm('你将失去金币，产生器，倍数和所有技能点，但是可以获得'+getssp0()+'超技能点。确定吗？')){
+		ssp=ssp.plus(getssp0());
+		for(var i=1;i<SPUpgrades.length;i++){
+			SPUpgrades[i].level=new Decimal(0);
+		}
+		sp=new Decimal(0);
+		spsati=new Decimal(0);
+		prestige();
+		prestige();
+		gold=new Decimal(1);
+		bs=new Decimal(1);
+		tt=new Decimal(2.9);
+		for(var i=1;i<=tiers;i++){
+			mul[i]=new Decimal(bmul[i]);
+		}
+		exp=new Decimal(0);
+	}
+	display();
+}
+function notation(a){ // from antimatter dimensions
+    const prefixes = [
+    ['', 'U', 'D', 'T', 'Qa', 'Qt', 'Sx', 'Sp', 'O', 'N'],
+    ['', 'Dc', 'Vg', 'Tg', 'Qd', 'Qi', 'Se', 'St', 'Og', 'Nn'],
+    ['', 'Ce', 'Dn', 'Tc', 'Qe', 'Qu', 'Sc', 'Si', 'Oe', 'Ne']]
+    const prefixes2 = ['', 'MI', 'MC', 'NA', 'PC', 'FM', 'AT', 'ZP', 'YC', 'XN']
+	var result = ''
+    e = Math.floor(e/3)-1;
+	e2 = 0
+    while (e > 0) {
+		var partE = e % 1000
+		if (partE > 0) {
+			if (partE == 1 && e2 > 0) var prefix = ""
+			else var prefix = prefixes[0][partE % 10] + prefixes[1][Math.floor(partE/10) % 10] + prefixes[2][Math.floor(partE/100)]
+			if (result == "") result = prefix + prefixes2[e2]
+			else result = prefix + prefixes2[e2] + '-' + result
+		}
+		e = Math.floor(e/1000)
+		e2++
+	}
+	return result
+}
+function notation_2(a,given){
+	var s=given.length;
+	if(a==0)return "";
+	a--;
+	var b="";
+	while(true){
+		b=given[a%s]+b;
+		a-=a%s;
+		a/=s;
+		if(a==0)return b;
+		a--;
+	}
+	
+}
+function disp_sci(a,force_sci){
+	if(a.mag<0){
+		return "0";
+	}
+	if(a.layer>2)return "Too Big";
+	if(a.layer==2){
+		if(a.mag>20)return "Too Big";
+		var log_val=Math.pow(10,a.mag);
+		var temp=Math.floor(log_val);
+		return Math.floor(Math.pow(10,log_val-temp+3))/1000+(force_sci == 2 ? "e":"e+")+temp;
+	}
+	if(a.layer==1){
+		var log_val=a.mag;
+		var temp=Math.floor(log_val);
+		return Math.floor(Math.pow(10,log_val-temp+3))/1000+(force_sci == 2 ? "e":"e+")+temp;
+	}
+	if(a.layer==0){
+		var log_val=Math.log10(a.mag);
+		var temp=Math.floor(log_val);
+		return Math.floor(Math.pow(10,log_val-temp+3))/1000+(force_sci == 2 ? "e":"e+")+temp;
+	}
+}
+function disp_he(a,b){
+	if(a.gte("1e+5"))return disp_he(a.log10(),b+1);
+	return "E"+Math.floor(a)+"#"+b;
+}
+function disp(a){
+	if(a.lt("1e+5"))return Math.floor(new Number(a));
+	if(a=="NaN" || a=="NaNeNaN" || a=="eeNaN")return "NaN (Not a number)";
+	if(a=="Infinity" || a=="NaNeInfinity" || a=="eeInfinity")return "Infinity";
+	if(force_sci==6){//Tetration
+		var tetr_base=JSON.parse(document.getElementById("tetr_base_select").value);
+		var r=-1;
+		while(a.gte(1)){
+			r++;
+			a=a.log10().div(Decimal.log10(tetr_base[0]));
+		}
+		r+=tetr_base[1]*a*a*a;
+		r+=tetr_base[2]*a*a;
+		r+=tetr_base[3]*a;
+		var f=function(a){
+			var b=a.indexOf(".");var c=a.indexOf("#");
+			if(b==-1){
+				a=a.slice(0,c)+"."+a.slice(c);
+				b=a.indexOf(".");c=a.indexOf("#");
+			}
+			return a.slice(0,c)+a.slice(c+1);
+		};
+		return tetr_base[0]+"^^"+f((r+"#0000000000000000000000000000000000")).slice(0,10);
+	}
+	if(force_sci==7||force_sci==8){//Psi's Notation
+		var F=0;
+		while(a.gte(10)){
+			F++;
+			a=a.log10();
+		}
+		F=a.log10().plus(F);
+		var f=function(a){
+			var b=a.indexOf(".");var c=a.indexOf("#");
+			if(b==-1){
+				a=a.slice(0,c)+"."+a.slice(c);
+				b=a.indexOf(".");c=a.indexOf("#");
+			}
+			return a.slice(0,c)+a.slice(c+1);
+		};
+		if(force_sci==7){
+			return "F"+f((F+"#0000000000000000000000000000000000")).slice(0,10);
+		}
+		var G=1;
+		while(F.gte(10)){
+			G++;
+			F=F.log10();
+		}
+		G=F.log10().plus(G);
+		return "G"+f((G+"#0000000000000000000000000000000000")).slice(0,10);
+	}
+	if(force_sci==9){//E#
+		return disp_he(a,0);
+	}
+	if(force_sci==1 || force_sci==2 || force_sci==4)if(a.gte("1e10000000")){
+		return "e"+disp(new Decimal(a.log10()));
+	}
+	if(force_sci==3 || force_sci==5)if(a.gte("ee12")){
+		return "e"+disp(new Decimal(a.log10()));
+	}
+	if(force_sci==0)if(a.gte("ee12")){
+		return "Too Big";
+	}
+	if(force_sci==4){
+		return "e"+Math.floor(a.log10()*1000)/1000;
+	}
+	if(force_sci==1 || force_sci==2)return disp_sci(a,force_sci);
+	if(force_sci==0)if(a.gte("1e+30005")){
+		return disp_sci(a,force_sci);
+	}
+	var i=0;
+	while(a.gte("1e+3000000000005")){
+		a=a.div("1e+3000000000000");
+		i+=1000000000000;
+	}
+	while(a.gte("1e+300000000005")){
+		a=a.div("1e+300000000000");
+		i+=100000000000;
+	}
+	while(a.gte("1e+30000000005")){
+		a=a.div("1e+30000000000");
+		i+=10000000000;
+	}
+	while(a.gte("1e+3000000005")){
+		a=a.div("1e+3000000000");
+		i+=1000000000;
+	}
+	while(a.gte("1e+300000005")){
+		a=a.div("1e+300000000");
+		i+=100000000;
+	}
+	while(a.gte("1e+30000005")){
+		a=a.div("1e+30000000");
+		i+=10000000;
+	}
+	while(a.gte("1e+3000005")){
+		a=a.div("1e+3000000");
+		i+=1000000;
+	}
+	while(a.gte("1e+300005")){
+		a=a.div("1e+300000");
+		i+=100000;
+	}
+	while(a.gte("1e+30005")){
+		a=a.div("1e+30000");
+		i+=10000;
+	}
+	while(a.gte("1e+3005")){
+		a=a.div("1e+3000");
+		i+=1000;
+	}
+	while(a.gte("1e+305")){
+		a=a.div("1e+300");
+		i+=100;
+	}
+	while(a.gte("1e+35")){
+		a=a.div("1e+30");
+		i+=10;
+	}
+	while(a.gte("1e+5")){
+		a=a.div("1e+3");
+		i+=1;
+	}
+	if(force_sci==3){
+		return Math.floor(new Number(a))+notation_2(i,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']);
+	}
+	if(force_sci==5){
+		return Math.floor(new Number(a))+notation_2(i,['😠', '🎂', '🎄', '💀', '🍆', '👪', '🌈', '💯', '🍦', '🎃', '💋', '😂', '🌙', '⛔', '🐙', '💩', '❓', '☢', '🙈', '👍', '☂', '✌', '⚠', '❌', '😋', '⚡']);
+	}
+	return Math.floor(new Number(a))+notation(i);
+}
+function subdisplay(i){
+	if(hiddengenerator)return;
+	document.getElementById("a").innerHTML+="产生器#"+i+"：等级"+(level[i]>100000000?disp(new Decimal(level[i])):level[i])+"，产生"+disp(mul[i].mul(level[i]).mul(base[i]).pow(Decimal.pow(1.2,SSPUpgrades[12].level)))+"金币/秒，升级需"+disp(base[i].mul(new Decimal(1.2).pow(level[i])))+"金币<br><a href=javascript:up("+i+");>升级</a><br>";
+}
+function getsinglescore(a){
+	a=new Decimal(a);
+	b=1e8;
+	while(a.gt(b)){
+		a=Decimal.log(a.div(b),Math.E).mul(b).plus(b);
+		b=Math.min(b*10,b+1e12);
+	}
+	return Math.floor(a);
+}
+function getsinglescore2(a){
+	a=new Decimal(a);
+	b=1e8;
+	while(a.gt(b)){
+		a=Decimal.log(a.div(b),Math.E).mul(b).plus(b);
+		b=Math.min(b*10,b+1e12);
+	}
+	return Math.floor(a.mul(23));
+}
+function getcurscore(){
+	if(gold.gte("ee100"))return getsinglescore2(gold.log10());
+	var score2=0;
+	for(var i=1;i<=tiers;i++)score2+=getsinglescore(level[i]);
+	return score2;
+}
+function getscore(){
+	var score2=getcurscore();
+	return score>score2?score:score=score2;
+}
+function getexp(){
+	var e=0;
+	for(var i=1;i<=tiers;i++)e+=Math.pow(i,1.5)*level[i]*level[i];
+	return Decimal.mul(e,bs);
+}
+function tgold(){
+	var p=gold;
+	for(var i=1;i<=tiers;i++)if(level[i]>300){
+		p=p.plus(base[i].mul(new Decimal(1.2).pow(level[i]).mul(5)));
+	}else for(var j=0;j<level[i];j++){
+		p=p.plus(base[i].mul(new Decimal(1.2).pow(j).floor()));
+	}
+	return Decimal.max(p.plus(-0.99999),0);
+}
+function display(){
+	force_sci=parseInt(document.getElementById("force_sci").value);
+	document.getElementById("tetr_base").style.display=(force_sci==6)?"initial":"none";
+	hiddengenerator=document.getElementById("hiddengenerator").checked;
+	document.getElementById("a").innerHTML="";
+	document.getElementById("dgold").innerHTML=disp(gold);
+	document.getElementById("dtgold").innerHTML=disp(tgold());
+	document.getElementById("dtotal").innerHTML=disp(total());
+	document.getElementById("dexp").innerHTML=disp(exp);
+	if(getelevelbs().lt(1000))document.getElementById("dexp2").innerHTML=Math.floor(getelevelbs()*1000)/1000;
+	else document.getElementById("dexp2").innerHTML=disp(getelevelbs());
+	if(getelevelbs_2().lt(10000))if(getelevelbs_1().lt(10000))document.getElementById("dexp2").innerHTML+="=("+Math.floor(getelevelbs_1()*100)/100+")^("+Math.floor(getelevelbs_2()*100)/100+")/("+disp(getelevelbs_3())+")+1";
+	else document.getElementById("dexp2").innerHTML+="=("+disp(getelevelbs_1())+")^("+Math.floor(getelevelbs_2()*100)/100+")/("+disp(getelevelbs_3())+")+1";
+	else document.getElementById("dexp2").innerHTML+="=("+disp(getelevelbs_1())+")^("+disp(getelevelbs_2())+")/("+disp(getelevelbs_3())+")+1";
+	if(bs.gt(1))document.getElementById("dbs").innerHTML="倍数x"+disp(bs)+"<br>",document.getElementById("dbs").style.display="inline";
+	else document.getElementById("dbs").style.display="none";
+	subdisplay(1);
+	if(bs.gt(1)||gold.gt(new Decimal('1e4'))||level[2]>0)subdisplay(2);
+	if(bs.gt(1)||level[3]>0)for(var i=3;i<=4;i++)subdisplay(i);
+	if(bs.gt(75)||level[5]>0)for(var i=5;i<=6;i++)subdisplay(i);
+	if(bs.gt(150)||level[7]>0)subdisplay(7);
+	if(bs.gt(225)||level[7]>0)subdisplay(8);
+	if(bs.gt(300)||gold.gt(new Decimal('1e66')) || level[9]>0)subdisplay(9);
+	if(bs.gt(400)||gold.gt(new Decimal('1e80')) || level[10]>0)subdisplay(10);
+	if(bs.gt(500)||gold.gt(new Decimal('1e90')) || level[11]>0)subdisplay(11);
+	if(gold.gt(new Decimal('1e290')) || level[12]>0)subdisplay(12);
+	if(gold.gt(new Decimal('1e690')) || level[13]>0)subdisplay(13);
+	if(gold.gt(new Decimal('1e1490')) || level[14]>0)subdisplay(14);
+	if(gold.gt(new Decimal('1e3090')) || level[15]>0)subdisplay(15);
+	if(gold.gt(new Decimal('1e6290')) || level[16]>0)subdisplay(16);
+	if(gold.gt(new Decimal('1e12690')) || level[17]>0)subdisplay(17);
+	if(gold.gt(new Decimal('1e25490')) || level[18]>0)subdisplay(18);
+	if(gold.gt(new Decimal('1e51090')) || level[19]>0)subdisplay(19);
+	if(gold.gt(new Decimal('1e102290')) || level[20]>0)subdisplay(20);
+	if(gold.gt(new Decimal('1e204690')) || level[21]>0)subdisplay(21);
+	if(gold.gt(new Decimal('1e409490')) || level[22]>0)subdisplay(22);
+	if(gold.gt(new Decimal('1e819090')) || level[23]>0)subdisplay(23);
+	if(!hiddengenerator)if(bs.gt(1))document.getElementById("a").innerHTML+="<a href=javascript:yj(1);>一键升级</a><br>";
+	if(!hiddengenerator)if(SPUpgrades[3].level.eq(0)){
+	if(total().plus(2).gt(tt))document.getElementById("a").innerHTML+="<a href=javascript:prestige();>重置获得x"+disp(getbs())+"倍数</a><br>";
+	else document.getElementById("a").innerHTML+="<progress value=\""+(total().plus(2).log(2).plus(-0.99999))+"\" max=\""+(tt.log(2).plus(-0.99999))+"\" style=\"width:100%;\"></progress>";
+	document.getElementById("a").innerHTML+=Math.floor(new Number((total().plus(2).log(2).plus(-0.99999)).div(tt.log(2).plus(-0.99999)))*10000)/100;document.getElementById("a").innerHTML+='%<br>';
+	}
+	if(SPUpgrades[4].level.gte(1)){
+		if(Decimal.max(total(),tt).gt(Number.MAX_VALUE))document.getElementById("prestige2").style.display="block";else document.getElementById("prestige2").style.display="none";
+		if(SSPUpgrades[2].level.eq(0))if(Decimal.max(total(),tt).gt(Number.MAX_VALUE))document.getElementById("prestige3").style.display="block";else document.getElementById("prestige3").style.display="none";else document.getElementById("prestige3").style.display="none";
+		document.getElementById("prestige2a").style.display="block";
+		document.getElementById("sp0").innerHTML=disp(new Decimal(getsp0()));
+		document.getElementById("sp0a").innerHTML=disp(new Decimal(getsp()));
+	}else if(Decimal.max(total(),tt).gt(Number.MAX_VALUE)){
+		document.getElementById("prestige2").style.display="block";
+		document.getElementById("prestige2a").style.display="none";
+		document.getElementById("prestige3").style.display="none";
+		document.getElementById("sp0").innerHTML=disp(new Decimal(getsp0()));
+	}else{
+		document.getElementById("prestige2").style.display="none";
+		document.getElementById("prestige2a").style.display="none";
+		document.getElementById("prestige3").style.display="none";
+	}
+	if(Decimal.max(total(),tt).gt(Number.MAX_VALUE)||totalsp()>0){
+		document.getElementById("p2up").style.display="block";
+		document.getElementById("sp1").innerHTML=disp(new Decimal(sp));
+		document.getElementById("sp2").innerHTML=disp(new Decimal(totalsp()));
+		document.getElementById("sp3").innerHTML=disp(new Decimal(getsp3()));
+		document.getElementById("sp6").innerHTML=disp(new Decimal(getp2lv6()));
+		document.getElementById("p2lv1bs").innerHTML=disp(getp2lv1bsn());
+		document.getElementById("SPP2").innerHTML=Math.floor(getp2lv2()*1e11);
+		document.getElementById("p2lv2bs").innerHTML=disp(getp2lv2bs(Decimal.max(total(),tt)));
+		for(let i=1;i<SPUpgrades.length;i++){
+			document.getElementById("SPD"+i).style.display=SPUpgrades[i].available() ? "block" : "none";
+			document.getElementById("SPU"+i).innerHTML=disp(new Decimal(SPUpgrades[i].level));
+			if(i!=1)if(SPUpgrades[i].level==SPUpgrades[i].maxlevel)document.getElementById("SPU"+i).innerHTML+="(MAX)";
+			document.getElementById("SPC"+i).innerHTML=disp(new Decimal(SPUpgrades[i].cost(SPUpgrades[i].level)));
+		}
+		document.getElementById("SPU7a").innerHTML=disp(new Decimal(SPUpgrades[7].level));
+	}
+	/*if(gold.gt(new Decimal('1e10000000'))){
+		document.getElementById("dtar").style.display="block";
+		document.getElementById("dtar2").innerHTML=disp(new Decimal('1e10000000000'));
+		document.getElementById("dtar3").value=Math.log10(Decimal.log10(gold)) - 7;
+	}else{
+		document.getElementById("dtar").style.display="none";
+	}*/
+	document.getElementById("curscore").innerHTML=getcurscore();
+	document.getElementById("score").innerHTML=getscore();
+	document.getElementById("score2").value=Math.pow(getcurscore(),0.3);
+	if(Decimal.pow(spsati.plus(1),getspmul1())>1000){
+		document.getElementById("spmul").innerHTML="技能点倍数x"+disp(Decimal.pow(spsati.plus(1),getspmul1()).mul(SSPUpgrades[3].level.plus(1)));
+	}else if(spsati>0){
+		document.getElementById("spmul").innerHTML="技能点倍数x"+Math.floor(Decimal.pow(spsati.plus(1),getspmul1()).mul(SSPUpgrades[3].level.plus(1))*1000)/1000;
+	}else{
+		document.getElementById("spmul").innerHTML="";
+	}
+	if(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()).sub(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()),0.5)),getspmul1())>1000){
+		document.getElementById("spmul0").innerHTML=disp(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()).sub(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()),0.5)),getspmul1()));
+	}else{
+		document.getElementById("spmul0").innerHTML=Math.floor(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()).sub(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()),0.5)),getspmul1())*1000)/1000;
+	}
+	document.getElementById("spmul0a").innerHTML=disp(Decimal.pow(spsati.plus(totalsp()).plus(getsp0()),0.5));
+	
+	
+	if(spsati.plus(totalsp()).gt(Number.MAX_VALUE)||totalssp()>0){
+		document.getElementById("p4up").style.display="block";
+		document.getElementById("p4u1mul").innerHTML=disp(getSSPMultiplier());
+		
+		if(spsati.plus(totalsp()).gt(Number.MAX_VALUE))document.getElementById("prestige4").style.display="block";else document.getElementById("prestige4").style.display="none";
+		document.getElementById("ssp0").innerHTML=disp(new Decimal(getssp0()));
+		document.getElementById("ssp1").innerHTML=disp(new Decimal(ssp));
+		document.getElementById("ssp2").innerHTML=disp(new Decimal(totalssp()));
+		for(let i=1;i<SSPUpgrades.length;i++){
+			document.getElementById("SSPD"+i).style.display=SSPUpgrades[i].available() ? "block" : "none";
+			document.getElementById("SSPU"+i).innerHTML=disp(new Decimal(SSPUpgrades[i].level));
+			if(i!=1)if(SSPUpgrades[i].level==SSPUpgrades[i].maxlevel)document.getElementById("SSPU"+i).innerHTML+="(MAX)";
+			document.getElementById("SSPC"+i).innerHTML=disp(new Decimal(SSPUpgrades[i].cost(SSPUpgrades[i].level)));
+		}
+		
+		document.getElementById("SSPU11T").innerHTML=disp(new Decimal(200).plus(Decimal.pow(SSPUpgrades[11].level.mul(15),1.1)).plus(Decimal.pow(SSPUpgrades[11].level.mul(4),1.5)));
+		document.getElementById("SSPU12T").innerHTML=disp(Decimal.pow(1.2,SSPUpgrades[12].level));
+	}
+}
+function main(){
+	for(let i=1;i<SPUpgrades.length;i++){
+		if(SPUpgrades[i].level.gt(SPUpgrades[i].maxlevel))SPUpgrades[i].level=new Decimal(SPUpgrades[i].maxlevel);
+	}
+	if(SPUpgrades[7].level==100){
+		document.getElementById("autoupg").checked=true;
+		document.getElementById("autoupg").disabled="disabled";
+		autoupg=false;
+	}else{
+		autoupg=document.getElementById("autoupg").checked;
+		document.getElementById("autoupg").disabled="";
+	}
+	if(SSPUpgrades[10].level>0){
+		document.getElementById("autoupgsp").disabled="";
+		autoupgsp=document.getElementById("autoupgsp").checked;
+		if(autoupgsp){
+			for(let i=3;i<SPUpgrades.length;i++){
+				if(sp.gte(new Decimal(SPUpgrades[i].cost(SPUpgrades[i].level)).div(1000))){
+					SPUpgrades[i].buy();
+				}
+			}
+			SPUpgrades[1].level=SPUpgrades[1].level.plus(sp.div(1e15));
+			SPUpgrades[2].level=Decimal.min(SPUpgrades[2].maxlevel,SPUpgrades[2].level.plus(sp.div(1e15)));
+		}
+	}else{
+		autoupgsp=document.getElementById("autoupgsp").checked=false;
+		document.getElementById("autoupgsp").disabled="disabled";
+	}
+	var ticktime=Date.now()-lastticktime;
+	gold=gold.plus(total().mul(ticktime/1000));
+	exp=exp.plus(getexp().mul(ticktime/1000));
+	if(SPUpgrades[3].level.gte(1))prestige();
+	if(SPUpgrades[4].level.gte(1))sp2=sp2.plus(getsp().mul(ticktime/1000)),sp=sp.plus(Decimal.floor(sp2)),sp2=sp2.sub(Decimal.floor(sp2));
+	if(SSPUpgrades[8].level.gte(1))ssp=ssp.plus(getssp0().mul(ticktime/1000));
+	display();
+	lastticktime+=ticktime;
+	if(autoupg)yj(1);
+	if(SPUpgrades[7].level==100){
+		for(var i=1;i<=tiers;i++){
+			level[i]=Math.min(Math.max(0,Math.floor(Decimal.log(gold.div(base[i]),1.2))+1),1e100);
+			mul[i]=bs.mul(glv(level[i])).mul(bmul[i]);
+		}
+	}else{
+		for(var i=1;i<=tiers;i++){if(level[i]<Math.max(10000,Math.floor(Decimal.log(gold.div(base[i]),1.2))+1)-10000){
+			level[i]=Math.min(Math.max(10000,Math.floor(Decimal.log(gold.div(base[i]),1.2))+1)-10000,1e100);
+			mul[i]=bs.mul(glv(level[i])).mul(bmul[i]);
+		}
+		level[i]=Math.min(level[i],1e100);
+		}
+	}
+	if(SSPUpgrades[2].level.gte(1))spsati=totalsp();
+	setTimeout(main,document.getElementById("utime")?document.getElementById("utime").value:100);
+}
+function start(){
+	for(var i=1;i<=tiers;i++){
+		base[i]=new Decimal(base[i]);
+		mul[i]=new Decimal(mul[i]);
+	}
+	main();
+	setInterval(displayb,200);
+}
+function save(){
+	var save={};
+	save.gold=gold;
+	save.level=level;
+	save.bs=bs;
+	save.tt=tt;
+	save.sp=sp;
+	save.ssp=ssp;
+	save.SUlevel=[0];
+	for(var i=1;i<SPUpgrades.length;i++){
+		save.SUlevel[i]=SPUpgrades[i].level;
+	}
+	save.SSUlevel=[0];
+	for(var i=1;i<SSPUpgrades.length;i++){
+		save.SSUlevel[i]=SSPUpgrades[i].level;
+	}
+	save.score=score;
+	save.time=lastticktime;
+	save.exp=exp;
+	save.spsati=spsati;
+	document.getElementById("c").innerHTML="你的存档是：<br>";
+	document.getElementById("c").innerHTML+=JSON.stringify(save);
+	prompt("你的存档是：",JSON.stringify(save));
+}
+function load(){
+	var time0,time1;
+	try{
+		var save=JSON.parse(prompt("输入存档"));time0=Date.now();
+		new Decimal(save.gold);new Decimal(save.bs);save.level[1];new Decimal(save.tt);save.SUlevel[1];new Decimal(save.exp);
+	}catch(e){
+		alert("存档读取错误："+e);var e2=new Error(e);e2.name="LoadSaveError";e2.number=-2146820634;
+		throw e2;
+	}
+	gold=new Decimal(save.gold);
+	level=save.level;
+	bs=new Decimal(save.bs);
+	for(var i=1;i<=tiers;i++)mul[i]=bs.mul(glv(level[i])).mul(bmul[i]);
+	tt=new Decimal(save.tt);
+	sp=new Decimal(save.sp);
+	ssp=new Decimal(save.ssp);
+	for(var i=1;i<SPUpgrades.length;i++){
+		SPUpgrades[i].level=new Decimal(save.SUlevel[i]);
+	}
+	for(var i=1;i<SSPUpgrades.length;i++){
+		SSPUpgrades[i].level=new Decimal(save.SSUlevel[i]);
+	}
+	score=save.score;
+	time1=Date.now();
+	spsati=new Decimal(save.spsati);
+	exp=new Decimal(save.exp);
+	alert("存档读取成功，用时"+(time1-time0)+"ms");
+	var time=(time1-save.time)/1000;
+	gold=gold.plus(total().mul(time));
+	exp=exp.plus(getexp().mul(time));
+	if(SPUpgrades[4].level.gte(1))sp=sp.plus(Decimal.floor(getsp().mul(time)));
+	if(SSPUpgrades[8].level.gte(1))ssp=ssp.plus(Decimal.floor(getssp0().mul(time)));
+	end1=0;
+}
+function mup(){
+	var flag=0;
+	if(document.getElementById("muid").value.search("e")!=-1){
+		document.getElementById("muid").value="";
+		flag=1;
+	}
+	if(document.getElementById("mulevel").value.search("e")!=-1){
+		document.getElementById("mulevel").value="";
+		flag=1;
+	}
+	if(flag)return;
+	up(parseInt(document.getElementById("muid").value),parseInt(document.getElementById("mulevel").value));
+}
+function displayb(){
+	document.title=disp(gold);
+	if(getp2lv1bsn()=="Infinity")return;
+	var jbbs=new Decimal(getp2lv1bsn()).mul(getelevelbs()).mul(getScoreMultiplier());
+	var fjbs=new Decimal(level[1]).mul(Decimal.max(total(),tt).plus(2).log(2).mul(2).pow(1+getp2lv2()*150));
+	var t,gk=level[1];
+	for(i=0;i<5;i++){
+		t=jbbs.mul(fjbs);
+		var gk2=Math.floor(level[1]/200000)*200000+1999999;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2)).mul(glv(gk2)).gte(0.001)){
+			gk2+=200000;
+			if(gk2>1e14)gk=1e14;
+			if(gk2>1e14)break;
+			if(gk2>=1e8)gk2=1e14;
+		}
+		
+		if(level[1]>=1e14){
+		gk=gk2=1e14;
+		break;
+		}
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e12)).mul(glv(gk2-1e12)).lt(0.001) && gk2>1e12+level[1])gk2-=1e12;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e11)).mul(glv(gk2-1e11)).lt(0.001) && gk2>1e11+level[1])gk2-=1e11;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e10)).mul(glv(gk2-1e10)).lt(0.001) && gk2>1e10+level[1])gk2-=1e10;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e9)).mul(glv(gk2-1e9)).lt(0.001) && gk2>1e9+level[1])gk2-=1e9;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e8)).mul(glv(gk2-1e8)).lt(0.001) && gk2>1e8+level[1])gk2-=1e8;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1e7)).mul(glv(gk2-1e7)).lt(0.001) && gk2>1e7+level[1])gk2-=1e7;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1000000)).mul(glv(gk2-1000000)).lt(0.001) && gk2>1000000+level[1])gk2-=1000000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-200000)).mul(glv(gk2-200000)).lt(0.001) && gk2>200000+level[1])gk2-=200000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-100000)).mul(glv(gk2-100000)).lt(0.001) && gk2>100000+level[1])gk2-=100000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-40000)).mul(glv(gk2-40000)).lt(0.001) && gk2>40000+level[1])gk2-=40000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-20000)).mul(glv(gk2-20000)).lt(0.001) && gk2>20000+level[1])gk2-=20000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-10000)).mul(glv(gk2-10000)).lt(0.001) && gk2>10000+level[1])gk2-=10000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-4000)).mul(glv(gk2-4000)).lt(0.001) && gk2>4000+level[1])gk2-=4000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-2000)).mul(glv(gk2-2000)).lt(0.001) && gk2>2000+level[1])gk2-=2000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1000)).mul(glv(gk2-1000)).lt(0.001) && gk2>1000+level[1])gk2-=1000;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-400)).mul(glv(gk2-400)).lt(0.001) && gk2>400+level[1])gk2-=400;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-200)).mul(glv(gk2-200)).lt(0.001) && gk2>200+level[1])gk2-=200;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-100)).mul(glv(gk2-100)).lt(0.001) && gk2>100+level[1])gk2-=100;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-50)).mul(glv(gk2-50)).lt(0.001) && gk2>50+level[1])gk2-=50;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-10)).mul(glv(gk2-10)).lt(0.001) && gk2>10+level[1])gk2-=10;
+		while(t.div(new Decimal(1.2).pow(0.975-getp2lv2()).pow(gk2-1)).mul(glv(gk2-1)).lt(0.001) && gk2>1+level[1])gk2-=1;
+		if(gk2<level[1])gk2=level[1];
+		gk=gk2;
+		fjbs=new Decimal(gk).mul(Decimal.max(Decimal.pow(1.2,gk),tt).plus(2).log(2).mul(2).pow(1+getp2lv2()*150));
+	}
+	document.getElementById("b").innerHTML="版本：V"+gmversion+" 预计最大产生器等级"+((Decimal.max(total(),tt).gt(Number.MAX_VALUE)||sp>0||(SPUpgrades[1].level.plus(1))>1||SPUpgrades[2].level>0||SPUpgrades[3].level>0||SPUpgrades[4].level>0)?"（二级重置前）":"")+"："+(gk >= 1e14 ? ">=1e14" : gk)+" ("+disp(Decimal.pow(1.2,gk))+")";
+}
+
+function getssp0(){
+	return Decimal.floor(Decimal.pow(Decimal.log10(spsati.plus(totalsp()).plus(1e10)),SSPUpgrades[6].level.mul(0.1).plus(1)));
+}
+function totalssp(){
+	var sum=ssp;
+	for(var i=1;i<SSPUpgrades.length;i++){
+		sum=sum.plus(SSPUpgrades[i].total());
+	}
+	return sum;
+}
+function getspmul1(){
+	if(SSPUpgrades[4].level.gte(200))return 1-Decimal.pow(0.9,SSPUpgrades[4].level.mul(13).pow(0.5).plus(2));
+	return 1-Decimal.pow(0.9,SSPUpgrades[4].level.mul(0.25).plus(1));
+}
+</script>
+<style id="language_st">.l_en{display:none;}</style>
+</head>
+<body onload="start()">
+<div id="d">
+<span class=l_cn>金币</span><span class=l_en>Gold: </span><span id="dgold"></span><br>
+<span class=l_cn>总金币</span><span class=l_en>Total Gold: </span><span id="dtgold"></span><br>
+产生<span id="dtotal"></span>金币/秒<br>
+<span id="dbs"></span>
+经验<span id="dexp"></span>(倍数加成x<span id="dexp2"></span>)<br>
+</div>
+<br>
+<div id="a">
+</div>
+<div id="e">
+<hr>
+<div id="p2up" style="display:none;">
+<div id="prestige2" style="display:none;">
+<a href="javascript:prestige2();">二级重置获得<span id="sp0"></span>技能点</a><br>
+</div>
+<div id="prestige2a" style="display:none;">
+获得<span id="sp0a"></span>技能点/秒<br>
+</div>
+<div id="SPD1">
+剩余技能点：<span id="sp1"></span>/<span id="sp2"></span><br>
+固定倍数加成：等级<span id="SPU1"></span>，倍数加成x<span id="p2lv1bs"></span>，升级需<span id="SPC1"></span>技能点<br>
+<a href="javascript:SPUpgrades[1].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[1].buyMax();">一键升级</a>
+</div>
+<div id="SPD2">
+金币产生速度-&gt;倍数加成：等级<span id="SPU2"></span>，参数<span id="SPP2"></span>，倍数加成x<span id="p2lv2bs"></span>，升级需<span id="SPC2"></span>技能点<br>
+<a href="javascript:SPUpgrades[2].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[2].buyMax();">一键升级</a>
+</div>
+<div id="SPD3">
+获得倍数无需重置：等级<span id="SPU3"></span>，升级需<span id="SPC3"></span>技能点<br>
+<a href="javascript:SPUpgrades[3].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[3].buyMax();">一键升级</a>
+</div>
+<div id="SPD4">
+获得技能点无需二级重置：等级<span id="SPU4"></span>，升级需<span id="SPC4"></span>技能点<br>
+<a href="javascript:SPUpgrades[4].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[4].buyMax();">一键升级</a>
+</div>
+<div id="SPD5">
+更多的技能点：等级<span id="SPU5"></span>，技能点x<span id="sp3"></span>，升级需<span id="SPC5"></span>技能点<br>
+<a href="javascript:SPUpgrades[5].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[5].buyMax();">一键升级</a>
+</div>
+<div id="SPD6">
+更多的技能点（二级重置）：等级<span id="SPU6"></span>，二级重置技能点+<span id="sp6"></span>，升级需<span id="SPC6"></span>技能点<br>
+<a href="javascript:SPUpgrades[6].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[6].buyMax();">一键升级</a>
+</div>
+<div id="SPD7">
+升级金币返还：等级<span id="SPU7"></span>，金币返还<span id="SPU7a"></span>%，升级需<span id="SPC7"></span>技能点<br>
+<a href="javascript:SPUpgrades[7].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[7].buyMax();">一键升级</a>
+</div>
+<div id="SPD8">
+二级重置时对金币开根而不是清除金币：等级<span id="SPU8"></span>，升级需<span id="SPC8"></span>技能点<br>
+<a href="javascript:SPUpgrades[8].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[8].buyMax();">一键升级</a>
+</div>
+<div id="SPD9">
+技能点/秒加成（每1级x10）：等级<span id="SPU9"></span>，升级需<span id="SPC9"></span>技能点<br>
+<a href="javascript:SPUpgrades[9].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[9].buyMax();">一键升级</a>
+</div>
+<div id="SPD10">
+经验的效果大大增加：等级<span id="SPU10"></span>，升级需<span id="SPC10"></span>技能点<br>
+<a href="javascript:SPUpgrades[10].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[10].buyMax();">一键升级</a>
+</div>
+<div id="SPD11">
+固定倍数加成的效果大大增加：等级<span id="SPU11"></span>，升级需<span id="SPC11"></span>技能点<br>
+<a href="javascript:SPUpgrades[11].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[11].buyMax();">一键升级</a>
+</div>
+<div id="SPD12">
+根据你的记录分数获得加成：等级<span id="SPU12"></span>，升级需<span id="SPC12"></span>技能点<br>
+<a href="javascript:SPUpgrades[12].buy();">升级</a>
+<br>
+<a href="javascript:SPUpgrades[12].buyMax();">一键升级</a>
+</div>
+<div id="prestige3" style="display:none;">
+<a href="javascript:prestige3();">三级重置获得x<span id="spmul0"></span>技能点倍数，保留<span id="spmul0a"></span>技能点</a><br>
+</div>
+<span id="spmul"></span>
+</div>
+
+<div id="p4up" style="display:none;">
+<hr>
+<div id="prestige4" style="display:none;">
+<a href="javascript:prestige4();">四级重置获得<span id="ssp0"></span>超技能点</a><br>
+</div>
+<div id="SSPD1">
+剩余超技能点：<span id="ssp1"></span>/<span id="ssp2"></span><br>
+固定倍数加成：等级<span id="SSPU1"></span>，倍数加成x<span id="p4u1mul"></span>，升级需<span id="SSPC1"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[1].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[1].buyMax();">一键升级</a>
+</div>
+<div id="SSPD3">
+固定技能点倍数加成：等级<span id="SSPU3"></span>，升级需<span id="SSPC3"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[3].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[3].buyMax();">一键升级</a>
+</div>
+<div id="SSPD2">
+获得技能点倍数无需三级重置：等级<span id="SSPU2"></span>，升级需<span id="SSPC2"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[2].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[2].buyMax();">一键升级</a>
+</div>
+<div id="SSPD4">
+技能点-&gt;技能点倍数加成：等级<span id="SSPU4"></span>，升级需<span id="SSPC4"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[4].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[4].buyMax();">一键升级</a>
+</div>
+<div id="SSPD5">
+增加金币产生速度-&gt;倍数加成的参数：等级<span id="SSPU5"></span>，升级需<span id="SSPC5"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[5].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[5].buyMax();">一键升级</a>
+</div>
+<div id="SSPD6">
+更多的超技能点：等级<span id="SSPU6"></span>，升级需<span id="SSPC6"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[6].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[6].buyMax();">一键升级</a>
+</div>
+<div id="SSPD7">
+经验的效果大大增加：等级<span id="SSPU7"></span>，升级需<span id="SSPC7"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[7].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[7].buyMax();">一键升级</a>
+</div>
+<div id="SSPD8">
+获得超技能点无需四级重置：等级<span id="SSPU8"></span>，升级需<span id="SSPC8"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[8].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[8].buyMax();">一键升级</a>
+</div>
+<div id="SSPD9">
+固定倍数加成（技能点升级）的效果大大增加：等级<span id="SSPU9"></span>，升级需<span id="SSPC9"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[9].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[9].buyMax();">一键升级</a>
+</div>
+<div id="SSPD10">
+解锁自动升级技能点升级：等级<span id="SSPU10"></span>，升级需<span id="SSPC10"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[10].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[10].buyMax();">一键升级</a>
+</div>
+<div id="SSPD11">
+减少金币过多时金币产生速度的减少：等级<span id="SSPU11"></span>，当前参数<span id="SSPU11T"></span>，升级需<span id="SSPC11"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[11].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[11].buyMax();">一键升级</a>
+</div>
+<div id="SSPD12">
+金币产生速度变为其的次方：等级<span id="SSPU12"></span>，金币产生速度^<span id="SSPU12T"></span>，升级需<span id="SSPC12"></span>超技能点<br>
+<a href="javascript:SSPUpgrades[12].buy();">升级</a>
+<br>
+<a href="javascript:SSPUpgrades[12].buyMax();">一键升级</a>
+</div>
+
+</div>
+当前分数<span id="curscore"></span>，记录分数<span id="score"></span>
+<progress id="score2" min="0" max="2500" style="width:100%;"></progress>
+<a href="javascript:save();">存档</a>&nbsp;&nbsp;<a href="javascript:load();">读档</a><br>
+<form onsubmit="mup();return false;">升级金币产生器#<input type="number" min="1" max="23" step="1" value="1" required id="muid"><input type="number" min="1" max="100000" step="1" value="1" required id="mulevel">级<input type="submit" value="执行"></form><br>
+数字显示格式：<select id="force_sci">
+<option value="0">常规 (1K,2M,3Qt)</option>
+<option value="1" selected>科学计数法 (1e+3,2e+6,3e+18)</option>
+<option value="2">科学计数法 (1e3,2e6,3e18)</option>
+<option value="3">字符 (1a,2b,3f)</option>
+<option value="4">对数 (e3.000,e6.301,e18.477)</option>
+<option value="5">Cancer (1😠,2🎂,3👪)</option>
+<option value="6" disabled>Tetration</option>
+<option value="7">PsiCubed2's Notation (F)</option>
+<option value="8" disabled>PsiCubed2's Notation (G)</option>
+<option value="9">Hyper-E Notation</option>
+</select><br>
+<span id="tetr_base">Tetration Base:<select id="tetr_base_select">
+<option value="[1.5]" disabled>1.5</option>
+<option value="[1.6]" disabled>1.6</option>
+<option value="[2,-0.08188560743188483201533507159595,0.29664047430627739686513012425226,0.78524513312560743515020494734367]" selected>2</option>
+<option value="[3]" disabled>3</option>
+<option value="[10]" disabled>10</option>
+</select><br></span>
+<input type="checkbox" id="autoupg"><label for="autoupg">自动升级金币产生器</label><br>
+<input type="checkbox" id="autoupgsp"><label for="autoupgsp">自动升级技能点升级</label><br>
+<input type="checkbox" id="hiddengenerator"><label for="hiddengenerator">隐藏金币产生器</label><br>
+更新时间（这不会影响金币产生速度，但是这可能会影响你点击升级链接）：<select id="utime">
+<option value="1000">1s</option>
+<option value="750">750ms</option>
+<option value="500">500ms</option>
+<option value="300">300ms</option>
+<option value="200">200ms</option>
+<option value="100">100ms</option>
+<option value="50">50ms</option>
+<option value="30">30ms</option>
+<option value="20">20ms</option>
+<option value="10">10ms</option>
+<option value="5">5ms</option>
+<option value="3">3ms</option>
+<option value="2">2ms</option>
+<option value="0" selected>fast</option>
+</select>
+<hr>
+</div>
+<br>
+<div id="b">
+</div>
+<br>
+<div id="c">
+</div>
+这是loader3229的第1个增量游戏，制作于2018年。版权所有 (c) 2018 loader3229。
+</body>
+</html>
