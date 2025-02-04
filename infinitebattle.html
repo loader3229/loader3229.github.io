@@ -285,7 +285,7 @@ function fight(){
 		return;
 	}
 	var stage=parseInt(gk.value);
-	if(stage<=0||isNaN(stage)){
+	if(stage<=0||isNaN(stage)||stage>=9e15){
 		alert(["Invalid Stage","关卡不合法"][localStorage.lang]);
 		return;
 	}
