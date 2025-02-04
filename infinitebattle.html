@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=1250">
+<title>loader3229's New Homepage - loader3229's Infinite Battle</title><script>zhtitle='loader3229的新主页 - loader3229的无尽闯关';</script>
+<link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+<style id="lang-style"></style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="/">loader3229</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item"><a class="nav-link" id="nav1"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav2"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav3"></a></li>
+<li class="nav-item"><a class="nav-link" id="nav4"></a></li>
+</ul>
+<a class="nav-link" id="discord">Discord</a>
+<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">语言/Language</a>
+<div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="javascript:change_language(1);">简体中文</a><a class="dropdown-item" href="javascript:change_language(0);">English</a></div>
+</div>
+</div>
+</nav>
+<noscript>Please Enable Javascript.</noscript>
+
+
+<div class='container'>
+<h1><span class=en>loader3229's Infinite Battle</span><span class=zh>loader3229的无尽闯关</span></h1>
+<span class=zh>这是loader3229在2017年制作的一个HTML小游戏，现在以修改后的形态和大家见面了！</span><span class=en>This is an HTML Minigame made by loader3229 in 2017.</span><br>
+<span class=zh>名字可以自选，初始等级为1，初始密码为11111。每次战斗后将会存档。记得每次战斗后导出存档！</span><span class=en>You can input your character name, initial level is 1, initial password is 11111.</span><br>
+<span class=zh>每件装备都有类型，等级，掉落人和密码属性，类型，掉落人和密码都正确，且装备等级&lt;=角色等级时才可以装备成功。</span><span class=en>Each equipment has type, level, owner and password. You can equip an equipment only if type, owner, password are correct and level &lt;= your character level.</span><br><br>
+<table>
+<tr>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>名字</span><span class=en>Name</span></span></div><input id=name name=name class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>等级</span><span class=en>Level</span></span></div><input id=level name=level class=form-control type=number min=1 value=1></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>密码</span><span class=en>Password</span></span></div><input id=pass name=pass class=form-control value=11111></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>想要掉落的装备名</span><span class=en>Equipment name to drop</span></span></div><input id=ename name=ename class=form-control></div></td>
+</tr>
+</table>
+<div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>关卡</span><span class=en>Stage</span></span></div><input id=stage name=stage min=1 value=1 class=form-control type=number>
+<div class=input-group-append><button class="btn btn-primary" type=button onclick="fight();"><span class=zh>开始挑战</span><span class=en>Start!</span></button></div></div>
+<span class=zh>掉落装备：</span><span class=en>Drop Equipment:</span> <span id=drop></span><button class="btn btn-primary" onclick="equip();"><span class=zh>装备</span><span class=en>Equip!</span></button><br>
+
+
+<table>
+<tr>
+<td style=width:75px;><span class=zh>武器：</span><span class=en>Weapon</span></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>装备名</span><span class=en>Equipment Name</span></span></div><input id=e0name name=e0name class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>等级</span><span class=en>Level</span></span></div><input id=e0level name=e0level class=form-control type=number min=1 value=1></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>掉落人</span><span class=en>Owner</span></span></div><input id=e0owner name=e0owner class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>密码</span><span class=en>Password</span></span></div><input id=e0pass name=e0pass class=form-control></div></td>
+<td style=width:200px;><span id=e0stat></span></td>
+</tr>
+<tr>
+<td><span class=zh>盔甲：</span><span class=en>Armor</span></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>装备名</span><span class=en>Equipment Name</span></span></div><input id=e1name name=e1name class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>等级</span><span class=en>Level</span></span></div><input id=e1level name=e1level class=form-control type=number min=1 value=1></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>掉落人</span><span class=en>Owner</span></span></div><input id=e1owner name=e1owner class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>密码</span><span class=en>Password</span></span></div><input id=e1pass name=e1pass class=form-control></div></td>
+<td><span id=e1stat></span></td>
+</tr>
+<tr>
+<td><span class=zh>头盔：</span><span class=en>Helmet</span></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>装备名</span><span class=en>Equipment Name</span></span></div><input id=e2name name=e2name class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>等级</span><span class=en>Level</span></span></div><input id=e2level name=e2level class=form-control type=number min=1 value=1></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>掉落人</span><span class=en>Owner</span></span></div><input id=e2owner name=e2owner class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>密码</span><span class=en>Password</span></span></div><input id=e2pass name=e2pass class=form-control></div></td>
+<td><span id=e2stat></span></td>
+</tr>
+<tr>
+<td><span class=zh>鞋子：</span><span class=en>Shoes</span></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>装备名</span><span class=en>Equipment Name</span></span></div><input id=e3name name=e3name class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>等级</span><span class=en>Level</span></span></div><input id=e3level name=e3level class=form-control type=number min=1 value=1></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>掉落人</span><span class=en>Owner</span></span></div><input id=e3owner name=e3owner class=form-control></div></td>
+<td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>密码</span><span class=en>Password</span></span></div><input id=e3pass name=e3pass class=form-control></div></td>
+<td><span id=e3stat></span></td>
+</tr>
+</table>
+<button class="btn btn-primary" onclick="export_save()"><span class=zh>导出存档</span><span class=en>Export Save</span></button>
+<button class="btn btn-primary" onclick="import_save()"><span class=zh>导入存档</span><span class=en>Import Save</span></button>
+<button class="btn btn-primary" onclick="clear_textarea()"><span class=zh>清空</span><span class=en>Clear</span></button>
+<div id=battle_log>
+</div>
+</div>
+<script src="sha512.js"></script><script src="jquery.min.js"></script><script src="jquery-ui.min.js"></script><script src="live2d.js"></script>
+<script src="bootstrap/bootstrap.min.js"></script>
+<script src="break_eternity.js"></script>
+<script src="expantanum.js"></script>
+<script src="lz-string.js"></script>
+<script src="index.js"></script>
+<script>
+function getpassword(t,v){
+	v=parseInt(v);
+	if(v<=1)return "11111";
+	var sha="1"+sha512_256("ld_"+t+"#!#level"+v+"#!#");
+	var i=0;
+	while(sha[0]!='a'||sha[1]!='b'||sha[2]!='c'){
+		sha=sha512_256("ld_"+sha+"#!#level"+v+"#!#"+i);
+		i++;
+	}
+	return sha.slice(5,15);
+}
+function getequipmentpassword(name,owner,level){
+	level=parseInt(level);
+	var d="ldeq_"+name+"!level"+level+"#"+owner;
+	var e=sha512_256(d);
+	var i=0;
+	while(e[0]!='a'||e[1]!='b'||e[2]!='c'){
+		e=sha512_256("ldeq__"+e+"!level"+level+"#"+owner+"#"+i);
+		i++;
+	}
+	return e.slice(5,15);
+}
+function hget(a){
+	a=a.charCodeAt(0);
+	if(a<=57){
+		return a-48;
+	}else{
+		return a-87;
+	}
+}
+function getplayerbaseattr(level,type){ // type: ATK,HP,DEF,SPD
+	level=parseInt(level);
+	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(level**1.5-100)))][type];
+}
+function getplayerattr(level,type){ // type: ATK,HP,DEF,SPD
+	return getplayerbaseattr(level,type)+checkequipment(type);
+}
+function getmonsterbaseattr(stage,type){ // type: ATK,HP,DEF,SPD
+	stage=parseInt(stage);
+	return Math.ceil([99+Math.log10(stage)*stage*stage,490+4*Math.log10(stage)*stage*stage,99+Math.log10(stage)*stage*stage,100+Math.log10(stage)*stage*stage][type]);
+}
+function getequipmenttype(name,owner,level){
+	level=parseInt(level);
+	var d="ldeq_"+name+"!level"+level+"#"+owner;
+	var e=sha512_256(d);
+	return Math.floor(hget(e[24])/4);
+}
+function getequipmenttier(name,owner,level){
+	var d="ldeq_"+name+"!level"+level+"!"+owner;
+	var e=sha512_256(d);
+	var k=1;
+	while(k%4==1&&k<200){
+		var q=Math.floor(k/4);
+		var r=hget(e[q]);
+		if(r<8){
+			break;
+		}else if(r<12){
+			k+=1;
+		}else if(r<14){
+			k+=2;
+		}else if(r<15){
+			k+=3;
+		}else k+=4;
+	}
+	return k;
+}
+function checkequipment(t){
+	var yh=document.getElementById("e"+t+"owner");
+	var mc=document.getElementById("e"+t+"name");
+	var dj=document.getElementById("e"+t+"level");
+	var mm=document.getElementById("e"+t+"pass");
+	var sx=document.getElementById("e"+t+"stat");
+	if(mc.value==""||yh.value==""||dj.value==""){
+		sx.innerHTML=["Not Fully Input","未完全输入装备信息"][localStorage.lang];
+		return 0;
+	}
+	var level=parseInt(dj.value);
+	if(level<=0||isNaN(level)){
+		sx.innerHTML=["Invalid Level","等级不合法"][localStorage.lang];
+		return 0;
+	}
+	if(mm.value!=getequipmentpassword(mc.value,yh.value,level)){
+		sx.innerHTML=["Incorrect Password","密码不正确"][localStorage.lang];
+		return 0;
+	}
+	if(t!=getequipmenttype(mc.value,yh.value,level)){
+		sx.innerHTML=["Incorrect Type","类型不正确"][localStorage.lang];
+		return 0;
+	}
+	if(!(parseInt(document.getElementById("level").value)>=level)){
+		sx.innerHTML=["Character Level is low","不符合穿戴等级"][localStorage.lang];
+		return 0;
+	}var c=["Tier ","品阶："][localStorage.lang];
+	var pj=getequipmenttier(mc.value,yh.value,level);
+	c+=pj;
+	var r=0;
+	if(t==0){
+		c+=[", ATK+","，攻击+"][localStorage.lang];
+		r=Math.ceil(3*level+(0.4+pj*0.2)*level*level);
+		c+=r;
+	}else if(t==1){
+		c+=[", HP+","，生命值+"][localStorage.lang];
+		r=Math.ceil(10*level+(2+pj*0.8)*level*level);
+		c+=r;
+	}else if(t==2){
+		c+=[", DEF+","，防御+"][localStorage.lang];
+		r=Math.ceil(2*level+(0.3+pj*0.2)*level*level);
+		c+=r;
+	}else if(t==3){
+		c+=[", SPD+","，速度+"][localStorage.lang];
+		r=Math.ceil(level+(0.2+pj*0.2)*level*level);
+		c+=r;
+	}
+	sx.innerHTML=c;
+	return r;
+}
+function getzb(a,b,p){
+	var c="",pj=1;
+	c+=["Owner: ","掉落人："][localStorage.lang];
+	c+=b;
+	window.equip_owner=b;
+	c+=[", Name: ","，装备名："][localStorage.lang];
+	c+=a;
+	window.equip_name=a;
+	c+=[", Level: ","，等级："][localStorage.lang];
+	c+=p;
+	window.equip_level=p;
+	c+=[", Type: ","，类型："][localStorage.lang];
+	var j=getequipmenttype(a,b,p);
+	window.equip_type=j;
+	
+	if(j==0){
+		c+=["Weapon","武器"][localStorage.lang];
+	}else if(j==1){
+		c+=["Armor","盔甲"][localStorage.lang];
+	}else if(j==2){
+		c+=["Helmet","头盔"][localStorage.lang];
+	}else if(j==3){
+		c+=["Shoes","鞋子"][localStorage.lang];
+	}
+	c+=[", Tier: ","，品阶："][localStorage.lang];
+	c+=(pj=getequipmenttier(a,b,p));
+	if(j==0){
+		c+=[", ATK+","，攻击+"][localStorage.lang];
+	}else if(j==1){
+		c+=[", HP+","，生命值+"][localStorage.lang];
+	}else if(j==2){
+		c+=[", DEF+","，防御+"][localStorage.lang];
+	}else if(j==3){
+		c+=[", SPD+","，速度+"][localStorage.lang];
+	}
+	if(j==0)c+=Math.ceil(3*p+(0.4+pj*0.2)*p*p);
+	if(j==1)c+=Math.ceil(10*p+(2+pj*0.8)*p*p);
+	if(j==2)c+=Math.ceil(2*p+(0.3+pj*0.2)*p*p);
+	if(j==3)c+=Math.ceil(p+(0.2+pj*0.2)*p*p);
+	c+=[", Password: ","，密码："][localStorage.lang];
+	c+=(window.equip_password=getequipmentpassword(a,b,p));
+	return c;
+}
+function equip(){
+	document.getElementById("e"+window.equip_type+"name").value=window.equip_name;
+	document.getElementById("e"+window.equip_type+"level").value=window.equip_level;
+	document.getElementById("e"+window.equip_type+"owner").value=window.equip_owner;
+	document.getElementById("e"+window.equip_type+"pass").value=window.equip_password;
+}
+function fight(){
+	var yh=document.getElementById("name");
+	var dj=document.getElementById("level");
+	var mm=document.getElementById("pass");
+	var gk=document.getElementById("stage");
+	var xhddzb=document.getElementById("ename");
+	var hdzb=document.getElementById("drop");
+	var jg={"innerHTML":""};
+	document.getElementById("battle_log").innerHTML="";
+	yh.value=yh.value.trim();
+	mm.value=mm.value.trim();
+	if(yh.value==""){
+		alert(["Name Invalid","名字不合法"][localStorage.lang]);
+		return;
+	}
+	var level=parseInt(dj.value);
+	if(level<=0||isNaN(level)){
+		alert(["Invalid Level","等级不合法"][localStorage.lang]);
+		return;
+	}
+	if(mm.value!=getpassword(yh.value,level)){
+		alert(["Incorrect Password","密码不正确"][localStorage.lang]);
+		return;
+	}
+	var stage=parseInt(gk.value);
+	if(stage<=0||isNaN(stage)){
+		alert(["Invalid Stage","关卡不合法"][localStorage.lang]);
+		return;
+	}
+	if(xhddzb.value==""){
+		alert(["Please input equipment name to drop","请输入想得到的装备名"][localStorage.lang]);
+		return;
+	}
+	var mname=["Stage "+stage+" Boss","第"+stage+"关守卫"][localStorage.lang];
+	var php,pgj,pfy,psd,mhp,mgj,mfy,msd;
+	php=getplayerattr(level,1);
+	pgj=getplayerattr(level,0);
+	pfy=getplayerattr(level,2);
+	psd=getplayerattr(level,3);
+	mhp=getmonsterbaseattr(stage,1);
+	mgj=getmonsterbaseattr(stage,0);
+	mfy=getmonsterbaseattr(stage,2);
+	msd=getmonsterbaseattr(stage,3);
+	jg.innerHTML+=yh.value;
+	jg.innerHTML+=[" Level "," 等级"][localStorage.lang];
+	jg.innerHTML+=level;
+	jg.innerHTML+=[" HP:"," 生命值"][localStorage.lang];
+	jg.innerHTML+=php;
+	jg.innerHTML+=[" ATK:"," 攻击"][localStorage.lang];
+	jg.innerHTML+=pgj;
+	jg.innerHTML+=[" DEF:"," 防御"][localStorage.lang];
+	jg.innerHTML+=pfy;
+	jg.innerHTML+=[" SPD:"," 速度"][localStorage.lang];
+	jg.innerHTML+=psd;
+	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
+	jg.innerHTML+=Math.floor(Math.cbrt(php*pgj*pfy*psd)/8);
+	jg.innerHTML+="<br>";
+	jg.innerHTML+=mname;
+	jg.innerHTML+=[" HP:"," 生命值"][localStorage.lang];
+	jg.innerHTML+=mhp;
+	jg.innerHTML+=[" ATK:"," 攻击"][localStorage.lang];
+	jg.innerHTML+=mgj;
+	jg.innerHTML+=[" DEF:"," 防御"][localStorage.lang];
+	jg.innerHTML+=mfy;
+	jg.innerHTML+=[" SPD:"," 速度"][localStorage.lang];
+	jg.innerHTML+=msd;
+	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
+	jg.innerHTML+=Math.floor(Math.cbrt(mhp*mgj*mfy*msd)/8);
+	jg.innerHTML+=["<br>Battle Start","<br>开始战斗"][localStorage.lang];
+	pgj=Math.ceil(pgj*pgj/(pgj+4*mfy));
+	mgj=Math.ceil(mgj*mgj/(mgj+4*pfy));
+	var i=1,pt=1,mt=1;
+	while(true){
+		jg.innerHTML+="<br>";
+		jg.innerHTML+=["Turn ","第"][localStorage.lang];
+		jg.innerHTML+=i;
+		jg.innerHTML+=[": ","回合："][localStorage.lang];
+		if(pt/psd<=mt/msd){
+			jg.innerHTML+=[yh.value+" dealt "+pgj+" damage to "+mname,yh.value+"对"+mname+"造成了"+pgj+"点伤害"][localStorage.lang];
+			pt++;i++;
+			mhp-=pgj;
+			if(mhp<0){
+				jg.innerHTML+=["<br>You won the battle","<br>战斗胜利"][localStorage.lang];
+				if(level<stage)level=stage;
+				dj.value=level;
+				mm.value=getpassword(yh.value,level);
+				hdzb.innerHTML=getzb(xhddzb.value,yh.value,stage);
+				document.getElementById("battle_log").innerHTML=jg.innerHTML;
+				save_game();
+				return;
+			}
+		}else{
+			jg.innerHTML+=[mname+" dealt "+mgj+" damage to "+yh.value,mname+"对"+yh.value+"造成了"+mgj+"点伤害"][localStorage.lang];
+			mt++;i++;
+			php-=mgj;
+			if(php<0){
+				jg.innerHTML+=["<br>You lost the battle","<br>战斗失败"][localStorage.lang];
+				document.getElementById("battle_log").innerHTML=jg.innerHTML;
+				save_game();
+				return;
+			}
+		}
+		if(i>=50){
+			pgj+=Math.ceil(pgj/100);
+			mgj+=Math.ceil(mgj/100);
+		}
+	}
+}
+
+function save_object(){
+	var o=document.getElementsByTagName("input"),p={};
+	for(var i=0;i<o.length;i++){
+		p[o[i].id]=o[i].value;
+	}
+	return p;
+}
+function load_object(p){
+	var o=document.getElementsByTagName("input");
+	for(var i=0;i<o.length;i++){
+		o[i].value=p[o[i].id];
+	}
+}
+function save_game(){
+	localStorage.infinitebattle=JSON.stringify(save_object());
+}
+function export_save(){
+	document.getElementById("battle_log").innerHTML=["Your save is: ","您的存档是："][localStorage.lang]+JSON.stringify(save_object());
+	prompt(["Your save is: ","您的存档是："][localStorage.lang],JSON.stringify(save_object()));
+}
+function import_save(){
+	try{
+		load_object(JSON.parse(prompt(["Import Save","请输入存档"][localStorage.lang])));
+	}catch(e){alert(["Invalid Save","存档不合法"][localStorage.lang]);}
+}
+function load_game(){
+	try{
+		load_object(JSON.parse(localStorage.infinitebattle));
+	}catch(e){}
+}
+load_game();
+function clear_textarea(){
+	var o=document.getElementsByTagName("input");
+	for(var i=0;i<o.length;i++){
+		o[i].value="";
+		if(o[i].id.endsWith("level"))o[i].value=1;
+		if(o[i].id=="pass")o[i].value=11111;
+	}
+}
+</script>
+<link rel="stylesheet" type="text/css" href="l2d.css"/>
+<div class="waifu">
+        <div class="waifu-tips"></div>
+<canvas id="live2d" class="live2d"></canvas>
+        <div class="waifu-tool">
+            <span class="fui-chat"></span>
+            <span class="fui-star"></span>
+            <span class="fui-folder"></span>
+            <!--span class="fui-video"></span-->
+            <!--span class="fui-gear"></span-->
+            <span class="fui-info-circle"></span>
+            <span class="fui-cmd"></span>
+        </div>
+</body>
+</html>
