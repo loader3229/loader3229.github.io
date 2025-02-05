@@ -34,7 +34,8 @@
 <h1><span class=en>loader3229's Infinite Battle</span><span class=zh>loader3229的无尽闯关</span></h1>
 <span class=zh>这是loader3229在2017年制作的一个HTML小游戏，现在以修改后的形态和大家见面了！</span><span class=en>This is an HTML Minigame made by loader3229 in 2017.</span><br>
 <span class=zh>名字可以自选，初始等级为1，初始密码为11111。每次战斗后将会存档。记得每次战斗后导出存档！</span><span class=en>You can input your character name, initial level is 1, initial password is 11111.</span><br>
-<span class=zh>每件装备都有类型，等级，掉落人和密码属性，类型，掉落人和密码都正确，且装备等级&lt;=角色等级时才可以装备成功。</span><span class=en>Each equipment has type, level, owner and password. You can equip an equipment only if type, owner, password are correct and level &lt;= your character level.</span><br><br>
+<span class=zh>每件装备都有类型，等级，掉落人和密码属性，类型，掉落人和密码都正确，且装备等级&lt;=角色等级时才可以装备成功。</span><span class=en>Each equipment has type, level, owner and password. You can equip an equipment only if type, owner, password are correct and level &lt;= your character level.</span><br>
+<span class=zh>还有，装备可以分享给其他人穿（非常重要）！但是要保证装备等级&lt;=角色等级。</span><span class=en>Also, equipments can be shared to other players! (Important!)</span><br><br>
 <table>
 <tr>
 <td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>名字</span><span class=en>Name</span></span></div><input id=name name=name class=form-control></div></td>
@@ -127,13 +128,14 @@ function hget(a){
 }
 function getplayerbaseattr(level,type){ // type: ATK,HP,DEF,SPD
 	level=parseInt(level);
-	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(level**1.5-100)))][type];
+	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(Math.max(level*level/10-100,level**1.5-100))))][type];
 }
 function getplayerattr(level,type){ // type: ATK,HP,DEF,SPD
 	return getplayerbaseattr(level,type)+checkequipment(type);
 }
 function getmonsterbaseattr(stage,type){ // type: ATK,HP,DEF,SPD
 	stage=parseInt(stage);
+	if(type==3 && stage>=100)return Math.ceil(5000+Math.log10(stage)*stage*stage*0.75);
 	return Math.ceil([99+Math.log10(stage)*stage*stage,490+4*Math.log10(stage)*stage*stage,99+Math.log10(stage)*stage*stage,100+Math.log10(stage)*stage*stage][type]);
 }
 function getequipmenttype(name,owner,level){
