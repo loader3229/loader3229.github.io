@@ -141,7 +141,7 @@ function getplayerbaseattr(level,type){ // type: ATK,HP,DEF,SPD
 	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(Math.max(level*level/10-100,level**1.5-100))))][type];
 }
 function getplayerattr(level,type){ // type: ATK,HP,DEF,SPD
-	if(level>=100 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1,4,1,1][type]*level*level*(Math.log10(level)-1)/2);
+	if(level>=100 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1,8.8,2.55,1][type]*level*level*(Math.log10(level)-1)/2);
 	return getplayerbaseattr(level,type)+checkequipment(type);
 }
 function getmonsterbaseattr(stage,type){ // type: ATK,HP,DEF,SPD
@@ -338,7 +338,7 @@ function fight(){
 		}else if(j==3){
 			c+=[" Talent: SPD+"," 天赋：速度+"][localStorage.lang];
 		}
-		c+=Math.ceil([1,4,1,1][j]*level*level*(Math.log10(level)-1)/2);
+		c+=Math.ceil([1,8.8,2.55,1][j]*level*level*(Math.log10(level)-1)/2);
 		jg.innerHTML+=c;
 	}
 	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
