@@ -35,7 +35,7 @@
 <span class=zh>这是loader3229在2017年制作的一个HTML小游戏，现在以修改后的形态和大家见面了！</span><span class=en>This is an HTML Minigame made by loader3229 in 2017.</span><br>
 <span class=zh>名字可以自选，初始等级为1，初始密码为11111。每次战斗后将会存档。记得每次战斗后导出存档！</span><span class=en>You can input your character name, initial level is 1, initial password is 11111.</span><br>
 <span class=zh>每件装备都有类型，等级，掉落人和密码属性，类型，掉落人和密码都正确，且装备等级&lt;=角色等级时才可以装备成功。</span><span class=en>Each equipment has type, level, owner and password. You can equip an equipment only if type, owner, password are correct and level &lt;= your character level.</span><br>
-<span class=zh>当等级达到100时，会获得一个天赋，天赋的效果会随着等级更高而更高。500级时天赋的效果进一步提高。</span><span class=en>When level is greater than 100, you will gain a talent, talent's effect scales with your level. Talent's effect is greatly increased after level 500.</span><br>
+<span class=zh>当等级达到100时，会获得一个天赋，天赋的效果会随着等级更高而更高。500级、1000级时天赋的效果进一步提高。</span><span class=en>When level is greater than 100, you will gain a talent, talent's effect scales with your level. Talent's effect is greatly increased after levels 500, 1000.</span><br>
 <span class=zh>还有，装备可以分享给其他人穿（非常重要）！但是要保证装备等级&lt;=角色等级。</span><span class=en>Also, equipments can be shared to other players! (Important!)</span><br><br>
 <form onsubmit="try{fight();}catch(e){};return false;">
 <table>
@@ -46,7 +46,7 @@
 <td><div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>想要掉落的装备名</span><span class=en>Equipment name to drop</span></span></div><input id=ename name=ename class=form-control></div></td>
 </tr>
 </table>
-<div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>关卡</span><span class=en>Stage</span></span></div><input id=stage name=stage min=1 value=1 class=form-control type=number>
+<div class=input-group><div class=input-group-prepend><span class=input-group-text><span class=zh>关卡</span><span class=en>Stage</span></span></div><input id=stage name=stage min=1 value=1 max=9e15 required class=form-control type=number>
 <div class=input-group-append><button class="btn btn-primary" type=submit><span class=zh>开始挑战</span><span class=en>Start!</span></button></div></div>
 <span class=zh>掉落装备：</span><span class=en>Drop Equipment:</span> <span id=drop></span><a class="btn btn-primary" href="javascript:equip();"><span class=zh>装备</span><span class=en>Equip!</span></a><br>
 
@@ -143,13 +143,16 @@ function getplayerbaseattr(level,type){ // type: ATK,HP,DEF,SPD
 	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(Math.max(level*level/10-100,level**1.5-100))))][type];
 }
 function getplayerattr(level,type){ // type: ATK,HP,DEF,SPD
+	if(level>=1000 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+Math.ceil(checkequipment(type)*Math.min([2,3.5,3.5,3.5][type],1+level/[10000,4000,4000,4000][type]))+Math.ceil([1.27,11,3.5,1.35][type]*level*level*(Math.log10(level)-1)/2);
 	if(level>=500 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1.25,10.4,3.1,1.35][type]*level*level*(Math.log10(level)-1)/2);
 	if(level>=100 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1,8.4,2.45,1.1][type]*level*level*(Math.log10(level)-1)/2);
 	return getplayerbaseattr(level,type)+checkequipment(type);
 }
 function getmonsterbaseattr(stage,type){ // type: ATK,HP,DEF,SPD
 	stage=parseInt(stage);
-	if(type==3 && stage>=1000)return Math.ceil(Math.log10(stage)*stage*stage*0.7);
+	if(stage>=10000)return Math.ceil([Math.log10(stage)*Math.pow(10,Math.log10(stage)**2/2),4*Math.log10(stage)*Math.pow(10,Math.log10(stage)**2/2),0.85*Math.log10(stage)*Math.pow(10,Math.log10(stage)**2/2),0.7*Math.log10(stage)*Math.pow(10,Math.log10(stage)**2/2)][type]);
+	if(stage>=2000)return Math.ceil([Math.log10(stage)*stage*stage,4*Math.log10(stage)*stage*stage,(2000-stage)*2425-700000+Math.log10(stage)*stage*stage*0.9,Math.log10(stage)*stage*stage*0.7][type]);
+	if(stage>=1000)return Math.ceil([Math.log10(stage)*stage*stage,4*Math.log10(stage)*stage*stage,(1000-stage)*1000+300000+Math.log10(stage)*stage*stage*0.9,Math.log10(stage)*stage*stage*0.7][type]);
 	if(type==3 && stage>=421)return Math.ceil((1000-stage)*80+Math.log10(stage)*stage*stage*0.7);
 	if(stage>=100)return Math.ceil([Math.log10(stage)*stage*stage,4*Math.log10(stage)*stage*stage,Math.log10(stage)*stage*stage,Math.log10(stage)*stage*stage*0.8][type]);
 	if(type==3 && stage>=50)return Math.ceil((50-stage)*80+Math.log10(stage)*stage*stage);
@@ -305,7 +308,7 @@ function fight(){
 		return;
 	}
 	var stage=parseInt(gk.value);
-	if(stage<=0||isNaN(stage)||stage>=9e15){
+	if(stage<=0||isNaN(stage)||stage>9e15){
 		alert(["Invalid Stage","关卡不合法"][localStorage.lang]);
 		return;
 	}
@@ -345,12 +348,36 @@ function fight(){
 		}else if(j==3){
 			c+=[" Talent: SPD+"," 天赋：速度+"][localStorage.lang];
 		}
-		if(level>=500) c+=Math.ceil([1.25,10.4,3.1,1.35][j]*level*level*(Math.log10(level)-1)/2);
+		if(level>=1000){
+			c+="(";
+			c+=Math.ceil([1.27,11,3.5,1.35][j]*level*level*(Math.log10(level)-1)/2);
+			c+=[" + "+Math.min([100,250,250,250][j],level/[100,40,40,40][j]).toFixed(2)+"% of ","+"+Math.min([100,250,250,250][j],level/[100,40,40,40][j]).toFixed(2)+"%×"][localStorage.lang];
+			if(j==0){
+				c+=["Weapon","武器"][localStorage.lang];
+			}else if(j==1){
+				c+=["Armor","盔甲"][localStorage.lang];
+			}else if(j==2){
+				c+=["Helmet","头盔"][localStorage.lang];
+			}else if(j==3){
+				c+=["Shoes","鞋子"][localStorage.lang];
+			}
+			c+=["'s ","提供的"][localStorage.lang];
+			if(j==0){
+				c+=["ATK","攻击"][localStorage.lang];
+			}else if(j==1){
+				c+=["HP","生命值"][localStorage.lang];
+			}else if(j==2){
+				c+=["DEF","防御"][localStorage.lang];
+			}else if(j==3){
+				c+=["SPD","速度"][localStorage.lang];
+			}
+			c+=")";
+		}else if(level>=500) c+=Math.ceil([1.25,10.4,3.1,1.35][j]*level*level*(Math.log10(level)-1)/2);
 		else c+=Math.ceil([1,8.4,2.45,1.1][j]*level*level*(Math.log10(level)-1)/2);
 		jg.innerHTML+=c;
 	}
 	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
-	jg.innerHTML+=Math.floor(Math.cbrt(php*pgj*pfy*psd)/8);
+	jg.innerHTML+=Math.floor(Math.pow(php*Math.pow(pgj,1.5)*pfy*psd,1/4.5));
 	jg.innerHTML+="<br>";
 	jg.innerHTML+=mname;
 	jg.innerHTML+=[" HP:"," 生命值"][localStorage.lang];
@@ -362,10 +389,10 @@ function fight(){
 	jg.innerHTML+=[" SPD:"," 速度"][localStorage.lang];
 	jg.innerHTML+=msd;
 	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
-	jg.innerHTML+=Math.floor(Math.cbrt(mhp*mgj*mfy*msd)/8);
+	jg.innerHTML+=Math.floor(Math.pow(mhp*Math.pow(mgj,1.5)*mfy*msd,1/4.5));
 	jg.innerHTML+=["<br>Battle Start","<br>开始战斗"][localStorage.lang];
-	pgj=Math.ceil(pgj*pgj/(pgj+4*mfy));
-	mgj=Math.ceil(mgj*mgj/(mgj+4*pfy));
+	pgj=Math.ceil(pgj*pgj/(pgj+Math.max(4,Math.log10(stage+10)+1)*mfy));
+	mgj=Math.ceil(mgj*mgj/(mgj+Math.max(4,Math.log10(stage+10)+1)*pfy));
 	var i=1,pt=1,mt=1;
 	while(true){
 		jg.innerHTML+="<br>";
@@ -445,7 +472,7 @@ function clear_textarea(){
 }
 </script>
 <link rel="stylesheet" type="text/css" href="l2d.css"/>
-<div class="waifu">
+<div class="waifu" style="display:none;">
         <div class="waifu-tips"></div>
 <canvas id="live2d" class="live2d"></canvas>
         <div class="waifu-tool">
