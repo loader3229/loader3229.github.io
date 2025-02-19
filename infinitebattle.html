@@ -36,6 +36,7 @@
 <span class=zh>名字可以自选，初始等级为1，初始密码为11111。每次战斗后将会存档。记得每次战斗后导出存档！</span><span class=en>You can input your character name, initial level is 1, initial password is 11111.</span><br>
 <span class=zh>每件装备都有类型，等级，掉落人和密码属性，类型，掉落人和密码都正确，且装备等级&lt;=角色等级时才可以装备成功。</span><span class=en>Each equipment has type, level, owner and password. You can equip an equipment only if type, owner, password are correct and level &lt;= your character level.</span><br>
 <span class=zh>当等级达到100时，会获得一个天赋，天赋的效果会随着等级更高而更高。500级、1000级时天赋的效果进一步提高。</span><span class=en>When level is greater than 100, you will gain a talent, talent's effect scales with your level. Talent's effect is greatly increased after levels 500, 1000.</span><br>
+<span class=zh>5000级后会得到天赋第二效果，10000级后天赋第二效果进一步加强。</span><span class=en>When level is greater than 5000, the talent will gain a second effect. Talent's second effect is increased after level 10000.</span><br>
 <span class=zh>还有，装备可以分享给其他人穿（非常重要）！但是要保证装备等级&lt;=角色等级。</span><span class=en>Also, equipments can be shared to other players! (Important!)</span><br><br>
 <form onsubmit="try{fight();}catch(e){};return false;">
 <table>
@@ -337,8 +338,9 @@ function fight(){
 	jg.innerHTML+=pfy;
 	jg.innerHTML+=[" SPD:"," 速度"][localStorage.lang];
 	jg.innerHTML+=psd;
+	var j=gettf(yh.value0);
 	if(level>=100){
-		var j=gettf(yh.value0),c="";
+		var c="";
 		if(j==0){
 			c+=[" Talent: ATK+"," 天赋：攻击+"][localStorage.lang];
 		}else if(j==1){
@@ -377,8 +379,33 @@ function fight(){
 		jg.innerHTML+=c;
 	}
 	jg.innerHTML+=[" Power:"," 战力"][localStorage.lang];
-	jg.innerHTML+=Math.floor(Math.pow(php*Math.pow(pgj,1.5)*pfy*psd,1/4.5));
+	jg.innerHTML+=Math.floor(Math.pow(php*Math.pow(pgj,1.5)*pfy*psd*(level>=10000?1.1:1),1/4.5));
 	jg.innerHTML+="<br>";
+	if(level>=10000){
+		jg.innerHTML+=["2nd Talent Effect: ","天赋第二效果："][localStorage.lang];
+		if(j==0){
+			jg.innerHTML+=["5th, 10th, 15th... attacks will be critical attacks which deal 150% DMG.","第5,10,15...次攻击变为暴击，造成150%伤害。"][localStorage.lang];
+		}else if(j==1){
+			jg.innerHTML+=["When got a damage that otherwise let HP to 0 for the first time, immediately restore HP to 10%.","受到第1次致命伤害时，立即回复生命值到10%。"][localStorage.lang];
+		}else if(j==2){
+			jg.innerHTML+=["Block 60% of 3rd, 6th, 9th... damage.","第3,6,9...次受到攻击时格挡60%的伤害。"][localStorage.lang];
+		}else if(j==3){
+			jg.innerHTML+=["After 10th, 20th, 30th... attack, immediately attack again.","第10,20,30...次攻击后立即再次进行攻击。"][localStorage.lang];
+		}
+		jg.innerHTML+="<br>";
+	}else if(level>=5000){
+		jg.innerHTML+=["2nd Talent Effect: ","天赋第二效果："][localStorage.lang];
+		if(j==0){
+			jg.innerHTML+=["10th attack will be a critical attack which deal 150% DMG.","第10次攻击变为暴击，造成150%伤害。"][localStorage.lang];
+		}else if(j==1){
+			jg.innerHTML+=["When got a damage that otherwise let HP to 0 for the first time, immediately restore HP to 1.","受到第1次致命伤害时，立即回复生命值到1。"][localStorage.lang];
+		}else if(j==2){
+			jg.innerHTML+=["Block 60% of 9th, 18th, 27th... damage.","第9,18,27...次受到攻击时格挡60%的伤害。"][localStorage.lang];
+		}else if(j==3){
+			jg.innerHTML+=["After 10th attack, immediately attack again.","第10次攻击后立即再次进行攻击。"][localStorage.lang];
+		}
+		jg.innerHTML+="<br>";
+	}
 	jg.innerHTML+=mname;
 	jg.innerHTML+=[" HP:"," 生命值"][localStorage.lang];
 	jg.innerHTML+=mhp;
@@ -393,14 +420,27 @@ function fight(){
 	jg.innerHTML+=["<br>Battle Start","<br>开始战斗"][localStorage.lang];
 	pgj=Math.ceil(pgj*pgj/(pgj+Math.max(4,Math.log10(stage+10)+1)*mfy));
 	mgj=Math.ceil(mgj*mgj/(mgj+Math.max(4,Math.log10(stage+10)+1)*pfy));
-	var i=1,pt=1,mt=1;
+	var i=1,pt=1,mt=1,ptf=0,pfh=0;
 	while(true){
 		jg.innerHTML+="<br>";
 		jg.innerHTML+=["Turn ","第"][localStorage.lang];
 		jg.innerHTML+=i;
 		jg.innerHTML+=[": ","回合："][localStorage.lang];
-		if(pt/psd<=mt/msd){
+		if((pt-ptf)/psd<=mt/msd){
+			if(j==3&&level>=10000&&ptf*10==pt-10){
+				ptf++;
+			}else if(j==3&&level>=5000&&pt==10&&ptf==0){
+				ptf++;
+			}
+			if(j==0&&level>=10000&&pt%5==0){
+				jg.innerHTML+=[yh.value+" dealt "+pgj+" critical damage to "+mname,yh.value+"对"+mname+"造成了"+Math.ceil(pgj*1.5)+"点暴击伤害"][localStorage.lang];
+				mhp-=Math.ceil(pgj*0.5);
+			}else if(j==0&&level>=5000&&pt==10){
+				jg.innerHTML+=[yh.value+" dealt "+pgj+" critical damage to "+mname,yh.value+"对"+mname+"造成了"+Math.ceil(pgj*1.5)+"点暴击伤害"][localStorage.lang];
+				mhp-=Math.ceil(pgj*0.5);
+			}else{
 			jg.innerHTML+=[yh.value+" dealt "+pgj+" damage to "+mname,yh.value+"对"+mname+"造成了"+pgj+"点伤害"][localStorage.lang];
+			}
 			pt++;i++;
 			mhp-=pgj;
 			if(mhp<0){
@@ -414,15 +454,31 @@ function fight(){
 				return;
 			}
 		}else{
+			if(j==2&&level>=10000&&mt%3==0){
+				jg.innerHTML+=[mname+" dealt "+mgj+" blocked damage to "+yh.value,mname+"对"+yh.value+"造成了"+(mgj-Math.floor(mgj*0.6))+"点被格挡的伤害"][localStorage.lang];
+				php+=Math.floor(mgj*0.6);
+			}else if(j==2&&level>=5000&&mt%9==0){
+				jg.innerHTML+=[mname+" dealt "+mgj+" blocked damage to "+yh.value,mname+"对"+yh.value+"造成了"+(mgj-Math.floor(mgj*0.6))+"点被格挡的伤害"][localStorage.lang];
+				php+=Math.floor(mgj*0.6);
+			}else{
 			jg.innerHTML+=[mname+" dealt "+mgj+" damage to "+yh.value,mname+"对"+yh.value+"造成了"+mgj+"点伤害"][localStorage.lang];
+			}
 			mt++;i++;
 			php-=mgj;
 			if(php<0){
+				if(j==1&&level>=10000&&pfh==0){
+					php=getplayerattr(level,1)/10;pfh=1;
+					jg.innerHTML+=["<br>2nd Talent Effect active!","<br>天赋第二效果生效！"][localStorage.lang];
+				}else if(j==1&&level>=5000&&pfh==0){
+					php=1;pfh=1;
+					jg.innerHTML+=["<br>2nd Talent Effect active!","<br>天赋第二效果生效！"][localStorage.lang];
+				}else{
 				jg.innerHTML+=["<br>You lost the battle","<br>战斗失败"][localStorage.lang];
 				document.getElementById("battle_log").innerHTML=jg.innerHTML;
 				save_game();
 				return;
 			}
+		}
 		}
 		if(i>=50){
 			pgj+=Math.ceil(pgj/100);
