@@ -34,9 +34,9 @@ var cash=new Decimal(0);
 var forge=new Decimal(1);
 var ltime=Date.now();
 var dml=[new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1)];
-var acl=[new Decimal(0)];
+var acl=[new Decimal(0),new Decimal(1)];
 var otl=[];
-var otp=[40,1e7,1e10,1e12,1e12,1e18,1e20,1e25,1e33];
+var otp=[40,1e7,1e10,1e12,1e12,1e18,1e20,1e25,1e33,1e40];
 function disp(a){
 	a=new Decimal(a);
 	if(a.lt(0))return "-"+disp(a.mul(-1));
@@ -49,7 +49,7 @@ function disp(a){
 function dmp(a){
 	let pow=new Decimal(1);
 	if(otl[3])pow=pow.mul(Decimal.pow(0.9,total_damage.add(1).log2().floor().sqrt()));
-	if(a==0)return Decimal.pow(1.2,dml[0]).mul(8).pow(pow);
+	if(a==0)return Decimal.pow(1.2,dml[0]).mul(otl[8]?1:8).pow(pow);
 	if(a==1)return Decimal.pow(1.2,dml[1]).mul(1000).pow(pow);
 	if(a==2)return Decimal.pow(1.2,dml[2]).mul(1e6).pow(pow);
 	if(a==3)return Decimal.pow(1.2,dml[3]).mul(1e9).pow(pow);
@@ -60,11 +60,13 @@ function dmp(a){
 	if(a==8)return Decimal.pow(1.2,dml[8]).mul(otl[8]?1e24:1e55).pow(pow);
 	if(a==9)return Decimal.pow(1.2,dml[9]).mul(otl[8]?1e27:1e70).pow(pow);
 	if(a==10)return Decimal.pow(1.2,dml[10]).mul(otl[8]?1e30:1e100).pow(pow);
+	if(a==11)return Decimal.pow(1.2,dml[11]).mul(1e135).pow(pow);
 }
 function acp(a){
 	let pow=new Decimal(1);
 	if(otl[7])pow=pow.mul(Decimal.pow(0.95,total_damage.add(1).log2().floor().sqrt()));
 	if(a==0)return Decimal.pow(1.1,acl[0]).mul(1000).pow(pow);
+	if(a==1)return Decimal.pow(1.1,acl[1]).mul(1e34);
 }
 function dmup(i){
 	if(cash.gte(dmp(i)))cash=cash.sub(dmp(i)),dml[i]=dml[i].plus(1);
@@ -80,31 +82,31 @@ function acup(i){
 function disp1(){
 	document.getElementById("mhp").innerHTML="总计伤害："+disp(total_damage);
 	document.getElementById("main").innerHTML="金币："+disp(cash)+"<br>单次攻击伤害："+disp(getdpc())+"<br>单次攻击金币："+disp(getcpc())+"<br>秒伤："+disp(getdps())+"<br>每秒金币："+disp(getcps());
-	for(var i=0;i<=10;i++){
+	for(var i=0;i<=11;i++){
 		document.getElementById("dml"+i).innerHTML=dml[i];
 		document.getElementById("dmc"+i).innerHTML=disp(dmp(i));
 		while(cash.gte(dmp(i))&&otl[2])dml[i]=dml[i].plus(1);
 	}
-	for(var i=0;i<=0;i++){
+	for(var i=0;i<=1;i++){
 		document.getElementById("acl"+i).innerHTML=acl[i];
 		document.getElementById("acc"+i).innerHTML=disp(acp(i));
-		while(cash.gte(acp(i))&&otl[4])acl[i]=acl[i].plus(1);
+		while(cash.gte(acp(i))&&otl[4]&&i==0)acl[i]=acl[i].plus(1);
 	}
 	document.getElementById("for4").innerHTML=disp(forge);
 	document.getElementById("for3").innerHTML=disp(forge.sub(1));
 	document.getElementById("for2").innerHTML="重置以获得"+disp(forge_gain())+"强化点数";
 }
 function getdpc(){
-	return new Decimal(1).mul(dml[0]).mul(dml[1]).mul(dml[2]).mul(dml[3]).mul(dml[4]).mul(dml[5]).mul(dml[6]).mul(dml[7]).mul(dml[8]).mul(dml[9]).mul(dml[10]).mul(otl[6]?forge:1);
+	return new Decimal(1).mul(dml[0]).mul(dml[1]).mul(dml[2]).mul(dml[3]).mul(dml[4]).mul(dml[5]).mul(dml[6]).mul(dml[7]).mul(dml[8]).mul(dml[9]).mul(dml[10]).mul(dml[11]).mul(otl[6]?forge:1);
 }
 function getcpc(){
-	return new Decimal(1).mul(otl[0]?(total_damage.add(10).sqrt()):(1)).mul(otl[1]?(total_damage.add(1).log2().floor().add(1)):(1)).mul(forge);
+	return new Decimal(1).mul(otl[0]?(total_damage.add(10).sqrt()):(1)).mul(otl[1]?(total_damage.add(1).log2().floor().add(1)):(1)).mul(otl[9]?(cash.add(1).pow(0.1)):(1)).mul(forge);
 }
 function getdps(){
-	return getdpc().mul(acl[0]);
+	return getdpc().mul(acl[0]).mul(acl[1]);
 }
 function getcps(){
-	return getcpc().mul(acl[0]);
+	return getcpc().mul(acl[0]).mul(acl[1]);
 }
 function attack(){
 	total_damage=total_damage.add(getdpc());
@@ -118,8 +120,10 @@ function main(){
 	fhp=1024-total_damage.add(1).log2();
 	if(display<=1023){
 		document.getElementById("unlock").style.display="block";document.getElementById("unlock").innerHTML="";
-		if(display<=896)document.getElementById("unlock").innerHTML="你已经达到残局！";
-		if(display>896)document.getElementById("unlock").innerHTML="打掉BOSS的128血条以解锁残局";
+		if(display<=864)document.getElementById("unlock").innerHTML="";
+		if(display>864)document.getElementById("unlock").innerHTML="打掉BOSS的160血条以解锁一个升级";
+		if(display>880)document.getElementById("unlock").innerHTML="打掉BOSS的144血条以解锁伤害倍增器12";
+		if(display>896)document.getElementById("unlock").innerHTML="打掉BOSS的128血条以解锁自动点击倍增器1";
 		if(display>904)document.getElementById("unlock").innerHTML="打掉BOSS的120血条以解锁一个升级";
 		if(display>912)document.getElementById("unlock").innerHTML="打掉BOSS的112血条以解锁伤害倍增器11";
 		if(display>920)document.getElementById("unlock").innerHTML="打掉BOSS的104血条以解锁一个升级";
@@ -170,6 +174,9 @@ function main(){
 	if(display<=920)document.getElementById("otu7").style.display="block";
 	if(display<=912)document.getElementById("dmu10").style.display="block";
 	if(display<=904)document.getElementById("otu8").style.display="block";
+	if(display<=896)document.getElementById("acu1").style.display="block";
+	if(display<=880)document.getElementById("dmu11").style.display="block";
+	if(display<=864)document.getElementById("otu9").style.display="block";
 	disp1();
 	setTimeout(main,30);
 }
@@ -195,6 +202,7 @@ setTimeout(main,30);
 <div id="upgrade" style="display:none">
 <div id="for1" style="display:none">你有<span id="for3"></span>强化点数，金币的获得变为<span id="for4"></span>倍 <a href="javascript:forge_reset();" id="for2"></a><br></div>
 <div id="acu0" style="display:none">自动点击器等级<span id="acl0"></span>，<a href="javascript:acup(0);">升级(<span id="acc0"></span>)</a><br></div>
+<div id="acu1" style="display:none">自动点击倍增器1：×<span id="acl1"></span>，<a href="javascript:acup(1);">升级(<span id="acc1"></span>)</a><br></div>
 <div id="dmu0" style="display:none">伤害倍增器1：×<span id="dml0"></span>，<a href="javascript:dmup(0);">升级(<span id="dmc0"></span>)</a><br></div>
 <div id="dmu1" style="display:none">伤害倍增器2：×<span id="dml1"></span>，<a href="javascript:dmup(1);">升级(<span id="dmc1"></span>)</a><br></div>
 <div id="dmu2" style="display:none">伤害倍增器3：×<span id="dml2"></span>，<a href="javascript:dmup(2);">升级(<span id="dmc2"></span>)</a><br></div>
@@ -206,6 +214,7 @@ setTimeout(main,30);
 <div id="dmu8" style="display:none">伤害倍增器9：×<span id="dml8"></span>，<a href="javascript:dmup(8);">升级(<span id="dmc8"></span>)</a><br></div>
 <div id="dmu9" style="display:none">伤害倍增器10：×<span id="dml9"></span>，<a href="javascript:dmup(9);">升级(<span id="dmc9"></span>)</a><br></div>
 <div id="dmu10" style="display:none">伤害倍增器11：×<span id="dml10"></span>，<a href="javascript:dmup(10);">升级(<span id="dmc10"></span>)</a><br></div>
+<div id="dmu11" style="display:none">伤害倍增器12：×<span id="dml11"></span>，<a href="javascript:dmup(11);">升级(<span id="dmc11"></span>)</a><br></div>
 <br>
 <div id="otu0" style="display:none">总计伤害倍增金币<a href="javascript:otup(0);" id="otb0">购买(40)</a><br></div>
 <div id="otu1" style="display:none">打掉的血条数量倍增金币<a href="javascript:otup(1);" id="otb1">购买(1e7)</a><br></div>
@@ -216,5 +225,6 @@ setTimeout(main,30);
 <div id="otu6" style="display:none">强化点数倍增伤害<a href="javascript:otup(6);" id="otb6">购买(1e20)</a><br></div>
 <div id="otu7" style="display:none">打掉的血条数量使自动点击器变得更便宜<a href="javascript:otup(7);" id="otb7">购买(1e25)</a><br></div>
 <div id="otu8" style="display:none">伤害倍增器9-11变得更便宜<a href="javascript:otup(8);" id="otb8">购买(1e33)</a><br></div>
+<div id="otu9" style="display:none">金币倍增金币<a href="javascript:otup(9);" id="otb9">购买(1e40)</a><br></div>
 </div>
 </body></html>
