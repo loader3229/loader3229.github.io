@@ -175,8 +175,8 @@ function update_total_points(){
 		var tmp=new Decimal(JSON.parse(atob(localStorage["one-points-one-layer"])).points).toNumber();
 		if(Number.isFinite(tmp))total_points+=(tmp*50);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#onep1l1").html(tmp);
-			$("#onep1l2").html(tmp*50);
+			$("#onep1l1").html(format(tmp,4));
+			$("#onep1l2").html(Math.floor(tmp*50));
 		}
 	}catch(e){}
 
