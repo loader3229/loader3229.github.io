@@ -430,7 +430,7 @@ setInterval(function(){
 			$("#total_points2").html(Math.floor(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber()));
 		}
 		if(document.location.href.indexOf("/b.html")!=-1){
-			$("#result").html((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?["<br>Supporter Code Valid!","<br>捐赠码输入正确！"][localStorage.lang]:["<br>Supporter Code Invalid or you did not input it!","<br>捐赠码输入错误或者没有输入捐赠码！"][localStorage.lang]);
+			$("#result").html((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?["<br>Supporter Code Valid!","<br>捐赠码输入正确！"][localStorage.lang]:["<br>Supporter Code Invalid or you did not input it!","<br>捐赠码输入错误或者没有输入捐赠码！"][localStorage.lang]);
 		}
 		player.tick=Date.now();
 	}catch(e){console.log(e);}
@@ -440,7 +440,7 @@ function metagain(){
 	if(player.stat == 0)return new Decimal(0);
 	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(preseffect()).mul(transeffect());
 	if(window.sha512_256 === undefined)return ret;
-	if(sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')ret = ret.mul(3);
+	if(sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')ret = ret.mul(3);
 	return ret;
 }
 
@@ -497,10 +497,10 @@ function metaupgrade(a){
 }
 
 function presgain(){
-	if(player.metainf.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul(metainfeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?2:1);
-	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?2:1);
+	if(player.metainf.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul(metainfeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?2:1);
+	if(player.metatranscension.gte(1))return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul(transeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?2:1);
 	if(player.metapoints.lt(1e9))return new Decimal(0);
-	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?2:1);
+	return Decimal.pow(10,player.metapoints.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?2:1);
 }
 
 function preseffect(){
@@ -517,9 +517,9 @@ function metaprestige(){
 }
 
 function transgain(){
-	if(player.metainf.gte(1))return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul(metainfeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?1.5:1);
+	if(player.metainf.gte(1))return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul(metainfeffect()).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1.5:1);
 	if(player.metaprestige.lt(1e9))return new Decimal(0);
-	return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?1.5:1);
+	return Decimal.pow(10,player.metaprestige.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1.5:1);
 }
 
 function transeffect(){
@@ -927,9 +927,9 @@ pldiv.id='pldiv';
 document.body.append(pldiv);
 
 setInterval(function(){
-	var pl=((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?1:0))**1.5;
+	var pl=((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))**1.5;
 	pl=pl*2+1;
-	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor(((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
+	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor(((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
 	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
 	
 	if(programming_contest_mode){
