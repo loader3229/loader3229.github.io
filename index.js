@@ -172,6 +172,15 @@ function update_total_points(){
 	}catch(e){}
 
 	try{
+		var tmp=parseInt(JSON.parse(atob(localStorage["one-points-one-layer"])).points);
+		if(Number.isFinite(tmp))total_points+=(tmp*50);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#onep1l1").html(tmp);
+			$("#onep1l2").html(tmp*50);
+		}
+	}catch(e){}
+
+	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
 		if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
