@@ -140,13 +140,13 @@ function convert2(s) {    //0-Y to BMS
 </head>
 <body>
 <h1>Ordinal Remarkup! (Base 2)</h1>
+<br>
+<div style=overflow-x:auto><span>g<sub id=current_ordinal></sub>(2)=<span id="current_count"></span></span></div>
 <a href="javascript:void(markup_count=markup_count.add(1));">Markup!</a><br>
 <a href="javascript:void(markup_count=markup_count.mul(2));">Double Markup!</a><br>
 <a href="javascript:void(markup_count=markup_count.pow(2));">Squared Markup!</a><br>
 <a href="javascript:void(markup_count=Decimal.pow(2,markup_count));">Powered Markup!</a><br>
-Count: <span id="current_count"></span><br>
-Current: <span id="current_ordinal"></span><br>
-Next: <span id="next_ordinal"></span><br>
+<div style=overflow-x:auto>Next: <span id="next_ordinal"></span></div>
 Current 0-Y Sequence: <span id="current_0yseq"></span><br>
 Next 0-Y Sequence: <span id="next_0yseq"></span><br>
 Current BMS: <span id="current_bms"></span><br>
