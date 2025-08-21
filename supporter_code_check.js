@@ -1,3 +1,3 @@
 setInterval(function(){
-	window.supporterCodeInput = (sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '7b083ed1d3579e19e6750ae10ce02d6bb178ee3bd60de5ffec1ae2572a68b8');
+	window.supporterCodeInput = (sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5');
 },10);
