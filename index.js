@@ -191,7 +191,7 @@ function update_total_points(){
 
 	try{
 		var tmp=0;
-		for(var i=1;i<=8;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
+		for(var i=1;i<=9;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
 		if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#multitree1").html(tmp);
