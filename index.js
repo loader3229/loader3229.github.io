@@ -176,7 +176,7 @@ function update_total_points(){
 		if(Number.isFinite(tmp))total_points+=(tmp*50);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#onep1l1").html(format(tmp,4));
-			$("#onep1l2").html(Math.floor(tmp*50));
+			$("#onep1l2").html(Math.floor(Math.min(tmp*50,1450)));
 		}
 	}catch(e){}
 
@@ -257,12 +257,12 @@ function update_total_points(){
 	try{
 		var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
 		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
-		if(localStorage.imr_secret_badge1=="1")total_points+=200;
+		if(localStorage.imr_secret_badge1=="1")total_points+=500;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
 			$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
-			if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+200);
-			if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1200);
+			if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+500);
+			if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1500);
 		}
 	}catch(e){}
 
