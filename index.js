@@ -309,8 +309,9 @@ var player={
 	metapoints: new Decimal(0),
 	metaprestige: new Decimal(0),
 	metatranscension: new Decimal(0),
+	metareincarnation: new Decimal(0),
 	metainf: new Decimal(0),
-	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)],
+	metaupgrades: [new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)],
 	tick: Date.now(),
 	lastprestige: Date.now(),
 	lasttranscension: Date.now(),
@@ -324,8 +325,10 @@ try{
 	player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
 	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
 	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
+	player.metaupgrades[5]=new Decimal(player_saved.metaupgrades[5] || 0);
 	player.metaprestige=new Decimal(player_saved.metaprestige || 0);
 	player.metatranscension=new Decimal(player_saved.metatranscension || 0);
+	player.metareincarnation=new Decimal(player_saved.metareincarnation || 0);
 	player.metainf=new Decimal(player_saved.metainf || 0);
 	player.tick=(player_saved.tick || Date.now());
 	player.lastprestige=(player_saved.lastprestige || Date.now());
@@ -343,8 +346,10 @@ setInterval(function(){
 				player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
 				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
 				player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
+				player.metaupgrades[5]=new Decimal(player_saved.metaupgrades[5] || 0);
 				player.metaprestige=new Decimal(player_saved.metaprestige || 0);
 				player.metatranscension=new Decimal(player_saved.metatranscension || 0);
+				player.metareincarnation=new Decimal(player_saved.metareincarnation || 0);
 				player.tick=(player_saved.tick || Date.now());
 				player.lastprestige=(player_saved.lastprestige || Date.now());
 				player.lasttranscension=(player_saved.lasttranscension || Date.now());
@@ -359,7 +364,7 @@ setInterval(function(){
 			}
 			player.metatranscension=metainfeffect2().mul(Date.now()-player.tick).div(20000).add(player.metatranscension);
 			if(player.metaprestige.gte(50)){
-				for(var i=1;i<=4;i++){
+				for(var i=1;i<=5;i++){
 					if(player.metapoints.gte(metacost(i))){
 						player.metaupgrades[i]=player.metaupgrades[i].add(1);
 						player.stat=Date.now();
@@ -376,14 +381,17 @@ setInterval(function(){
 			$("#2level").html(formatWhole(player.metaupgrades[2]));
 			$("#3level").html(formatWhole(player.metaupgrades[3]));
 			$("#4level").html(formatWhole(player.metaupgrades[4]));
+			$("#5level").html(formatWhole(player.metaupgrades[5]));
 			$("#1effect").html(format(metaeffect(1)));
 			$("#2effect").html(format(metaeffect(2)));
 			$("#3effect").html(format(metaeffect(3)));
 			$("#4effect").html(format(metaeffect(4)));
+			$("#5effect").html(format(metaeffect(5)));
 			$("#1cost").html(formatWhole(metacost(1)));
 			$("#2cost").html(formatWhole(metacost(2)));
 			$("#3cost").html(formatWhole(metacost(3)));
 			$("#4cost").html(formatWhole(metacost(4)));
+			$("#5cost").html(formatWhole(metacost(5)));
 			$("#trans").css("display",(player.metatranscension.gt(0)||player.metaprestige.gte(1e9))?"":"none");
 			$("#prestige_milestone").css("display",(player.metaprestige.gt(0))?"":"none");
 			$("#trans_milestone").css("display",(player.metatranscension.gt(0))?"":"none");
@@ -406,6 +414,7 @@ setInterval(function(){
 			$("#milestone12").css("display",(player.metatranscension.gte(1e4))?"":"none");
 			$("#milestone13").css("display",(player.metatranscension.gte(1e6))?"":"none");
 			$("#milestone14").css("display",(player.metapoints.gte(Number.MAX_VALUE))?"":"none");
+			$("#upg5").css("display",(player.metapoints.gte(Number.MAX_VALUE))?"":"none");
 			$("#presgain").html(formatWhole(presgain()));
 			$("#metaprestige").html(formatWhole(player.metaprestige));
 			$("#transgain").html(formatWhole(transgain()));
@@ -422,7 +431,7 @@ setInterval(function(){
 			$("#milestone2display").html(format(mpps));
 		}
 		if(player.metaprestige.gte(1e4)&&document.location.href.indexOf("/metagame")!=-1){
-			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(50)));
+			$("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(100)));
 		}
 		if(player.metatranscension.gte(50)&&document.location.href.indexOf("/metagame")!=-1){
 			$("#milestone7display").html(format(presgain().add(100).mul(player.metatranscension.gte(1e4)?(1+((total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber())/10000)**3):1)));
@@ -447,7 +456,7 @@ setInterval(function(){
 
 function metagain(){
 	if(player.stat == 0)return new Decimal(0);
-	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(preseffect()).mul(transeffect());
+	let ret=metaeffect(1).mul(metaeffect(2)).mul(metaeffect(3)).mul(metaeffect(4)).mul(metaeffect(5)).mul(preseffect()).mul(transeffect()).mul(metainfeffect());
 	if(window.sha512_256 === undefined)return ret;
 	if(sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')ret = ret.mul(3);
 	return ret;
@@ -455,7 +464,7 @@ function metagain(){
 
 function metaeffect(a){
 	if(a==1){
-		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber(),20000)+100,1))/2,player.metaupgrades[1]);
+		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber(),30000)+100,1))/2,player.metaupgrades[1]);
 		return ret;
 	}
 	if(a==2){
@@ -474,6 +483,15 @@ function metaeffect(a){
 		let ret=Decimal.pow(Math.log10(Date.now()-player.lastprestige+1),player.metaupgrades[4].pow(0.8).div(player.metaprestige.gte(1e6)?Math.max(5-(Math.log10(Date.now()-player.lastprestige+1)/2)**1.5,player.metatranscension.gte(1e6)?1.5:2):5));
 		return ret;
 	}
+	if(a==5){
+		var opencount=parseFloat(localStorage.pageopencount);
+		if(!isFinite(opencount))opencount = 0;
+		if(opencount>1e12)opencount=1e12;
+		localStorage.pageopencount=opencount;
+		let ret=Decimal.pow(Math.log10(opencount+10),player.metaupgrades[5].pow(0.75));
+		return ret;
+	}
+	return new Decimal(1);
 }
 
 function metacost(a){
@@ -491,6 +509,10 @@ function metacost(a){
 	}
 	if(a==4){
 		let ret=Decimal.pow(5,player.metaupgrades[4].add(11).pow(1.4));
+		return ret;
+	}
+	if(a==5){
+		let ret=Decimal.pow(2,player.metaupgrades[5].add(32).pow(2));
 		return ret;
 	}
 }
@@ -520,7 +542,7 @@ function preseffect(){
 function metaprestige(){
 	player.metaprestige=player.metaprestige.add(presgain());
 	player.metapoints=new Decimal(0);
-	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
+	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=Date.now();
 	localStorage.metagame=btoa(JSON.stringify(player));
 }
@@ -551,7 +573,7 @@ function metatranscension(){
 	player.metatranscension=player.metatranscension.add(transgain());
 	player.metaprestige=new Decimal(0);
 	player.metapoints=new Decimal(0);
-	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
+	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=player.lasttranscension=Date.now();
 	localStorage.metagame=btoa(JSON.stringify(player));
 }
@@ -562,7 +584,7 @@ function metainf(){
 	player.metatranscension=new Decimal(0);
 	player.metaprestige=new Decimal(0);
 	player.metapoints=new Decimal(0);
-	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
+	player.metaupgrades=[new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0),new Decimal(0)];
 	player.stat=player.lastprestige=player.lasttranscension=Date.now();
 	localStorage.metagame=btoa(JSON.stringify(player));
 }
@@ -575,7 +597,7 @@ localStorage.kasumiLivecount=localStorage.kasumiLivecount || '0';
 
 function getIntimacyGain(a){
 	a=a*(parseInt(localStorage.kasumiLivecount)/2+1);
-	a=a*(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(50).toNumber());
+	a=a*(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(100).toNumber());
 	return a;
 }
 
