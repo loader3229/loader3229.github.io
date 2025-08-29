@@ -318,43 +318,36 @@ var player={
 	stat: 0,
 };
 
+function load_metagame(){
+				var fix = function(a){
+					a = new Decimal(a || 0);
+					if(!a.eq(a))a = new Decimal(0);
+					return a;
+				}
+				player.metapoints=fix(player_saved.metapoints);
+				player.metaupgrades[1]=fix(player_saved.metaupgrades[1]);
+				player.metaupgrades[2]=fix(player_saved.metaupgrades[2]);
+				player.metaupgrades[3]=fix(player_saved.metaupgrades[3]);
+				player.metaupgrades[4]=fix(player_saved.metaupgrades[4]);
+				player.metaupgrades[5]=fix(player_saved.metaupgrades[5]);
+				player.metaprestige=fix(player_saved.metaprestige);
+				player.metatranscension=fix(player_saved.metatranscension);
+				player.metareincarnation=fix(player_saved.metareincarnation);
+				player.metainf=fix(player_saved.metainf);
+				player.tick=(player_saved.tick || Date.now());
+				player.lastprestige=(player_saved.lastprestige || Date.now());
+				player.lasttranscension=(player_saved.lasttranscension || Date.now());
+				player.stat=(player_saved.stat || 0);
+}
 try{
-	var player_saved=JSON.parse(atob(localStorage.metagame));
-	player.metapoints=new Decimal(player_saved.metapoints || 0);
-	player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1] || 0);
-	player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
-	player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
-	player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
-	player.metaupgrades[5]=new Decimal(player_saved.metaupgrades[5] || 0);
-	player.metaprestige=new Decimal(player_saved.metaprestige || 0);
-	player.metatranscension=new Decimal(player_saved.metatranscension || 0);
-	player.metareincarnation=new Decimal(player_saved.metareincarnation || 0);
-	player.metainf=new Decimal(player_saved.metainf || 0);
-	player.tick=(player_saved.tick || Date.now());
-	player.lastprestige=(player_saved.lastprestige || Date.now());
-	player.lasttranscension=(player_saved.lasttranscension || Date.now());
-	player.stat=(player_saved.stat || 0);
+	load_metagame();
 }catch(e){}
 
 setInterval(function(){
 	try{
 		try{
 			var player_saved=JSON.parse(atob(localStorage.metagame));
-			if(player_saved.stat>player.stat){
-				player.metapoints=new Decimal(player_saved.metapoints || 0);
-				player.metaupgrades[1]=new Decimal(player_saved.metaupgrades[1] || 0);
-				player.metaupgrades[2]=new Decimal(player_saved.metaupgrades[2] || 0);
-				player.metaupgrades[3]=new Decimal(player_saved.metaupgrades[3] || 0);
-				player.metaupgrades[4]=new Decimal(player_saved.metaupgrades[4] || 0);
-				player.metaupgrades[5]=new Decimal(player_saved.metaupgrades[5] || 0);
-				player.metaprestige=new Decimal(player_saved.metaprestige || 0);
-				player.metatranscension=new Decimal(player_saved.metatranscension || 0);
-				player.metareincarnation=new Decimal(player_saved.metareincarnation || 0);
-				player.tick=(player_saved.tick || Date.now());
-				player.lastprestige=(player_saved.lastprestige || Date.now());
-				player.lasttranscension=(player_saved.lasttranscension || Date.now());
-				player.stat=(player_saved.stat || 0);
-			}
+			if(player_saved.stat>player.stat)load_metagame();
 		}catch(e){}
 		update_total_points();
 		for(var q=1;q<=20;q++){
@@ -464,7 +457,7 @@ function metagain(){
 
 function metaeffect(a){
 	if(a==1){
-		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber(),30000)+100,1))/2,player.metaupgrades[1]);
+		let ret=Decimal.pow(Math.log10(Math.max(Math.min(total_points+player.metapoints.add(1).log10().mul(10).toNumber()+player.metaprestige.add(1).log10().mul(30).toNumber()+player.metatranscension.add(1).log10().mul(100).toNumber(),30000)+100,100))/2,player.metaupgrades[1]);
 		return ret;
 	}
 	if(a==2){
@@ -474,6 +467,7 @@ function metaeffect(a){
 	if(a==3){
 		var intimacy=parseFloat(localStorage.kasumiIntimacy);
 		if(!isFinite(intimacy))intimacy = 0;
+		if(intimacy<0)intimacy=0;
 		if(intimacy>1e12)intimacy=1e12;
 		localStorage.kasumiIntimacy=intimacy;
 		let ret=Decimal.pow(Math.log10(intimacy+10),player.metaupgrades[3].pow(0.75).div(4));
@@ -486,6 +480,7 @@ function metaeffect(a){
 	if(a==5){
 		var opencount=parseFloat(localStorage.pageopencount);
 		if(!isFinite(opencount))opencount = 0;
+		if(opencount<0)opencount=0;
 		if(opencount>1e12)opencount=1e12;
 		localStorage.pageopencount=opencount;
 		let ret=Decimal.pow(opencount+1,player.metaupgrades[5].pow(0.75));
