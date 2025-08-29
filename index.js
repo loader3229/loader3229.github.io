@@ -488,7 +488,7 @@ function metaeffect(a){
 		if(!isFinite(opencount))opencount = 0;
 		if(opencount>1e12)opencount=1e12;
 		localStorage.pageopencount=opencount;
-		let ret=Decimal.pow(Math.log10(opencount+10),player.metaupgrades[5].pow(0.75));
+		let ret=Decimal.pow(opencount+1,player.metaupgrades[5].pow(0.75));
 		return ret;
 	}
 	return new Decimal(1);
