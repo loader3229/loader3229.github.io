@@ -319,6 +319,7 @@ var player={
 };
 
 function load_metagame(){
+				var player_saved=JSON.parse(atob(localStorage.metagame));
 				var fix = function(a){
 					a = new Decimal(a || 0);
 					if(!a.eq(a))a = new Decimal(0);
