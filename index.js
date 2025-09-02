@@ -176,7 +176,7 @@ function update_total_points(){
 		if(Number.isFinite(tmp))total_points+=(tmp*50);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#onep1l1").html(format(tmp,4));
-			$("#onep1l2").html(Math.floor(Math.min(tmp*50,1450)));
+			$("#onep1l2").html(Math.floor(Math.min(tmp*50,1500)));
 		}
 	}catch(e){}
 
