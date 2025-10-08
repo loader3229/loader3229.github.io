@@ -553,6 +553,15 @@ function transeffect(){
 	return player.metatranscension.add(1);
 }
 
+function reingain(){
+	if(player.metatranscension.lt(1e9))return new Decimal(0);
+	return Decimal.pow(10,player.metatranscension.add(1).log10().sqrt().sub(3)).mul((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1.5:1);
+}
+
+function reineffect(){
+	return player.metareincarnation.add(1);
+}
+
 function metainfgain(){
     if(player.metareincarnation.gte(1))return player.metapoints.add(1).log2().add(1).log2().div(2).pow(6).sub(player.metainf).div(25).sub(624).floor().max(0);
 	return player.metapoints.add(1).log2().add(1).log2().div(5).pow(6).sub(player.metainf).div(8).sub(7).floor().max(0);
