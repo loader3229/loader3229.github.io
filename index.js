@@ -554,6 +554,7 @@ function transeffect(){
 }
 
 function metainfgain(){
+    if(player.metareincarnation.gte(1))return player.metapoints.add(1).log2().add(1).log2().div(2).pow(6).sub(player.metainf).div(25).sub(624).floor().max(0);
 	return player.metapoints.add(1).log2().add(1).log2().div(5).pow(6).sub(player.metainf).div(8).sub(7).floor().max(0);
 }
 
