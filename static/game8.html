@@ -1,0 +1,220 @@
+<html>
+<head>
+<style>
+#bossbar{width:calc( 100% - 20px );height:23px;position:absolute;top:10px;left:10px;}
+#bossbarfg,#bossbarbg{width:calc( 100% - 40px );margin:0;padding:0;position:absolute;top:0px;left:0px;}
+#bossbarfg2{height:20px;margin:0;padding:0;position:absolute;top:0px;left:0px;}
+#bossbarfg{height:23px;z-index:2;}
+#bossbarto{z-index:2;height:3px;position:absolute;top:20px;left:0px; background-color:#ff0000;}
+#bossbarbg{height:20px;z-index:1;}
+#bossbarnumber{margin:0;padding:0;position:absolute;top:0px;right:0px;z-index:3;}
+</style>
+<script src="break_eternity.js"></script>
+<script>
+var colors=["#000000","#ff0000","#ff8800","#dddd00","#008800","#00dddd","#0000ff","#ff00ff","#993366","#ffff00","#999999"];
+function getcolor(floorval){
+if(floorval<=0)return colors[0];
+return colors[(floorval-1)%10+1];
+}
+var fhp=1024;var fmax=1024;var display=1024;
+function update(){
+display=(display*0.925+fhp*0.075);
+document.getElementById("bossbarfg2").style.backgroundColor=getcolor(Math.floor(display+1));
+document.getElementById("bossbarfg2").style.width=((display-Math.floor(display))*100)+"%";
+document.getElementById("bossbarto").style.width=((display/fmax)*100)+"%";
+document.getElementById("bossbarbg").style.backgroundColor=getcolor(Math.floor(display));
+document.getElementById("bossbarnumber").innerHTML="x"+Math.max(0,Math.ceil(display));
+setTimeout(update,20);
+}
+setTimeout(update,20);
+</script>
+<script>
+var total_damage=new Decimal(0);
+var cash=new Decimal(0);
+var forge=new Decimal(1);
+var ltime=Date.now();
+var dml=[new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1)];
+var acl=[new Decimal(0)];
+var otl=[];
+var otp=[40,1e7,1e10,1e12,1e12,1e18,1e20,1e25,1e33];
+function disp(a){
+	a=new Decimal(a);
+	if(a.lt(0))return "-"+disp(a.mul(-1));
+	if(a.lt(1e6))return Math.floor(a.max(0).toNumber());
+	if(a.slog().gte(5))return "F"+disp(a.slog());
+	var D=a.log10().floor();
+	if(D.gte(1e6))return "e"+disp(D);
+	return Math.max(Math.min(Math.floor(a.div(Decimal.pow(10,D)).mul(100).toNumber()),999),100)/100+"e"+D.toNumber();
+}
+function dmp(a){
+	let pow=new Decimal(1);
+	if(otl[3])pow=pow.mul(Decimal.pow(0.9,total_damage.add(1).log2().floor().sqrt()));
+	if(a==0)return Decimal.pow(1.2,dml[0]).mul(8).pow(pow);
+	if(a==1)return Decimal.pow(1.2,dml[1]).mul(1000).pow(pow);
+	if(a==2)return Decimal.pow(1.2,dml[2]).mul(1e6).pow(pow);
+	if(a==3)return Decimal.pow(1.2,dml[3]).mul(1e9).pow(pow);
+	if(a==4)return Decimal.pow(1.2,dml[4]).mul(otl[5]?1e12:1e28).pow(pow);
+	if(a==5)return Decimal.pow(1.2,dml[5]).mul(otl[5]?1e15:1e31).pow(pow);
+	if(a==6)return Decimal.pow(1.2,dml[6]).mul(otl[5]?1e18:1e34).pow(pow);
+	if(a==7)return Decimal.pow(1.2,dml[7]).mul(otl[5]?1e21:1e37).pow(pow);
+	if(a==8)return Decimal.pow(1.2,dml[8]).mul(otl[8]?1e24:1e55).pow(pow);
+	if(a==9)return Decimal.pow(1.2,dml[9]).mul(otl[8]?1e27:1e70).pow(pow);
+	if(a==10)return Decimal.pow(1.2,dml[10]).mul(otl[8]?1e30:1e100).pow(pow);
+}
+function acp(a){
+	let pow=new Decimal(1);
+	if(otl[7])pow=pow.mul(Decimal.pow(0.95,total_damage.add(1).log2().floor().sqrt()));
+	if(a==0)return Decimal.pow(1.1,acl[0]).mul(1000).pow(pow);
+}
+function dmup(i){
+	if(cash.gte(dmp(i)))cash=cash.sub(dmp(i)),dml[i]=dml[i].plus(1);
+}
+function otup(i){
+	if(otl[i])return;
+	if(cash.gte(otp[i]))cash=cash.sub(otp[i]),otl[i]=1,
+		document.getElementById("otb"+i).innerHTML="Bought";
+}
+function acup(i){
+	if(cash.gte(acp(i)))cash=cash.sub(acp(i)),acl[i]=acl[i].plus(1);
+}
+function disp1(){
+	document.getElementById("mhp").innerHTML="Total Damage: "+disp(total_damage);
+	document.getElementById("main").innerHTML="Cash: "+disp(cash)+"<br>DPC: "+disp(getdpc())+"<br>CPC: "+disp(getcpc())+"<br>DPS: "+disp(getdps())+"<br>CPS: "+disp(getcps());
+	for(var i=0;i<=10;i++){
+		document.getElementById("dml"+i).innerHTML=dml[i];
+		document.getElementById("dmc"+i).innerHTML=disp(dmp(i));
+		while(cash.gte(dmp(i))&&otl[2])dml[i]=dml[i].plus(1);
+	}
+	for(var i=0;i<=0;i++){
+		document.getElementById("acl"+i).innerHTML=acl[i];
+		document.getElementById("acc"+i).innerHTML=disp(acp(i));
+		while(cash.gte(acp(i))&&otl[4])acl[i]=acl[i].plus(1);
+	}
+	document.getElementById("for4").innerHTML=disp(forge);
+	document.getElementById("for3").innerHTML=disp(forge.sub(1));
+	document.getElementById("for2").innerHTML="Reset for "+disp(forge_gain())+" Forge Points";
+}
+function getdpc(){
+	return new Decimal(1).mul(dml[0]).mul(dml[1]).mul(dml[2]).mul(dml[3]).mul(dml[4]).mul(dml[5]).mul(dml[6]).mul(dml[7]).mul(dml[8]).mul(dml[9]).mul(dml[10]).mul(otl[6]?forge:1);
+}
+function getcpc(){
+	return new Decimal(1).mul(otl[0]?(total_damage.add(10).sqrt()):(1)).mul(otl[1]?(total_damage.add(1).log2().floor().add(1)):(1)).mul(forge);
+}
+function getdps(){
+	return getdpc().mul(acl[0]);
+}
+function getcps(){
+	return getcpc().mul(acl[0]);
+}
+function attack(){
+	total_damage=total_damage.add(getdpc());
+	cash=cash.add(getcpc());
+}
+function main(){
+	var time=Date.now();
+	total_damage=total_damage.add(getdps().mul(time-ltime).div(1000));
+	cash=cash.add(getcps().mul(time-ltime).div(1000));
+	ltime=time;
+	fhp=1024-total_damage.add(1).log2();
+	if(display<=1023){
+		document.getElementById("unlock").style.display="block";document.getElementById("unlock").innerHTML="";
+		if(display<=896)document.getElementById("unlock").innerHTML="You reached the current endgame!";
+		if(display>896)document.getElementById("unlock").innerHTML="Empty 128 HP bars to reach the current endgame";
+		if(display>904)document.getElementById("unlock").innerHTML="Empty 120 HP bars to unlock an One-Time Upgrade";
+		if(display>912)document.getElementById("unlock").innerHTML="Empty 112 HP bars to unlock Damage Multiplier 11";
+		if(display>920)document.getElementById("unlock").innerHTML="Empty 104 HP bars to unlock an One-Time Upgrade";
+		if(display>928)document.getElementById("unlock").innerHTML="Empty 96 HP bars to unlock Damage Multiplier 10";
+		if(display>936)document.getElementById("unlock").innerHTML="Empty 88 HP bars to unlock an One-Time Upgrade";
+		if(display>944)document.getElementById("unlock").innerHTML="Empty 80 HP bars to unlock Damage Multiplier 9";
+		if(display>952)document.getElementById("unlock").innerHTML="Empty 72 HP bars to unlock an One-Time Upgrade";
+		if(display>960)document.getElementById("unlock").innerHTML="Empty 64 HP bars to unlock Forge";
+		if(display>964)document.getElementById("unlock").innerHTML="Empty 60 HP bars to unlock Damage Multiplier 8";
+		if(display>968)document.getElementById("unlock").innerHTML="Empty 56 HP bars to unlock Damage Multiplier 7";
+		if(display>972)document.getElementById("unlock").innerHTML="Empty 52 HP bars to unlock Damage Multiplier 6";
+		if(display>976)document.getElementById("unlock").innerHTML="Empty 48 HP bars to unlock Damage Multiplier 5";
+		if(display>980)document.getElementById("unlock").innerHTML="Empty 44 HP bars to unlock an One-Time Upgrade";
+		if(display>984)document.getElementById("unlock").innerHTML="Empty 40 HP bars to unlock an One-Time Upgrade";
+		if(display>988)document.getElementById("unlock").innerHTML="Empty 36 HP bars to unlock an One-Time Upgrade";
+		if(display>992)document.getElementById("unlock").innerHTML="Empty 32 HP bars to unlock Damage Multiplier 4";
+		if(display>996)document.getElementById("unlock").innerHTML="Empty 28 HP bars to unlock an One-Time Upgrade";
+		if(display>1000)document.getElementById("unlock").innerHTML="Empty 24 HP bars to unlock Damage Multiplier 3";
+		if(display>1004)document.getElementById("unlock").innerHTML="Empty 20 HP bars to unlock Total Damage Display";
+		if(display>1008)document.getElementById("unlock").innerHTML="Empty 16 HP bars to unlock Auto Clicker";
+		if(display>1012)document.getElementById("unlock").innerHTML="Empty 12 HP bars to unlock Damage Multiplier 2";
+		if(display>1016)document.getElementById("unlock").innerHTML="Empty 8 HP bars to unlock an One-Time Upgrade";
+		if(display>1020)document.getElementById("unlock").innerHTML="Empty 4 HP bars to unlock Damage Multiplier 1";
+		if(display>1022)document.getElementById("unlock").innerHTML="Empty 2 HP bars to unlock Info";
+	}
+	if(display<=1022)document.getElementById("main").style.display="block";
+	if(display<=1020)document.getElementById("upgrade").style.display="block";
+	if(display<=1020)document.getElementById("dmu0").style.display="block";
+	if(display<=1016)document.getElementById("otu0").style.display="block";
+	if(display<=1012)document.getElementById("dmu1").style.display="block";
+	if(display<=1008)document.getElementById("acu0").style.display="block";
+	if(display<=1004)document.getElementById("mhp").style.display="block";
+	if(display<=1000)document.getElementById("dmu2").style.display="block";
+	if(display<=996)document.getElementById("otu1").style.display="block";
+	if(display<=992)document.getElementById("dmu3").style.display="block";
+	if(display<=988)document.getElementById("otu2").style.display="block";
+	if(display<=984)document.getElementById("otu3").style.display="block";
+	if(display<=980)document.getElementById("otu4").style.display="block";
+	if(display<=976)document.getElementById("dmu4").style.display="block";
+	if(display<=972)document.getElementById("dmu5").style.display="block";
+	if(display<=968)document.getElementById("dmu6").style.display="block";
+	if(display<=964)document.getElementById("dmu7").style.display="block";
+	if(display<=960)document.getElementById("for1").style.display="block";
+	if(display<=952)document.getElementById("otu5").style.display="block";
+	if(display<=944)document.getElementById("dmu8").style.display="block";
+	if(display<=936)document.getElementById("otu6").style.display="block";
+	if(display<=928)document.getElementById("dmu9").style.display="block";
+	if(display<=920)document.getElementById("otu7").style.display="block";
+	if(display<=912)document.getElementById("dmu10").style.display="block";
+	if(display<=904)document.getElementById("otu8").style.display="block";
+	disp1();
+	setTimeout(main,30);
+}
+function forge_gain(){
+	return cash.add(10).log2().div(64).mul(10).sub(9).max(0).pow(3).floor();
+}
+function forge_reset(){
+	forge=forge.add(forge_gain());
+	dml=[new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1),new Decimal(1)];
+	cash=new Decimal(0);
+}
+setTimeout(main,30);
+</script>
+</head>
+<body>
+<div id="bossbar"><div id="bossbarfg"><div id="bossbarfg2"></div><div id="bossbarto" style="display:none;"></div></div><div id="bossbarbg"></div><div id="bossbarnumber">x123</div></div>
+<div style="height:30px;"></div>
+<a href="javascript:attack();">Attack</a> <span id="mhp" style="display:none;"></span>
+<div id="unlock" style="display:none">
+</div>
+<div id="main" style="display:none">
+</div>
+<div id="upgrade" style="display:none">
+<div id="for1" style="display:none"><span id="for3"></span> Forge Points (Boost Cash Gain by <span id="for4"></span>x) <a href="javascript:forge_reset();" id="for2"></a><br></div>
+<div id="acu0" style="display:none">Auto Clicker: Level <span id="acl0"></span>, <a href="javascript:acup(0);">Level Up (<span id="acc0"></span>)</a><br></div>
+<div id="dmu0" style="display:none">Damage Multiplier 1: x<span id="dml0"></span>, <a href="javascript:dmup(0);">Level Up (<span id="dmc0"></span>)</a><br></div>
+<div id="dmu1" style="display:none">Damage Multiplier 2: x<span id="dml1"></span>, <a href="javascript:dmup(1);">Level Up (<span id="dmc1"></span>)</a><br></div>
+<div id="dmu2" style="display:none">Damage Multiplier 3: x<span id="dml2"></span>, <a href="javascript:dmup(2);">Level Up (<span id="dmc2"></span>)</a><br></div>
+<div id="dmu3" style="display:none">Damage Multiplier 4: x<span id="dml3"></span>, <a href="javascript:dmup(3);">Level Up (<span id="dmc3"></span>)</a><br></div>
+<div id="dmu4" style="display:none">Damage Multiplier 5: x<span id="dml4"></span>, <a href="javascript:dmup(4);">Level Up (<span id="dmc4"></span>)</a><br></div>
+<div id="dmu5" style="display:none">Damage Multiplier 6: x<span id="dml5"></span>, <a href="javascript:dmup(5);">Level Up (<span id="dmc5"></span>)</a><br></div>
+<div id="dmu6" style="display:none">Damage Multiplier 7: x<span id="dml6"></span>, <a href="javascript:dmup(6);">Level Up (<span id="dmc6"></span>)</a><br></div>
+<div id="dmu7" style="display:none">Damage Multiplier 8: x<span id="dml7"></span>, <a href="javascript:dmup(7);">Level Up (<span id="dmc7"></span>)</a><br></div>
+<div id="dmu8" style="display:none">Damage Multiplier 9: x<span id="dml8"></span>, <a href="javascript:dmup(8);">Level Up (<span id="dmc8"></span>)</a><br></div>
+<div id="dmu9" style="display:none">Damage Multiplier 10: x<span id="dml9"></span>, <a href="javascript:dmup(9);">Level Up (<span id="dmc9"></span>)</a><br></div>
+<div id="dmu10" style="display:none">Damage Multiplier 11: x<span id="dml10"></span>, <a href="javascript:dmup(10);">Level Up (<span id="dmc10"></span>)</a><br></div>
+<br>
+<div id="otu0" style="display:none">Total Damage boost cash gain, <a href="javascript:otup(0);" id="otb0">Buy (40)</a><br></div>
+<div id="otu1" style="display:none">Total HP bars Emptied boost cash gain, <a href="javascript:otup(1);" id="otb1">Buy (1e7)</a><br></div>
+<div id="otu2" style="display:none">Autobuy Damage Multipliers without costing any cash, <a href="javascript:otup(2);" id="otb2">Buy (1e10)</a><br></div>
+<div id="otu3" style="display:none">Total HP bars Emptied make Damage Multipliers costs less, <a href="javascript:otup(3);" id="otb3">Buy (1e12)</a><br></div>
+<div id="otu4" style="display:none">Autobuy Auto Clicker without costing any cash, <a href="javascript:otup(4);" id="otb4">Buy (1e12)</a><br></div>
+<div id="otu5" style="display:none">Damage Multipliers 5-8 are cheaper, <a href="javascript:otup(5);" id="otb5">Buy (1e18)</a><br></div>
+<div id="otu6" style="display:none">Forge Points boost Damage, <a href="javascript:otup(6);" id="otb6">Buy (1e20)</a><br></div>
+<div id="otu7" style="display:none">Total HP bars Emptied make Auto Clicker costs less, <a href="javascript:otup(7);" id="otb7">Buy (1e25)</a><br></div>
+<div id="otu8" style="display:none">Damage Multipliers 9-11 are cheaper, <a href="javascript:otup(8);" id="otb8">Buy (1e33)</a><br></div>
+</div>
+</body></html>

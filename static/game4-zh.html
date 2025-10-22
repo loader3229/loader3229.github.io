@@ -1,0 +1,49 @@
+<script>
+var b=1,e=1;
+function t(c){
+	if(c>=b)return b;
+	if(Math.random()<e)return c;else return t(c+1);
+}
+var hp=2020,hpmax=2020,time1=0,mult=1,level=0,preslevel=0;
+function disp(){
+document.getElementById("prog").value=hp;
+document.getElementById("prog").max=hpmax;
+document.getElementById("info").innerHTML="已击杀怪物"+level+"<br>攻击力"+Math.floor(mult*1000)+(preslevel?("*"+Math.floor(Math.pow(1.003,preslevel)*1000)/1000):"");
+}
+function main(){
+var time2=Date.now();
+hp-=mult*(time2-time1)*Math.pow(1.003,preslevel);
+if(hp<=0){
+level++;
+hpmax=2000*Math.pow(1.01,level);
+hp+=hpmax;
+e=Math.max(0.5*Math.pow(0.998,preslevel),0.05);
+b=5+Math.floor(preslevel/50);
+if(preslevel>=1000)b=25+Math.floor((preslevel-1000)/10);
+var pz=t(0);
+var newmult=Math.pow(1.005,level)*(1+Math.random()*0.1)*Math.pow(1.1,pz);
+document.getElementById("wuqi").innerHTML="获得武器，品质"+pz+"，攻击力"+Math.floor(newmult*1000);
+if(newmult>mult)mult=newmult;
+if(level>preslevel){document.getElementById("pres").style.display="block";}
+}
+time1=time2;
+setTimeout(main,20);
+disp();
+}
+function pres(){
+if(level>preslevel){
+preslevel=level;
+level=0;
+hp=hpmax=2020;
+mult=1;
+document.getElementById("wuqi").innerHTML="";
+document.getElementById("pres").style.display="none";
+}
+}
+time1=Date.now();
+setTimeout(main,20);
+</script>
+<progress id="prog"></progress>
+<div id="info"></div>
+<div id="wuqi"></div>
+<a href="javascript:pres();" id="pres" style="display:none;">重新开始（有加成）</a>
