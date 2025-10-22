@@ -4,23 +4,19 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=1250">
-  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
-  <script>zhtitle='{% if page.zhtitle %}{{ page.zhtitle }} | {% endif %}{{ site.zhtitle }}';</script>
-  <!-- 引入样式 -->
+  <title>{{ site.title }}{% if page.title %} -- {{ page.title }}{% endif %}</title>
+  <script>zhtitle='{{ site.zhtitle }}{% if page.zhtitle %} -- {{ page.zhtitle }}{% endif %}';</script>
   <link rel="stylesheet" href="/bootstrap/bootstrap.min.css">
   <style id="lang-style"></style>
 </head>
 <body>
-  <!-- 引入页头组件 -->
   {% include header.html %}
   
   <noscript>Please Enable Javascript.</noscript>
-  <!-- 页面内容区域（由子布局或页面填充） -->
   <div class='container'>
-    {{ content }}  <!-- 这里会替换为具体页面的内容 -->
+    {{ content }}  
   </div>
   
-  <!-- 引入JS -->
   <script src="/sha512.js"></script>
   <script src="/jquery.min.js"></script>
   <script src="/jquery-ui.min.js"></script>
@@ -32,7 +28,18 @@
   <script src="/index.js"></script>
   <link rel="stylesheet" type="text/css" href="/l2d.css"/>
   
-  <!-- 引入页脚组件 -->
-  {% include footer.html %}
+  <div class="waifu">
+  <div class="waifu-tips"></div>
+  <canvas id="live2d" class="live2d"></canvas>
+  <div class="waifu-tool">
+    <span class="fui-chat"></span>
+    <span class="fui-star"></span>
+    <span class="fui-folder"></span>
+    <!--span class="fui-video"></span-->
+    <!--span class="fui-gear"></span-->
+    <span class="fui-info-circle"></span>
+    <span class="fui-cmd"></span>
+  </div>
+</div>
 </body>
 </html>
