@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=1250">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <script>zhtitle='{% if page.zhtitle %}{{ page.zhtitle }} | {% endif %}{{ site.zhtitle }}';</script>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="/bootstrap/bootstrap.min.css">
+  <style id="lang-style"></style>
+</head>
+<body>
+  <!-- 引入页头组件 -->
+  {% include header.html %}
+  
+  <noscript>Please Enable Javascript.</noscript>
+  <!-- 页面内容区域（由子布局或页面填充） -->
+  <div class='container'>
+    {{ content }}  <!-- 这里会替换为具体页面的内容 -->
+  </div>
+  
+  <!-- 引入JS -->
+  <script src="/sha512.js"></script>
+  <script src="/jquery.min.js"></script>
+  <script src="/jquery-ui.min.js"></script>
+  <script src="/live2d.js"></script>
+  <script src="/bootstrap/bootstrap.min.js"></script>
+  <script src="/break_eternity.js"></script>
+  <script src="/expantanum.js"></script>
+  <script src="/lz-string.js"></script>
+  <script src="/index.js"></script>
+  <link rel="stylesheet" type="text/css" href="/l2d.css"/>
+  
+  <!-- 引入页脚组件 -->
+  {% include footer.html %}
+</body>
+</html>

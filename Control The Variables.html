@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>Control the variables</title>
+<script>
+var p=0,t=Date.now();
+var b1=0,b2=0,b3=0,b4=0,b5=0,c1=0,c2=0,auto=false;
+function geta1(){return 1+b1;}
+function geta2(){return Math.sin((Date.now()-t)/1000)*b2;}
+function geta3(){var T=(Date.now()-t)/1000*Math.sqrt(b3);if(T-Math.floor(T)<0.001*Math.sqrt(b3))return b3;return b3*(T-Math.floor(T));}
+function geta4(){return 2*b4/Math.sqrt((Date.now()-t)/500+1);}
+function geta5(){return Math.abs(2*Math.cos((Date.now()-t)/1000)*b5);}
+function getp(){
+	return (geta1()+geta2()+geta3()+geta4()+geta5())*(1+c1/10)*(1+c2/10);
+}
+function setp(){p=getp();t=Date.now();}
+function addc1(){t=Date.now();c1++;}
+function addc2(){t=Date.now();c2++;}
+function downb1(){if(b1>0)b1--;}
+function downb2(){if(b2>0)b2--;}
+function downb3(){if(b3>0)b3--;}
+function downb4(){if(b4>0)b4--;}
+function downb5(){if(b5>0)b5--;}
+function upb1(){if(p>=Math.pow((b1+1)/1.1,1.5))b1++;}
+function upb2(){if(p>=Math.pow((b2+1)*1.5,1.5))b2++;}
+function upb3(){if(p>=Math.pow((b3+1)*2,1.5))b3++;}
+function upb4(){if(p>=Math.pow((b4+1)*3.2,1.5))b4++;}
+function upb5(){if(p>=Math.pow((b5+1)*13,1.5))b5++;}
+function reset(){t=Date.now();};
+function update(){
+	document.getElementById("a1").innerHTML=geta1();
+	document.getElementById("a2").innerHTML=geta2();
+	document.getElementById("a3").innerHTML=geta3();
+	document.getElementById("a4").innerHTML=geta4();
+	document.getElementById("a5").innerHTML=geta5();
+	document.getElementById("b1").innerHTML=b1;
+	document.getElementById("b2").innerHTML=b2;
+	document.getElementById("b3").innerHTML=b3;
+	document.getElementById("b4").innerHTML=b4;
+	document.getElementById("b5").innerHTML=b5;
+	document.getElementById("b1a").innerHTML=Math.floor(Math.pow(p,1/1.5)*1.1);
+	document.getElementById("b2a").innerHTML=Math.floor(Math.pow(p,1/1.5)/1.5);
+	document.getElementById("b3a").innerHTML=Math.floor(Math.pow(p,1/1.5)/2);
+	document.getElementById("b4a").innerHTML=Math.floor(Math.pow(p,1/1.5)/3.2);
+	document.getElementById("b5a").innerHTML=Math.floor(Math.pow(p,1/1.5)/13);
+	document.getElementById("p").innerHTML=p;
+	document.getElementById("t").innerHTML=(Date.now()-t)/1000;
+	document.getElementById("c1").innerHTML=c1;
+	document.getElementById("c2").innerHTML=c2;
+	document.getElementById("addc1").style.display=(p>Math.pow(1.1,(c1+1)**2/2)*10)?"":"none";
+	document.getElementById("addc2").style.display=(p>Math.pow(1.1,(c2+1)**2/2)*50)?"":"none";
+	document.getElementById("autot").style.display=(p>=50)?"":"none";
+	document.getElementById("auto").innerHTML=auto?"On":"Off";
+	if(auto && p<getp())p=getp();
+}
+setInterval(update,10);
+</script>
+</head>
+<body>
+p=<span id="p"></span><br>
+T=<span id="t"></span><br>
+c1=<span id="c1"></span><br>
+c2=<span id="c2"></span><br>
+b1=<span id="b1"></span>/<span id="b1a"></span> <a href="javascript:downb1();">-1</a> <a href="javascript:upb1();">+1</a> <br>
+b2=<span id="b2"></span>/<span id="b2a"></span> <a href="javascript:downb2();">-1</a> <a href="javascript:upb2();">+1</a> <br>
+b3=<span id="b3"></span>/<span id="b3a"></span> <a href="javascript:downb3();">-1</a> <a href="javascript:upb3();">+1</a> <br>
+b4=<span id="b4"></span>/<span id="b4a"></span> <a href="javascript:downb4();">-1</a> <a href="javascript:upb4();">+1</a> <br>
+b5=<span id="b5"></span>/<span id="b5a"></span> <a href="javascript:downb5();">-1</a> <a href="javascript:upb5();">+1</a> <br>
+a1=1+b1=<span id="a1"></span><br>
+a2=b2*sin(T)=<span id="a2"></span><br>
+a3=(T*b3^1.5) mod b3=<span id="a3"></span><br>
+a4=2*b4/sqrt(2*T+1)=<span id="a4"></span><br>
+a5=|2*b5*cos(T)|=<span id="a5"></span><br>
+Auto-Update p: <span id="auto"></span><br>
+<a href="javascript:reset();">T=0</a><br>
+<a href="javascript:setp();">p=Σ(ai)*Π(1+ci/10),T=0</a><br>
+<a href="javascript:addc1();" id="addc1" style="display:none;">c1=c1+1,T=0</a><br>
+<a href="javascript:addc2();" id="addc2" style="display:none;">c2=c2+1,T=0</a><br>
+<a href="javascript:auto=!auto;" id="autot" style="display:none;">Toggle Auto-Update p</a><br>
+</body>
+</html>
