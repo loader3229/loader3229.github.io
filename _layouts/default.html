@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=1250">
   <title>{{ site.title }}{% if page.title %} -- {{ page.title }}{% endif %}</title>
-  <script>zhtitle='{{ site.zhtitle }}{% if page.zhtitle %} -- {{ page.zhtitle }}{% endif %}';</script>
+  <script>window.zhtitle = '{{ site.zhtitle }}{% if page.zhtitle %} -- {{ page.zhtitle }}{% endif %}';</script>
   <link rel="stylesheet" href="/bootstrap/bootstrap.min.css">
   <style id="lang-style"></style>
 </head>
+
 <body>
   {% include header.html %}
-  
+
   <noscript>Please Enable Javascript.</noscript>
   <div class='container'>
-    {{ content }}  
+    {{ content }}
   </div>
-  
+
   <script src="/sha512.js"></script>
   <script src="/jquery.min.js"></script>
   <script src="/jquery-ui.min.js"></script>
@@ -26,20 +28,21 @@
   <script src="/expantanum.js"></script>
   <script src="/lz-string.js"></script>
   <script src="/index.js"></script>
-  <link rel="stylesheet" type="text/css" href="/l2d.css"/>
-  
+  <link rel="stylesheet" type="text/css" href="/l2d.css" />
+
   <div class="waifu">
-  <div class="waifu-tips"></div>
-  <canvas id="live2d" class="live2d"></canvas>
-  <div class="waifu-tool">
-    <span class="fui-chat"></span>
-    <span class="fui-star"></span>
-    <span class="fui-folder"></span>
-    <!--span class="fui-video"></span-->
-    <!--span class="fui-gear"></span-->
-    <span class="fui-info-circle"></span>
-    <span class="fui-cmd"></span>
+    <div class="waifu-tips"></div>
+    <canvas id="live2d" class="live2d"></canvas>
+    <div class="waifu-tool">
+      <span class="fui-chat"></span>
+      <span class="fui-star"></span>
+      <span class="fui-folder"></span>
+      <!--span class="fui-video"></span-->
+      <!--span class="fui-gear"></span-->
+      <span class="fui-info-circle"></span>
+      <span class="fui-cmd"></span>
+    </div>
   </div>
-</div>
 </body>
+
 </html>
