@@ -5,7 +5,11 @@ layout: default
 ---
 
 <script type="text/javascript" src="/BanGConverter/converter.js"></script>
+<script>window.i18n_lang=[];</script>
+<script type="text/javascript" src="/BanGConverter/i18n/en.js"></script>
+<script>window.i18n_lang[0]=i18n;</script>
 <script type="text/javascript" src="/BanGConverter/i18n/zh.js"></script>
+<script>window.i18n_lang[1]=i18n;setInterval("window.i18n=window.i18n_lang[localStorage.lang];",20);</script>
 <script type="text/javascript" src="/BanGConverter/in/bangsim.js"></script>
 <script type="text/javascript" src="/BanGConverter/in/bestdori.js"></script>
 <script type="text/javascript" src="/BanGConverter/out/bangbangboom.js"></script>
@@ -16,25 +20,24 @@ layout: default
 <script type="text/javascript" src="/BanGConverter/out/bms-hitsound.js"></script>
 <script type="text/javascript" src="/BanGConverter/bestdori.js"></script>
 <h1><span class=en>BanG Converter - BanG Dream! Chart Converter</span><span class=zh>BanG Converter - BanG Dream! 谱面转换器</span></h1>
-<p>Note: This Converter doesn't support English now.</p>
 <hr>
 <div class="row">
   <div class="col-md-6">
     <div class="form-group">
-      <label>输入谱面：</label>
+      <label><span class=en>Input Chart: </span><span class=zh>输入谱面：</span></label>
       <textarea id="chartinput" class="form-control" style="height:200px;resize:none;"></textarea>
     </div>
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label>输出谱面：<a id="downloadchart" style="display:none;" class="btn btn-sm btn-primary ml-2" download="mychart.txt">下载</a></label>
+      <label><span class=en>Output Chart: </span><span class=zh>输出谱面：</span><a id="downloadchart" style="display:none;" class="btn btn-sm btn-primary ml-2" download="mychart.txt"><span class=en>Download</span><span class=zh>下载</span></a></label>
       <textarea id="chartoutput" class="form-control" style="height:200px;resize:none;" readonly="readonly"></textarea>
     </div>
   </div>
 </div>
 <div class="form-row">
   <div class="form-group col-md-6">
-    <label>输入谱面格式：</label>
+    <label><span class=en>Input Chart Format: </span><span class=zh>输入谱面格式：</span></label>
     <select id="inputformat" class="form-control">
       <option value="bestdori">Bestdori! (v2)</option>
       <option value="bestdoriv1">Bestdori! v1</option>
@@ -42,24 +45,24 @@ layout: default
     </select>
   </div>
   <div class="form-group col-md-6">
-    <label>输出谱面格式：</label>
+    <label><span class=en>Output Chart Format: </span><span class=zh>输出谱面格式：</span></label>
     <select id="outputformat" class="form-control">
       <option value="bestdori" selected>Bestdori! (v2)</option>
       <option value="bangbangboomv1">bangbangboom v1</option>
-      <option value="bangbangboomv1ex">bangbangboom v1-Ex</option>
+      <option value="bangbangboomv1ex">bangbangboom v1 Extended</option>
       <option value="bangsim">BanG! Simulator 2</option>
       <option value="bangsimv1">BanG! Simulator 1</option>
-      <option value="bangcraft">BanG!Craft</option>
-      <option value="bms">官谱BMS</option>
-      <option value="bmsex">官谱BMS-Ex</option>
-      <option value="bms_hitsound">打击音BMS</option>
+      <option value="bangcraft">BanG! Craft</option>
+      <option value="bms">Official BMS</option>
+      <option value="bmsex">Official BMS Extended</option>
+      <option value="bms_hitsound">Hitsound BMS</option>
     </select>
   </div>
 </div>
 <div class="form-group">
-  <a href="javascript:void(convert());" class="btn btn-primary">开始转换</a>
+  <a href="javascript:void(convert());" class="btn btn-primary"><span class=en>Convert!</span><span class=zh>开始转换！</span></a>
 </div>
-<div class="form-group">
+<div class="form-group" style="display:none;">
   <div class="row align-items-center">
     <div class="col-auto">
       <label class="sr-only" for="chartoffset">谱面偏移：</label>
@@ -75,9 +78,9 @@ layout: default
 </div>
 <hr>
 <div class="form-group">
-  <label>获取BanG Dream!官谱：</label>
-  <div class="input-group">
-    <input id="officialid" type="number" min="1" max="2000" placeholder="谱面ID" class="form-control">
+  <label><span class=en>Get BanG Dream! Official Chart: </span><span class=zh>获取BanG Dream!官谱：</span></label>
+  <div class="input-group" style="width:60%;">
+    <input id="officialid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
     <div class="input-group-append">
       <select id="officialdiff" class="custom-select">
         <option value="0">Easy</option>
@@ -88,22 +91,22 @@ layout: default
       </select>
     </div>
     <div class="input-group-append">
-      <a href="javascript:void(bestdoriofficial());" class="btn btn-success">获取</a>
+      <a href="javascript:void(bestdoriofficial());" class="btn btn-success"><span class=en>Get Chart</span><span class=zh>获取谱面</span></a>
     </div>
   </div>
 </div>
 <div class="form-group">
-  <label>获取Bestdori自制谱：</label>
-  <div class="input-group">
-    <input id="communityid" type="number" min="1" max="1000000" placeholder="谱面ID" class="form-control">
+  <label><span class=en>Get Bestdori! Community Chart: </span><span class=zh>获取Bestdori自制谱：</span></label>
+  <div class="input-group" style="width:60%;">
+    <input id="communityid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
     <div class="input-group-append">
-      <a href="javascript:void(bestdoricommunity());" class="btn btn-success">获取</a>
+      <a href="javascript:void(bestdoricommunity());" class="btn btn-success"><span class=en>Get Chart</span><span class=zh>获取谱面</span></a>
     </div>
   </div>
 </div>
-<div class="alert alert-info mt-4">
+<div class="alert alert-info mt-4 zh">
   <p class="mb-0">如果要转换为其他音游的谱面，请先转换为官谱BMS并下载，然后使用<a href="https://lrfasd.github.io/rmstZ/rmstZ_20211225.html" target="_blank">rmstZ</a>转换为其他音游的谱面。rmstZ不支持方向滑键的转换。</p>
 </div>
 <div class="text-center mt-4 mb-4">
-  <p class="text-muted">本转换器开源，你可以在这里看到源代码：<a href="https://github.com/loader3229/BanGConverter">GitHub</a></p>
+  <p class="text-muted"><span class=en>This converter is open-source, you can see source code here: </span><span class=zh>本转换器开源，你可以在这里看到源代码：</span><a href="https://github.com/loader3229/BanGConverter">GitHub</a></p>
 </div>
