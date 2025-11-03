@@ -25,20 +25,20 @@ layout: default
   <div class="col-md-6">
     <div class="form-group">
       <label><span class=en>Input Chart: </span><span class=zh>输入谱面：</span></label>
-      <textarea id="chartinput" class="form-control" style="height:200px;resize:none;"></textarea>
+      <textarea id="chartinput" name="chartinput" class="form-control" style="height:200px;resize:none;"></textarea>
     </div>
   </div>
   <div class="col-md-6">
     <div class="form-group">
       <label><span class=en>Output Chart: </span><span class=zh>输出谱面：</span><a id="downloadchart" style="display:none;" class="btn btn-sm btn-primary ml-2" download="mychart.txt"><span class=en>Download</span><span class=zh>下载</span></a></label>
-      <textarea id="chartoutput" class="form-control" style="height:200px;resize:none;" readonly="readonly"></textarea>
+      <textarea id="chartoutput" name="chartoutput" class="form-control" style="height:200px;resize:none;" readonly="readonly"></textarea>
     </div>
   </div>
 </div>
 <div class="form-row">
   <div class="form-group col-md-6">
     <label><span class=en>Input Chart Format: </span><span class=zh>输入谱面格式：</span></label>
-    <select id="inputformat" class="form-control">
+    <select id="inputformat" name="inputformat" class="form-control">
       <option value="bestdori">Bestdori! (v2)</option>
       <option value="bestdoriv1">Bestdori! v1</option>
       <option value="bangsim" selected>BanG! Simulator</option>
@@ -46,7 +46,7 @@ layout: default
   </div>
   <div class="form-group col-md-6">
     <label><span class=en>Output Chart Format: </span><span class=zh>输出谱面格式：</span></label>
-    <select id="outputformat" class="form-control">
+    <select id="outputformat" name="outputformat" class="form-control">
       <option value="bestdori" selected>Bestdori! (v2)</option>
       <option value="bangbangboomv1">bangbangboom v1</option>
       <option value="bangbangboomv1ex">bangbangboom v1 Extended</option>
@@ -62,16 +62,20 @@ layout: default
 <div class="form-group">
   <a href="javascript:void(convert());" class="btn btn-primary"><span class=en>Convert!</span><span class=zh>开始转换！</span></a>
 </div>
-<div class="form-group" style="display:none;">
+<div class="form-group">
   <div class="row align-items-center">
     <div class="col-auto">
-      <label class="sr-only" for="chartoffset">谱面偏移：</label>
-      <input id="chartoffset" type="number" min="-1e9" max="1e9" value="0" step="0.25" class="form-control" style="width:150px">
+      <label for="chartoffset"><span class=en>Chart Offset: </span><span class=zh>谱面偏移：</span></label>
+      <input id="chartoffset" name="chartoffset" type="number" min="-1e9" max="1e9" value="0" step="0.25" class="form-control" style="width:150px">
+    </div>
+    <div class="col-auto">
+      <label for="chartspeed"><span class=en>Chart Speed: </span><span class=zh>谱面倍速：</span></label>
+      <input id="chartspeed" name="chartspeed" type="number" min="0.001" max="1e9" value="1" step="0.001" class="form-control" style="width:150px">
     </div>
     <div class="col-auto">
       <span id="nolnspan" class="form-check">
         <input id="noln" type="checkbox" class="form-check-input">
-        <label class="form-check-label" for="noln">在转换Bestdori!谱面时将长条转换为滑条</label>
+        <label class="form-check-label" for="noln"><span class=en>When converting Bestdori! chart, don't convert slide to long note</span><span class=zh>在转换Bestdori!谱面时将长条转换为滑条</span></label>
       </span>
     </div>
   </div>
@@ -80,9 +84,9 @@ layout: default
 <div class="form-group">
   <label><span class=en>Get BanG Dream! Official Chart: </span><span class=zh>获取BanG Dream!官谱：</span></label>
   <div class="input-group" style="width:60%;">
-    <input id="officialid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
+    <input id="officialid" name="officialid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
     <div class="input-group-append">
-      <select id="officialdiff" class="custom-select">
+      <select id="officialdiff" name="officialdiff" class="custom-select">
         <option value="0">Easy</option>
         <option value="1">Normal</option>
         <option value="2">Hard</option>
@@ -98,7 +102,7 @@ layout: default
 <div class="form-group">
   <label><span class=en>Get Bestdori! Community Chart: </span><span class=zh>获取Bestdori自制谱：</span></label>
   <div class="input-group" style="width:60%;">
-    <input id="communityid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
+    <input id="communityid" name="communityid" type="number" min="1" max="1000000" placeholder="Chart ID" class="form-control">
     <div class="input-group-append">
       <a href="javascript:void(bestdoricommunity());" class="btn btn-success"><span class=en>Get Chart</span><span class=zh>获取谱面</span></a>
     </div>
