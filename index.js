@@ -1,3 +1,6 @@
+// Show Container
+$("#content-container").show();
+
 var decimalZero=new Decimal(0);
 var decimalOne=new Decimal(1);
 

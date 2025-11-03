@@ -8,14 +8,22 @@
   <title>{{ site.title }}{% if page.title %} -- {{ page.title }}{% endif %}</title>
   <script>window.zhtitle = '{{ site.zhtitle }}{% if page.zhtitle %} -- {{ page.zhtitle }}{% endif %}';</script>
   <link rel="stylesheet" href="/bootstrap/bootstrap.min.css">
-  <style id="lang-style"></style>
+  <style id="lang-style">
+    .zh {
+      display: none;
+    }
+
+    .en {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
   {% include header.html %}
 
   <noscript>如果要正常访问loader3229的主页，请打开JavaScript。<br>Please enable JavaScript.</noscript>
-  <div class='container'>
+  <div class="container" id="content-container" style="display: none;">
     {{ content }}
   </div>
 
