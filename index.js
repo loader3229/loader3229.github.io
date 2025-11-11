@@ -193,6 +193,15 @@ function update_total_points(){
 	}catch(e){}
 
 	try{
+		var tmp=parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
+		if(Number.isFinite(tmp))total_points+=(tmp*20);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#asast1").html(tmp);
+			$("#asast2").html(tmp*20);
+		}
+	}catch(e){}
+
+	try{
 		var tmp=0;
 		for(var i=1;i<=9;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
 		if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
