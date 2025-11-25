@@ -10,7 +10,7 @@ else localStorage.pageopencount=b;
 
 /** Number Formatting */
 var script=document.createElement('script');
-script.src='NumberFormatting.js';
+script.src='/js/NumberFormatting.js';
 document.head.appendChild(script);
 
 /** Language Settings */
