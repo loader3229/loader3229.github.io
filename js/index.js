@@ -13,7 +13,7 @@ var script=document.createElement('script');
 script.src='/js/NumberFormatting.js';
 document.head.appendChild(script);
 
-/** Language Settings */
+/** Language Settings and Navigation */
 
 entitle=document.title;
 
