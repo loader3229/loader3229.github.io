@@ -116,6 +116,15 @@ function update_total_points(){
 	}catch(e){}
 
 	try{
+		var tmp=n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,500);else tmp=0;
+		if(document.location.href.indexOf("/incrementalgames")!=-1){
+			$("#adventurechain1").html(format(Decimal.pow(10,tmp).sub(1)));
+			$("#adventurechain2").html(Math.floor(Math.min(tmp*10,500)));
+		}
+	}catch(e){}
+
+	try{
 		var tmp=0;
 		JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
 		if(Number.isFinite(tmp))total_points+=tmp;else tmp=0;
