@@ -172,10 +172,10 @@ function update_total_points(){
 
 	try{
 		var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*tmp*10);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*tmp*19,1000);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#ngm4r1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-			$("#ngm4r2").html(Math.floor(tmp*tmp*10));
+			$("#ngm4r2").html(Math.floor(Math.min(tmp*tmp*19,1000)));
 		}
 	}catch(e){}
 
