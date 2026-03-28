@@ -117,10 +117,10 @@ function update_total_points(){
 
 	try{
 		var tmp=n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,500);else tmp=0;
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,777);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#adventurechain1").html(format(Decimal.pow(10,tmp).sub(1)));
-			$("#adventurechain2").html(Math.floor(Math.min(tmp*10,500)));
+			$("#adventurechain2").html(Math.floor(Math.min(tmp*10,777)));
 		}
 	}catch(e){}
 
