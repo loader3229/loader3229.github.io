@@ -127,10 +127,10 @@ function update_total_points(){
 	try{
 		var tmp=0;
 		JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
-		if(Number.isFinite(tmp))total_points+=tmp;else tmp=0;
+		if(Number.isFinite(tmp))total_points+=Math.min(tmp,1000);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#zbkc1").html(tmp);
-			$("#zbkc2").html(tmp);
+			$("#zbkc2").html(Math.min(tmp,1000));
 		}
 	}catch(e){}
 
