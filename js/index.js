@@ -71,7 +71,7 @@ function update_total_points(){
 	
 	try{
 		var tmp=new Decimal(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
-		if(Number.isFinite(tmp))total_points+=Math.floor(Math.min(Math.sqrt(tmp)*30,1600));else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*30,1600);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#ifl1").html(format(Decimal.pow(2,tmp).sub(1)));
 			$("#ifl2").html(Math.floor(Math.min(Math.sqrt(tmp)*30,1600)));
@@ -80,7 +80,7 @@ function update_total_points(){
 
 	try{
 		var tmp=new Decimal(JSON.parse(atob(localStorage["one-points-one-layer"])).points).toNumber();
-		if(Number.isFinite(tmp))total_points+=(tmp*50);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*50,1500);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#onep1l1").html(format(tmp,4));
 			$("#onep1l2").html(Math.floor(Math.min(tmp*50,1500)));
@@ -89,7 +89,7 @@ function update_total_points(){
 
 	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-		if(Number.isFinite(tmp))total_points+=(tmp*6);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*6);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#milestone1").html(tmp);
 			$("#milestone2").html(tmp*6);
@@ -98,7 +98,7 @@ function update_total_points(){
 
 	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
-		if(Number.isFinite(tmp))total_points+=(tmp*20);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*20);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#asast1").html(tmp);
 			$("#asast2").html(tmp*20);
@@ -108,7 +108,7 @@ function update_total_points(){
 	try{
 		var tmp=0;
 		for(var i=1;i<=9;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
-		if(Number.isFinite(tmp))total_points+=(tmp*9);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*9);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#multitree1").html(tmp);
 			$("#multitree2").html(tmp*9);
@@ -117,7 +117,7 @@ function update_total_points(){
 
 	try{
 		var tmp=n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,777);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,777);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#adventurechain1").html(format(Decimal.pow(10,tmp).sub(1)));
 			$("#adventurechain2").html(Math.floor(Math.min(tmp*10,777)));
@@ -127,7 +127,7 @@ function update_total_points(){
 	try{
 		var tmp=0;
 		JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp,1000);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp,1000);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#zbkc1").html(tmp);
 			$("#zbkc2").html(Math.min(tmp,1000));
@@ -136,7 +136,7 @@ function update_total_points(){
 
 	try{
 		var tmp=JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp*3,1500);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*3,1500);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#trimps1").html(tmp);
 			$("#trimps2").html(Math.floor(Math.min(tmp*3,1500)));
@@ -154,7 +154,7 @@ function update_total_points(){
 		let game=JSON.parse(atob(localStorage.tower));
 		let rank=EN(1);
 		let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
-		if(Number.isFinite(tmp))total_points+=Math.min(tmp*10,1000);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,1000);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#towers1").html(Math.round(tmp*10)/10+"%");
 			$("#towers2").html(Math.round(tmp*10));
