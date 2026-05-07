@@ -601,9 +601,9 @@ pldiv.id='pldiv';
 document.body.append(pldiv);
 
 setInterval(function(){
-	var pl=((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points*player.metapoints.add(1).log10().div(1000).add(1).min(1.5).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))**1.5;
+	var pl=((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points*player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))**1.5;
 	pl=pl*2+1;
-	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor(((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points*player.metapoints.add(1).log10().div(1000).add(1).min(1.5).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
+	pldisp.innerHTML="Level "+Math.floor(pl)+", EXP:"+Math.floor(((Math.log10(parseFloat(localStorage.pageopencount)/5+10)-1)*1.25+Math.min(Math.log10(parseFloat(localStorage.kasumiIntimacy)/1000+1),9)+Math.log10((total_points*player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber())/10+1)+(getTotalRating()-1777)/100+((sha512_256(localStorage.supporterCode+"loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5')?1:0))*100)+"/"+Math.floor(((Math.floor(pl)/2)**(2/3))*100);
 	plbar.style.width=((pl-Math.floor(pl))*100)+"%";
 	
 	if(programming_contest_mode){
