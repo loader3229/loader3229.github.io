@@ -18,7 +18,13 @@ function load_metagame() {
         if (!a.eq(a)) a = n(0);
         return a;
     }
+    var fix2 = function (a, b) {
+        a = a || b;
+        if (!isFinite(a)) a = b;
+        return a;
+    }
     player.metapoints = fix(player_saved.metapoints);
+    player.metaupgrades[0] = fix(player_saved.metaupgrades[0]);
     player.metaupgrades[1] = fix(player_saved.metaupgrades[1]);
     player.metaupgrades[2] = fix(player_saved.metaupgrades[2]);
     player.metaupgrades[3] = fix(player_saved.metaupgrades[3]);
@@ -28,10 +34,10 @@ function load_metagame() {
     player.metatranscension = fix(player_saved.metatranscension);
     player.metareincarnation = fix(player_saved.metareincarnation);
     player.metainf = fix(player_saved.metainf);
-    player.tick = (player_saved.tick || Date.now());
-    player.lastprestige = (player_saved.lastprestige || Date.now());
-    player.lasttranscension = (player_saved.lasttranscension || Date.now());
-    player.stat = (player_saved.stat || 0);
+    player.tick = fix2(player_saved.tick, Date.now());
+    player.lastprestige = fix2(player_saved.lastprestige, Date.now());
+    player.lasttranscension = fix2(player_saved.lasttranscension, Date.now());
+    player.stat = fix2(player_saved.stat, 0);
 }
 try {
     load_metagame();
