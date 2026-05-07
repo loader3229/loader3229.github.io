@@ -98,10 +98,10 @@ function update_total_points(){
 
 	try{
 		var tmp=parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*20);else tmp=0;
+		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,960);else tmp=0;
 		if(document.location.href.indexOf("/incrementalgames")!=-1){
 			$("#asast1").html(tmp);
-			$("#asast2").html(tmp*20);
+			$("#asast2").html(Math.min(tmp*20,960));
 		}
 	}catch(e){}
 
