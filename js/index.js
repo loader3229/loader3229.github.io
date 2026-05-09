@@ -277,6 +277,9 @@ function update_total_points(){
 			if(document.location.href.indexOf("/incrementalgames")!=-1){
 				$("#"+games[i].id+"1").html(games[i].displayInGamePoints(tmp));
 				$("#"+games[i].id+"2").html(Math.floor(games[i].getPoints(tmp)));
+				if(localStorage.imr_secret_badge1=="1"&&games[i].id=="imr"){
+					$("#"+games[i].id+"3").html(1500);
+				}
 			}
 		}catch(e){}
 	}
