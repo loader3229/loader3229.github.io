@@ -66,156 +66,220 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 var total_points=0;
 
 function update_total_points(){
-	
 	total_points=0;
-	
-	try{
-		var tmp=new Decimal(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*30,1600);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#ifl1").html(format(Decimal.pow(2,tmp).sub(1)));
-			$("#ifl2").html(Math.floor(Math.min(Math.sqrt(tmp)*30,1600)));
+	let games=[
+		{
+			id: "ifl",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(2,a).sub(1));
+			},
+			getPoints(a){
+				return Math.min(Math.sqrt(a)*30,1600);
+			},
+			maxPoints: 1600
+		},
+		{
+			id: "onep1l",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage["one-points-one-layer"])).points).toNumber();
+			},
+			displayInGamePoints(a){
+				return format(a,4);
+			},
+			getPoints(a){
+				return Math.min(a*50,1500);
+			},
+			maxPoints: 1500
+		},
+		{
+			id: "milestone",
+			getInGamePoints(){
+				return parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
+			},
+			displayInGamePoints(a){
+				return a;
+			},
+			getPoints(a){
+				return Math.min(a*6,1650);
+			},
+			maxPoints: 1650
+		},
+		{
+			id: "asast",
+			getInGamePoints(){
+				return parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
+			},
+			displayInGamePoints(a){
+				return a;
+			},
+			getPoints(a){
+				return Math.min(a*20,960);
+			},
+			maxPoints: 960
+		},
+		{
+			id: "multitree",
+			getInGamePoints(){
+				let tmp=0;
+				for(let i=1;i<=9;i++)tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);
+				return tmp;
+			},
+			displayInGamePoints(a){
+				return a;
+			},
+			getPoints(a){
+				return Math.min(a*9,1539);
+			},
+			maxPoints: 1539
+		},
+		{
+			id: "adventurechain",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(10,a).sub(1));
+			},
+			getPoints(a){
+				return Math.min(a*10,777);
+			},
+			maxPoints: 777
+		},
+		{
+			id: "trimps",
+			getInGamePoints(){
+				return JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
+			},
+			displayInGamePoints(a){
+				return a;
+			},
+			getPoints(a){
+				return Math.min(a*3,1500);
+			},
+			maxPoints: 1500
+		},
+		{
+			id: "zbkc",
+			getInGamePoints(){
+				let tmp=0;
+				JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
+				return tmp;
+			},
+			displayInGamePoints(a){
+				return a;
+			},
+			getPoints(a){
+				return Math.min(a,1000);
+			},
+			maxPoints: 1000
+		},
+		{
+			id: "luck",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(10,a).sub(1));
+			},
+			getPoints(a){
+				return Math.min(a*20,1000);
+			},
+			maxPoints: 1000
+		},
+		{
+			id: "ngm4r",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(10,Decimal.pow(10,a).sub(1)).sub(1));
+			},
+			getPoints(a){
+				return Math.min(a*a*19,1000);
+			},
+			maxPoints: 1000
+		},
+		{
+			id: "towers",
+			getInGamePoints(){
+				function calc_rank(a,b){
+					a=EN(a);
+					if(a.lte(1))return EN(0);
+					let ret=a.slog().pow(2).mul(a.log10().div(a.log10().add(b)));
+					if(ret.gte(16))ret=ret.mul(6.25).log10().div(2).slog().pow(2).mul(10).add(16);
+					return ret.min(9999/7);
+				}
+				let game=JSON.parse(atob(localStorage.tower));
+				let rank=EN(1);
+				let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
+				return tmp;
+			},
+			displayInGamePoints(a){
+				return format(a)+"%";
+			},
+			getPoints(a){
+				return Math.min(a*10,1000);
+			},
+			maxPoints: 1000
+		},
+		{
+			id: "imr",
+			getInGamePoints(){
+				return n(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(10,Decimal.pow(10,a))).sub(1e10);
+			},
+			getPoints(a){
+				if(localStorage.imr_secret_badge1=="1")return Math.min(Math.sqrt(a)*100,1000)+500;
+				return Math.min(Math.sqrt(a)*100,1000);
+			},
+			maxPoints: 1500
+		},
+		{
+			id: "ibsim",
+			getInGamePoints(){
+				let m=JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;
+				let tmp=0;
+				if(m.sign==1){
+					if(m.array[0]<0)m.array[0]=0;
+					if(m.array[2]>0){
+						tmp=1e10;
+					}else if(m.array[1]>=3){
+						tmp=1e10;
+					}else if(m.array[1]==2){
+						tmp=m.array[0];
+					}else if(m.array[1]==1){
+						tmp=Math.log10(m.array[0]+1);
+					}else if(m.array[1]==0 || m.array[1] === undefined){
+						tmp=Math.log10(Math.log10(m.array[0]+1)+1);
+					}
+				}
+				if(tmp>1e10)tmp=1e10;
+				return tmp;
+			},
+			displayInGamePoints(a){
+				return format(Decimal.pow(10,Decimal.pow(10,a).sub(1)).sub(1));
+			},
+			getPoints(a){
+				return Math.min(a*Math.sqrt(1000),1000);
+			},
+			maxPoints: 1000
 		}
-	}catch(e){}
-
-	try{
-		var tmp=new Decimal(JSON.parse(atob(localStorage["one-points-one-layer"])).points).toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*50,1500);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#onep1l1").html(format(tmp,4));
-			$("#onep1l2").html(Math.floor(Math.min(tmp*50,1500)));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*6);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#milestone1").html(tmp);
-			$("#milestone2").html(tmp*6);
-		}
-	}catch(e){}
-
-	try{
-		var tmp=parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,960);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#asast1").html(tmp);
-			$("#asast2").html(Math.min(tmp*20,960));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=0;
-		for(var i=1;i<=9;i++){tmp+=parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);};
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=(tmp*9);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#multitree1").html(tmp);
-			$("#multitree2").html(tmp*9);
-		}
-	}catch(e){}
-
-	try{
-		var tmp=n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,777);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#adventurechain1").html(format(Decimal.pow(10,tmp).sub(1)));
-			$("#adventurechain2").html(Math.floor(Math.min(tmp*10,777)));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=0;
-		JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function(a){a.filter(function(b){if(Number.isFinite(b))tmp+=b;})});
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp,1000);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#zbkc1").html(tmp);
-			$("#zbkc2").html(Math.min(tmp,1000));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*3,1500);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#trimps1").html(tmp);
-			$("#trimps2").html(Math.floor(Math.min(tmp*3,1500)));
-		}
-	}catch(e){}
-
-	try{
-		function calc_rank(a,b){
-			a=EN(a);
-			if(a.lte(1))return EN(0);
-			let ret=a.slog().pow(2).mul(a.log10().div(a.log10().add(b)));
-			if(ret.gte(16))ret=ret.mul(6.25).log10().div(2).slog().pow(2).mul(10).add(16);
-			return ret.min(9999/7);
-		}
-		let game=JSON.parse(atob(localStorage.tower));
-		let rank=EN(1);
-		let tmp=rank.add(calc_rank(game.powerTotal,0).min(31.2)).add(calc_rank(game.pointsTotal,3).min(13.2)).add(calc_rank(game.lootTotal,6).min(10.5)).add(calc_rank(game.bricksTotal,9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1),0).min(5.6)).add(calc_rank(game.karmaTotal,12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1),0).min(4.5)).add((game.rift**0.5)*21).toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*10,1000);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#towers1").html(Math.round(tmp*10)/10+"%");
-			$("#towers2").html(Math.round(tmp*10));
-		}
-	}catch(e){console.log(e);}
-
-	try{
-		var tmp=new Decimal(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*20,1000);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#luck1").html(format(Decimal.pow(10,tmp).sub(1)));
-			$("#luck2").html(Math.floor(Math.min(tmp*20,1000)));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=new Decimal(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*tmp*19,1000);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#ngm4r1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-			$("#ngm4r2").html(Math.floor(Math.min(tmp*tmp*19,1000)));
-		}
-	}catch(e){}
-
-	try{
-		var tmp=new Decimal(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(Math.sqrt(tmp)*100,1000);else tmp=0;
-		if(localStorage.imr_secret_badge1=="1")total_points+=500;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#imr1").html(format(Decimal.pow(10,Decimal.pow(10,Decimal.pow(10,tmp))).sub(1e10)));
-			$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000)));
-			if(localStorage.imr_secret_badge1=="1")$("#imr2").html(Math.floor(Math.min(Math.sqrt(tmp)*100,1000))+500);
-			if(localStorage.imr_secret_badge1=="1")$("#imr3").html(1500);
-		}
-	}catch(e){}
-
-
-	try{
-		var m=JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;var tmp=0;
-		if(m.sign==1){
-			if(m.array[0]<0)m.array[0]=0;
-			if(m.array[2]>0){
-				tmp=1e10;
-			}else if(m.array[1]>=3){
-				tmp=1e10;
-			}else if(m.array[1]==2){
-				tmp=m.array[0];
-			}else if(m.array[1]==1){
-				tmp=Math.log10(m.array[0]+1);
-			}else if(m.array[1]==0 || m.array[1] === undefined){
-				tmp=Math.log10(Math.log10(m.array[0]+1)+1);
+	];
+	for(let i=0;i<games.length;i++){
+		try{
+			let tmp=games[i].getInGamePoints();
+			if(Number.isFinite(tmp)&&tmp>0)total_points+=games[i].getPoints(tmp);else tmp=0;
+			if(document.location.href.indexOf("/incrementalgames")!=-1){
+				$("#"+games[i].id+"1").html(games[i].displayInGamePoints(tmp));
+				$("#"+games[i].id+"2").html(Math.floor(games[i].getPoints(tmp)));
 			}
-		}
-		if(tmp>1e10)tmp=1e10;
-		if(Number.isFinite(tmp)&&tmp>0)total_points+=Math.min(tmp*Math.sqrt(1000),1000);else tmp=0;
-		if(document.location.href.indexOf("/incrementalgames")!=-1){
-			$("#ibsim1").html(format(Decimal.pow(10,Decimal.pow(10,tmp).sub(1)).sub(1)));
-			$("#ibsim2").html(Math.floor(Math.min(tmp*Math.sqrt(1000),1000)));
-		}
-	}catch(e){}
-
+		}catch(e){}
+	}
 }
 
 update_total_points();
