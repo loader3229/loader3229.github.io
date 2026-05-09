@@ -231,7 +231,7 @@ function update_total_points(){
 				return n(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
 			},
 			displayInGamePoints(a){
-				return format(Decimal.pow(10,Decimal.pow(10,a))).sub(1e10);
+				return format(Decimal.pow(10,Decimal.pow(10,a)).sub(1e10));
 			},
 			getPoints(a){
 				if(localStorage.imr_secret_badge1=="1")return Math.min(Math.sqrt(a)*100,1000)+500;
