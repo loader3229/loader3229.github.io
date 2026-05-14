@@ -49,11 +49,11 @@ setInterval(function () {
             var player_saved = JSON.parse(atob(localStorage.metagame));
             if (player_saved.stat > player.stat) load_metagame();
         } catch (e) { }
-        update_total_points();
+        let total_points = update_total_points(true);
         for (var q = 1; q <= 20; q++) {
             player.metapoints = metagain().mul(Date.now() - player.tick).div(20000).add(player.metapoints);
             if (player.metatranscension.gte(50)) {
-                player.metaprestige = presgain().add(100).mul(Date.now() - player.tick).div(20000).mul(player.metatranscension.gte(1e4) ? (1 + ((total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber()) / 10000) ** 3) : 1).add(player.metaprestige);
+                player.metaprestige = presgain().add(100).mul(Date.now() - player.tick).div(20000).mul(player.metatranscension.gte(1e4) ? (1 + (total_points / 10000) ** 3) : 1).add(player.metaprestige);
             }
             player.metatranscension = metainfeffect2().mul(Date.now() - player.tick).div(20000).add(player.metatranscension);
             if (player.metaprestige.gte(50)) {
@@ -127,18 +127,18 @@ setInterval(function () {
             $("#milestone3display").html(format(player.metaprestige.max(1).log10().div(4).pow(2).max(1).min(100)));
         }
         if (player.metatranscension.gte(50) && document.location.href.indexOf("/metagame") != -1) {
-            $("#milestone7display").html(format(presgain().add(100).mul(player.metatranscension.gte(1e4) ? (1 + ((total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber()) / 10000) ** 3) : 1)));
+            $("#milestone7display").html(format(presgain().add(100).mul(player.metatranscension.gte(1e4) ? (1 + (total_points / 10000) ** 3) : 1)));
         }
         if (player.metatranscension.gte(200) && document.location.href.indexOf("/metagame") != -1) {
             $("#milestone8display").html(format(transgain().mul(1000).div(Date.now() - player.lasttranscension + 111)));
         }
         if (player.metatranscension.gte(1e4) && document.location.href.indexOf("/metagame") != -1) {
-            $("#milestone9display").html(format(1 + ((total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber()) / 10000) ** 3));
+            $("#milestone9display").html(format(1 + (total_points / 10000) ** 3));
         }
         if (document.location.href.indexOf("/incrementalgames") != -1) {
             if (player.stat >= 1) $("#metagamelink").html((localStorage.lang == 1 ? "元-游戏 -- 分数倍率：" : "Metagame -- Point Multiplier: ") + player.metapoints.add(1).log10().div(1000).add(1).min(1.56).mul(100).toNumber().toFixed(2) + "%");
-            $("#total_points1").html(Math.floor(total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber()));
-            $("#total_points2").html(Math.floor(total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber()));
+            $("#total_points1").html(Math.floor(total_points));
+            $("#total_points2").html(Math.floor(total_points));
         }
         if (document.location.href.indexOf("/b.html") != -1) {
             $("#result").html((sha512_256(localStorage.supporterCode + "loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5') ? ["<br>Supporter Code Valid!", "<br>捐赠码输入正确！"][localStorage.lang] : ["<br>Supporter Code Invalid or you did not input it!", "<br>捐赠码输入错误或者没有输入捐赠码！"][localStorage.lang]);
@@ -157,7 +157,7 @@ function metagain() {
 
 function metaeffect(a) {
     if (a == 1) {
-        let ret = Decimal.pow(Math.log10(Math.max(Math.min(total_points * player.metapoints.add(1).log10().div(1000).add(1).min(1.56).toNumber(), 30000) + 100, 100)) / 2, player.metaupgrades[1]);
+        let ret = Decimal.pow(Math.log10(Math.max(Math.min(update_total_points(true), 30000) + 100, 100)) / 2, player.metaupgrades[1]);
         return ret;
     }
     if (a == 2) {
@@ -271,7 +271,7 @@ function metainfeffect() {
 }
 
 function metainfeffect2() {
-    return transgain().sqrt().mul((1 + ((total_points * player.metapoints.add(1).log10().div(1000).min(1.5).toNumber()) / 10000) ** 2)).add(player.metainf.sqrt()).mul(player.metainf.sqrt());
+    return transgain().sqrt().mul((1 + (update_total_points(true) / 10000) ** 2)).add(player.metainf.sqrt()).mul(player.metainf.sqrt());
 }
 
 function metatranscension() {
