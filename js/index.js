@@ -71,8 +71,11 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 	let games = [
 		{
 			id: "ifl",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage.FileLoaderSave)).totalData).add(1).log2().toNumber();
+			getSave() {
+				return localStorage.FileLoaderSave;
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).totalData).add(1).log2().toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(Decimal.pow(2, a).sub(1));
@@ -80,12 +83,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(Math.sqrt(a) * 30, 1600);
 			},
-			maxPoints: 1600
+			maxPoints: 1600,
+			currentInGamePoints: 0
 		},
 		{
 			id: "onep1l",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage["one-points-one-layer"])).points).toNumber();
+			getSave() {
+				return localStorage["one-points-one-layer"];
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).points).toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(a, 4);
@@ -93,12 +100,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 50, 1500);
 			},
-			maxPoints: 1500
+			maxPoints: 1500,
+			currentInGamePoints: 0
 		},
 		{
 			id: "milestone",
-			getInGamePoints() {
-				return parseInt(JSON.parse(atob(localStorage.c2nv4in9eusojg59bmo)).m.points);
+			getSave() {
+				return localStorage.c2nv4in9eusojg59bmo;
+			},
+			getInGamePoints(a) {
+				return parseInt(JSON.parse(atob(a)).m.points);
 			},
 			displayInGamePoints(a) {
 				return a;
@@ -106,12 +117,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 6, 1650);
 			},
-			maxPoints: 1650
+			maxPoints: 1650,
+			currentInGamePoints: 0
 		},
 		{
 			id: "asast",
-			getInGamePoints() {
-				return parseInt(JSON.parse(atob(localStorage.asast)).Z.points);
+			getSave() {
+				return localStorage.asast;
+			},
+			getInGamePoints(a) {
+				return parseInt(JSON.parse(atob(a)).Z.points);
 			},
 			displayInGamePoints(a) {
 				return a;
@@ -119,13 +134,17 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 20, 960);
 			},
-			maxPoints: 960
+			maxPoints: 960,
+			currentInGamePoints: 0
 		},
 		{
 			id: "multitree",
-			getInGamePoints() {
+			getSave() {
+				return localStorage.multitree;
+			},
+			getInGamePoints(a) {
 				let tmp = 0;
-				for (let i = 1; i <= 9; i++)tmp += parseInt(JSON.parse(atob(localStorage.multitree)).tm.buyables[i]);
+				for (let i = 1; i <= 9; i++)tmp += parseInt(JSON.parse(atob(a)).tm.buyables[i]);
 				return tmp;
 			},
 			displayInGamePoints(a) {
@@ -134,12 +153,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 9, 1539);
 			},
-			maxPoints: 1539
+			maxPoints: 1539,
+			currentInGamePoints: 0
 		},
 		{
 			id: "adventurechain",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage["the-adventure-chain"])).a.points).add(1).log10().toNumber();
+			getSave() {
+				return localStorage["the-adventure-chain"];
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).a.points).add(1).log10().toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(Decimal.pow(10, a).sub(1));
@@ -147,12 +170,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 10, 777);
 			},
-			maxPoints: 777
+			maxPoints: 777,
+			currentInGamePoints: 0
 		},
 		{
 			id: "trimps",
-			getInGamePoints() {
-				return JSON.parse(LZString.decompressFromBase64(localStorage.trimpSave1)).global.highestRadonLevelCleared;
+			getSave() {
+				return localStorage.trimpSave1;
+			},
+			getInGamePoints(a) {
+				return JSON.parse(LZString.decompressFromBase64(a)).global.highestRadonLevelCleared;
 			},
 			displayInGamePoints(a) {
 				return a;
@@ -160,13 +187,17 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 3, 1500);
 			},
-			maxPoints: 1500
+			maxPoints: 1500,
+			currentInGamePoints: 0
 		},
 		{
 			id: "zbkc",
-			getInGamePoints() {
+			getSave() {
+				return localStorage.zbkc;
+			},
+			getInGamePoints(a) {
 				let tmp = 0;
-				JSON.parse(atob(atob(localStorage.zbkc).split(',')[12])).filter(function (a) { a.filter(function (b) { if (Number.isFinite(b)) tmp += b; }) });
+				JSON.parse(atob(a).split(',')[12]).filter(function (a) { a.filter(function (b) { if (Number.isFinite(b)) tmp += b; }) });
 				return tmp;
 			},
 			displayInGamePoints(a) {
@@ -175,12 +206,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a, 1000);
 			},
-			maxPoints: 1000
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		},
 		{
 			id: "luck",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage.luck_incremental_save)).max_rarity).add(1).log10().toNumber();
+			getSave() {
+				return localStorage.luck_incremental_save;
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).max_rarity).add(1).log10().toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(Decimal.pow(10, a).sub(1));
@@ -188,12 +223,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 20, 1000);
 			},
-			maxPoints: 1000
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		},
 		{
 			id: "ngm4r",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage.ngm4rep)).saves[JSON.parse(atob(localStorage.ngm4rep)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
+			getSave() {
+				return localStorage.ngm4rep;
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).saves[JSON.parse(atob(a)).current].totalmoney).add(1).log10().add(1).log10().toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(Decimal.pow(10, Decimal.pow(10, a).sub(1)).sub(1));
@@ -201,11 +240,15 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * a * 19, 1000);
 			},
-			maxPoints: 1000
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		},
 		{
 			id: "towers",
-			getInGamePoints() {
+			getSave() {
+				return localStorage.tower;
+			},
+			getInGamePoints(a) {
 				function calc_rank(a, b) {
 					a = EN(a);
 					if (a.lte(1)) return EN(0);
@@ -213,7 +256,7 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 					if (ret.gte(16)) ret = ret.mul(6.25).log10().div(2).slog().pow(2).mul(10).add(16);
 					return ret.min(9999 / 7);
 				}
-				let game = JSON.parse(atob(localStorage.tower));
+				let game = JSON.parse(atob(a));
 				let rank = EN(1);
 				let tmp = rank.add(calc_rank(game.powerTotal, 0).min(31.2)).add(calc_rank(game.pointsTotal, 3).min(13.2)).add(calc_rank(game.lootTotal, 6).min(10.5)).add(calc_rank(game.bricksTotal, 9).min(7.3)).add(calc_rank(EN(game.manaTotal).add(1), 0).min(5.6)).add(calc_rank(game.karmaTotal, 12).min(5.7)).add(calc_rank(EN(game.elemiteTotal).add(1), 0).min(4.5)).add((game.rift ** 0.5) * 21).toNumber();
 				return tmp;
@@ -224,12 +267,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 10, 1000);
 			},
-			maxPoints: 1000
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		},
 		{
 			id: "imr",
-			getInGamePoints() {
-				return n(JSON.parse(atob(localStorage.testSave)).mass).add(1e10).log10().log10().log10().toNumber();
+			getSave() {
+				return localStorage.testSave;
+			},
+			getInGamePoints(a) {
+				return n(JSON.parse(atob(a)).mass).add(1e10).log10().log10().log10().toNumber();
 			},
 			displayInGamePoints(a) {
 				return format(Decimal.pow(10, Decimal.pow(10, a)).sub(1e10));
@@ -238,12 +285,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 				if (localStorage.imr_secret_badge1 == "1") return Math.min(Math.sqrt(a) * 100, 1000) + 500;
 				return Math.min(Math.sqrt(a) * 100, 1000);
 			},
-			maxPoints: 1500
+			maxPoints: 1500,
+			currentInGamePoints: 0
 		},
 		{
 			id: "ibsim",
-			getInGamePoints() {
-				let m = JSON.parse(decodeURIComponent(atob(localStorage.ibsim))).money;
+			getSave() {
+				return localStorage.ibsim;
+			},
+			getInGamePoints(a) {
+				let m = JSON.parse(decodeURIComponent(atob(a))).money;
 				let tmp = 0;
 				if (m.sign == 1) {
 					if (m.array[0] < 0) m.array[0] = 0;
@@ -268,7 +319,8 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * Math.sqrt(1000), 1000);
 			},
-			maxPoints: 1000
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		}
 	];
 
@@ -278,11 +330,14 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 		for (let i = 0; i < games.length; i++) {
 			totalMaxPoints += games[i].maxPoints;
 			try {
-				let tmp = games[i].getInGamePoints();
-				if (Number.isFinite(tmp) && tmp > 0) total_points += games[i].getPoints(tmp); else tmp = 0;
+				if (games[i].currentSave != games[i].getSave()){
+					games[i].currentSave = games[i].getSave();
+					games[i].currentInGamePoints = games[i].getInGamePoints(games[i].currentSave);
+				}
+				if (Number.isFinite(games[i].currentInGamePoints) && games[i].currentInGamePoints > 0) total_points += games[i].getPoints(games[i].currentInGamePoints); else games[i].currentInGamePoints = 0;
 				if (document.location.href.indexOf("/incrementalgames") != -1) {
-					$("#" + games[i].id + "1").html(games[i].displayInGamePoints(tmp));
-					$("#" + games[i].id + "2").html(Math.floor(games[i].getPoints(tmp)));
+					$("#" + games[i].id + "1").html(games[i].displayInGamePoints(games[i].currentInGamePoints));
+					$("#" + games[i].id + "2").html(Math.floor(games[i].getPoints(games[i].currentInGamePoints)));
 					if (localStorage.imr_secret_badge1 == "1" && games[i].id == "imr") {
 						$("#" + games[i].id + "3").html(1500);
 					}
