@@ -138,7 +138,6 @@ setInterval(function () {
         if (document.location.href.indexOf("/incrementalgames") != -1) {
             if (player.stat >= 1) $("#metagamelink").html((localStorage.lang == 1 ? "元-游戏 -- 分数倍率：" : "Metagame -- Point Multiplier: ") + player.metapoints.add(1).log10().div(1000).add(1).min(1.56).mul(100).toNumber().toFixed(2) + "%");
             $("#total_points1").html(Math.floor(total_points));
-            $("#total_points2").html(Math.floor(total_points));
         }
         if (document.location.href.indexOf("/b.html") != -1) {
             $("#result").html((sha512_256(localStorage.supporterCode + "loader3229").slice(2) == '71fcb6c48d87276cfcaf7db32358649f23c82461d543509061a0e783f04be5') ? ["<br>Supporter Code Valid!", "<br>捐赠码输入正确！"][localStorage.lang] : ["<br>Supporter Code Invalid or you did not input it!", "<br>捐赠码输入错误或者没有输入捐赠码！"][localStorage.lang]);
