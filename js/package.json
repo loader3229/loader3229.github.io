@@ -3,6 +3,6 @@
   "dependencies": {
     "jquery": "^4.0.0",
     "jquery-ui": "^1.12.1",
-    "bootstrap": "^4.6.2"
+    "bootstrap": "^5.3.8"
   }
 }
