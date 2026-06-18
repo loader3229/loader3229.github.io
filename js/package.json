@@ -1,7 +1,7 @@
 {
   "name": "loader3229.github.io",
   "dependencies": {
-    "jquery": "^4.0.0",
+    "jquery": "^3.7.1",
     "jquery-ui": "^1.12.1",
     "bootstrap": "^4.6.2"
   }
