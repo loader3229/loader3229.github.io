@@ -4,4 +4,72 @@ zhtitle: loader3229的挑战
 layout: default
 ---
 
-Coming Soon...
+<h1><span class="en">loader3229's Challenge</span><span class="zh">loader3229的挑战</span></h1>
+
+<hr>
+
+<h2><span class="en">Generate Challenge Link</span><span class="zh">生成挑战链接</span></h2>
+
+<form method="get" action="ldrchallenge.html">
+  <div class="form-group">
+    <label for="stage"><span class="en">Stage Number</span><span class="zh">关卡编号</span></label>
+    <input type="text" class="form-control" id="stage" name="stage" placeholder="1">
+  </div>
+  <div class="form-group">
+    <label for="answer"><span class="en">Answer</span><span class="zh">关卡答案</span></label>
+    <input type="text" class="form-control" id="answer" name="answer" placeholder="answer">
+  </div>
+  <button type="submit" class="btn btn-primary">
+    <span class="en">Generate Link</span>
+    <span class="zh">生成链接</span>
+  </button>
+</form>
+
+<hr>
+
+<div id="challenge-content">
+  <p><span class="en">Enter a stage number and answer to generate a challenge link.</span><span class="zh">输入关卡编号和答案来生成挑战链接。</span></p>
+</div>
+
+<script>
+  function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+
+  const stage = getQueryParam('stage');
+  const answer = getQueryParam('answer');
+
+  if (stage !== null && answer !== null) {
+    verifyAnswer(stage, answer);
+  }
+
+  function verifyAnswer(stage, answer) {
+    fetch('challenge/' + stage + '.json')
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Stage not found');
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        const contentDiv = document.getElementById('challenge-content');
+        if (data.answer === answer) {
+          contentDiv.innerHTML =
+            '<h3><span class="en">Correct!</span><span class="zh">答案正确！</span></h3>' +
+            '<p><span class="en">Stage ' + stage + ' Content: </span><span class="zh">第' + stage + '关内容：</span></p>' +
+            '<div class="alert alert-success">' + data.content + '</div>';
+        } else {
+          contentDiv.innerHTML =
+            '<h3><span class="en">Wrong Answer</span><span class="zh">答案错误</span></h3>' +
+            '<div class="alert alert-danger"><span class="en">The answer for stage ' + stage + ' is incorrect. Please try again.</span><span class="zh">第' + stage + '关的答案不正确，请再试一次。</span></div>';
+        }
+      })
+      .catch(function(error) {
+        const contentDiv = document.getElementById('challenge-content');
+        contentDiv.innerHTML =
+          '<h3><span class="en">Error</span><span class="zh">错误</span></h3>' +
+          '<div class="alert alert-warning"><span class="en">Stage ' + stage + ' not found.</span><span class="zh">第' + stage + '关不存在。</span></div>';
+      });
+  }
+</script>
