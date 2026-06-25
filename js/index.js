@@ -37,18 +37,18 @@ function change_language(a){
 	if(localStorage.lang==1){
 		$('html').attr('lang','zh-CN');
 		$('#nav1').html('增量游戏表');
-		$('#nav3').html('以前制作的游戏');
+		$('#nav2').html('以前制作的游戏');
 		//$('#nav2').html('BanG Dream! 自制谱');
-		//$('#nav3').html('其他');
+		$('#nav3').html('其他');
 		$('#nav4').html('捐赠');
 		document.title=zhtitle;
 		$('#lang-style').html('.en{display:none;}');
 	}else{
 		$('html').attr('lang','en');
 		$('#nav1').html('Incremental Games');
-		$('#nav3').html('Game Prototypes');
+		$('#nav2').html('Game Prototypes');
 		//$('#nav2').html('BanG Dream! GBP Fanmade Charts');
-		//$('#nav3').html('Others');
+		$('#nav3').html('Others');
 		$('#nav4').html('Donate Me');
 		document.title=entitle;
 		$('#lang-style').html('.zh{display:none;}');
@@ -61,7 +61,8 @@ if(localStorage.lang === undefined){
 }
 change_language(localStorage.lang);
 $('#nav1').attr('href','/incrementalgames.html');
-$('#nav3').attr('href','/gameprototypes.html');
+$('#nav2').attr('href','/gameprototypes.html');
+$('#nav3').attr('href','/other.html');
 $('#nav4').attr('href','/b.html');
 $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 
