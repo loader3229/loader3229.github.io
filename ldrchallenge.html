@@ -6,32 +6,49 @@ layout: default
 
 <script>if(document.location.href.endsWith("ldrchallenge"))document.location.href+=".html";</script>
 Coming Soon...
-<!--
-<h1><span class="en">loader3229's Challenge</span><span class="zh">loader3229的挑战</span></h1>
+
+<!--h1><span class="en">loader3229's Challenge</span><span class="zh">loader3229的挑战</span></h1>
 <hr>
-
-<h2><span class="en">Generate Challenge Link</span><span class="zh">生成挑战链接</span></h2>
-
+<p class="zh">欢迎来到loader3229的挑战！在这个挑战中有许多关卡，每个关卡的问题回答正确即可进入下一关。答案不区分大小写。</p>
+<p class="en">Welcome to loader3229's Challenge! In this challenge, you will encounter some problems, if your answer is correct, you can proceed to next stage.<br>
+The answer is case-insensitive.
+</p>
 <form method="get" action="ldrchallenge.html">
   <div class="form-group">
     <label for="stage"><span class="en">Stage Number</span><span class="zh">关卡编号</span></label>
-    <input type="text" class="form-control" id="stage" name="stage" placeholder="1">
+    <input type="number" class="form-control" id="stage" name="stage" min="1" value="1" required>
   </div>
   <div class="form-group">
     <label for="answer"><span class="en">Answer</span><span class="zh">关卡答案</span></label>
-    <input type="text" class="form-control" id="answer" name="answer" placeholder="answer">
+    <input type="text" class="form-control" id="answer" name="answer" value="welcome" required>
   </div>
   <button type="submit" class="btn btn-primary">
-    <span class="en">Generate Link</span>
-    <span class="zh">生成链接</span>
+    <span class="en">Check Answer</span>
+    <span class="zh">检查答案</span>
   </button>
 </form>
-
 <hr>
-
-<div id="challenge-content">
-  <p><span class="en">Enter a stage number and answer to generate a challenge link.</span><span class="zh">输入关卡编号和答案来生成挑战链接。</span></p>
+<div id="challenge-status">
+  
 </div>
+<div id="challenge-title">
+<br>
+<h1><span class="en">Stage </span><span class="zh">第</span><span id="stage-number">1</span><span class="zh">关</span></h1>
+<hr>
+</div>
+<div id="challenge-content">
+  Welcome to loader3229's Challenge. This is the first stage. The answer is "welcome".
+</div>
+<style>
+div#challenge-status{
+  display: none;
+}
+
+div#challenge-status.alert{
+  display: block;
+}
+
+</style>
 
 <script>
   function getQueryParam(name) {
@@ -43,6 +60,8 @@ Coming Soon...
   const answer = getQueryParam('answer');
 
   if (stage !== null && answer !== null) {
+    document.getElementById("stage").value=stage;
+    document.getElementById("answer").value=answer;
     verifyAnswer(stage, answer);
   }
 
@@ -56,22 +75,28 @@ Coming Soon...
       })
       .then(function(data) {
         const contentDiv = document.getElementById('challenge-content');
+        const titleDiv = document.getElementById('challenge-title');
+        const statusDiv = document.getElementById('challenge-status');
         if (data.answer === answer) {
-          contentDiv.innerHTML =
-            '<h3><span class="en">Correct!</span><span class="zh">答案正确！</span></h3>' +
-            '<p><span class="en">Stage ' + stage + ' Content: </span><span class="zh">第' + stage + '关内容：</span></p>' +
-            '<div class="alert alert-success">' + data.content + '</div>';
+          document.getElementById('stage-number').innerHTML=(parseInt(stage)+1);
+          contentDiv.innerHTML = data.content;
+          statusDiv.className="alert alert-success";
+          statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is correct!</span><span class="zh">第' + stage + '关的答案正确！已进入下一关。</span>';
         } else {
-          contentDiv.innerHTML =
-            '<h3><span class="en">Wrong Answer</span><span class="zh">答案错误</span></h3>' +
-            '<div class="alert alert-danger"><span class="en">The answer for stage ' + stage + ' is incorrect. Please try again.</span><span class="zh">第' + stage + '关的答案不正确，请再试一次。</span></div>';
+          titleDiv.style.display="none";
+          statusDiv.className="alert alert-danger";
+          contentDiv.style.display="none";
+          statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is incorrect. Please try again.</span><span class="zh">第' + stage + '关的答案不正确，请再试一次。</span>';
         }
       })
       .catch(function(error) {
         const contentDiv = document.getElementById('challenge-content');
-        contentDiv.innerHTML =
-          '<h3><span class="en">Error</span><span class="zh">错误</span></h3>' +
-          '<div class="alert alert-warning"><span class="en">Stage ' + stage + ' not found.</span><span class="zh">第' + stage + '关不存在。</span></div>';
+        const titleDiv = document.getElementById('challenge-title');
+        const statusDiv = document.getElementById('challenge-status');
+        titleDiv.style.display="none";
+        statusDiv.className="alert alert-warning";
+        contentDiv.style.display="none";
+        statusDiv.innerHTML='<span class="en">Stage ' + stage + ' not found.</span><span class="zh">第' + stage + '关不存在。</span>';
       });
   }
 </script>
