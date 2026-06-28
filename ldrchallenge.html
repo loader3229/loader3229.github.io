@@ -5,9 +5,8 @@ layout: default
 ---
 
 <script>if(document.location.href.endsWith("ldrchallenge"))document.location.href+=".html";</script>
-Coming Soon...
 
-<!--h1><span class="en">loader3229's Challenge</span><span class="zh">loader3229的挑战</span></h1>
+<h1><span class="en">loader3229's Challenge</span><span class="zh">loader3229的挑战</span></h1>
 <hr>
 <p class="zh">欢迎来到loader3229的挑战！在这个挑战中有许多关卡，每个关卡的问题回答正确即可进入下一关。答案不区分大小写。</p>
 <p class="en">Welcome to loader3229's Challenge! In this challenge, you will encounter some problems, if your answer is correct, you can proceed to next stage.<br>
@@ -51,6 +50,42 @@ div#challenge-status.alert{
 </style>
 
 <script>
+function specialHash(str) {
+    const filtered = str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    if (filtered.length === 0) return 0n;
+    const MOD = (1n << 128n) - 159n;
+    let hash = 0n;
+    for (const ch of filtered) {
+        let val;
+        if (ch >= '0' && ch <= '9') {
+            val = BigInt(ch.charCodeAt(0) - '0'.charCodeAt(0));
+        } else {
+            val = BigInt(ch.charCodeAt(0) - 'a'.charCodeAt(0) + 10);
+        }
+        hash = (hash * 36n + val) % MOD;
+    }
+    return hash;
+}
+function specialHashHex(str) {
+    const hash = specialHash(str);
+    return hash.toString(16).padStart(32, '0');
+}
+function specialHashKey(str) {
+    const hash = specialHashHex(str);
+    return CryptoJS.enc.Hex.parse(hash);
+}
+function getAnswerStr(key) {
+    return CryptoJS.AES.encrypt("AnswerIsCorrect!",key,{mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.NoPadding}).toString().slice(0,20);
+}
+function encryptStr(key,str) {
+    return CryptoJS.AES.encrypt(str,key,{mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7}).toString();
+}
+function decryptStr(key,str) {
+    return CryptoJS.AES.decrypt(str,key,{mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);
+}
+</script>
+
+<script>
   function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
@@ -59,13 +94,8 @@ div#challenge-status.alert{
   const stage = getQueryParam('stage');
   const answer = getQueryParam('answer');
 
-  if (stage !== null && answer !== null) {
-    document.getElementById("stage").value=stage;
-    document.getElementById("answer").value=answer;
-    verifyAnswer(stage, answer);
-  }
-
   function verifyAnswer(stage, answer) {
+    answerKey = specialHashKey("loader3229chall"+answer);
     fetch('challenge/' + stage + '.json')
       .then(function(response) {
         if (!response.ok) {
@@ -77,16 +107,19 @@ div#challenge-status.alert{
         const contentDiv = document.getElementById('challenge-content');
         const titleDiv = document.getElementById('challenge-title');
         const statusDiv = document.getElementById('challenge-status');
-        if (data.answer === answer) {
-          document.getElementById('stage-number').innerHTML=(parseInt(stage)+1);
-          contentDiv.innerHTML = data.content;
-          statusDiv.className="alert alert-success";
-          statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is correct!</span><span class="zh">第' + stage + '关的答案正确！已进入下一关。</span>';
-        } else {
+        nextStageContent = data[getAnswerStr(answerKey)];
+        console.log(nextStageContent);
+        if (nextStageContent === undefined) {
           titleDiv.style.display="none";
           statusDiv.className="alert alert-danger";
           contentDiv.style.display="none";
           statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is incorrect. Please try again.</span><span class="zh">第' + stage + '关的答案不正确，请再试一次。</span>';
+        } else {
+          document.getElementById('stage-number').innerHTML=document.getElementById("stage").value=(parseInt(stage)+1);
+          document.getElementById("answer").value="";
+          contentDiv.innerHTML = decryptStr(answerKey,nextStageContent);
+          statusDiv.className="alert alert-success";
+          statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is correct!</span><span class="zh">第' + stage + '关的答案正确！已进入下一关。</span>';
         }
       })
       .catch(function(error) {
@@ -99,5 +132,10 @@ div#challenge-status.alert{
         statusDiv.innerHTML='<span class="en">Stage ' + stage + ' not found.</span><span class="zh">第' + stage + '关不存在。</span>';
       });
   }
+  
+  if (stage !== null && answer !== null) {
+    document.getElementById("stage").value=stage;
+    document.getElementById("answer").value=answer;
+    window.addEventListener("load",verifyAnswer.bind(null,stage,answer));
+  }
 </script>
--->
