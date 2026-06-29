@@ -95,7 +95,7 @@ function decryptStr(key,str) {
   const answer = getQueryParam('answer');
 
   function verifyAnswer(stage, answer) {
-    answerKey = specialHashKey("loader3229chall"+answer);
+    answerKey = specialHashKey("loader3229chall"+stage+answer);
     fetch('challenge/' + stage + '.json')
       .then(function(response) {
         if (!response.ok) {
