@@ -95,8 +95,15 @@ function decryptStr(key,str) {
   const answer = getQueryParam('answer');
 
   function verifyAnswer(stage, answer) {
+    const contentDiv = document.getElementById('challenge-content');
+    const titleDiv = document.getElementById('challenge-title');
+    const statusDiv = document.getElementById('challenge-status');
+    titleDiv.style.display="none";
+    statusDiv.className="alert alert-warning";
+    contentDiv.style.display="none";
+    statusDiv.innerHTML='<span class="en">Loading Stage ' + stage + '...</span><span class="zh">正在载入第' + stage + '关...</span>';
     answerKey = specialHashKey("loader3229chall"+stage+answer);
-    fetch('challenge/' + stage + '.json')
+    fetch('challenge/' + stage + '.json?'+Date.now())
       .then(function(response) {
         if (!response.ok) {
           throw new Error('Stage not found');
@@ -104,9 +111,6 @@ function decryptStr(key,str) {
         return response.json();
       })
       .then(function(data) {
-        const contentDiv = document.getElementById('challenge-content');
-        const titleDiv = document.getElementById('challenge-title');
-        const statusDiv = document.getElementById('challenge-status');
         nextStageContent = data[getAnswerStr(answerKey)];
         console.log(nextStageContent);
         if (nextStageContent === undefined) {
@@ -115,6 +119,8 @@ function decryptStr(key,str) {
           contentDiv.style.display="none";
           statusDiv.innerHTML = '<span class="en">The answer for stage ' + stage + ' is incorrect. Please try again.</span><span class="zh">第' + stage + '关的答案不正确，请再试一次。</span>';
         } else {
+          titleDiv.style.display="";
+          contentDiv.style.display="";
           document.getElementById('stage-number').innerHTML=document.getElementById("stage").value=(parseInt(stage)+1);
           document.getElementById("answer").value="";
           contentDiv.innerHTML = decryptStr(answerKey,nextStageContent);
@@ -123,9 +129,6 @@ function decryptStr(key,str) {
         }
       })
       .catch(function(error) {
-        const contentDiv = document.getElementById('challenge-content');
-        const titleDiv = document.getElementById('challenge-title');
-        const statusDiv = document.getElementById('challenge-status');
         titleDiv.style.display="none";
         statusDiv.className="alert alert-warning";
         contentDiv.style.display="none";
