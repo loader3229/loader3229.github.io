@@ -3,7 +3,7 @@ setInterval(function(){
 	let ua=navigator.userAgent || '';
 	ua = ua.toLowerCase();
 	if(ua.indexOf("qqtheme")!=-1 || ua.indexOf("qqapp")!=-1 || ua.indexOf("qqex")!=-1 || ua.indexOf("qqweb")!=-1 || ua.indexOf("wechat")!=-1 || ua.indexOf("weixin")!=-1){
-		if(document.location.href.indexOf("copytovisit.html")!=-1){
+		if(document.location.href.indexOf("copytovisit.html")==-1){
 			document.location.href="https://loader3229.github.io/copytovisit.html?"+document.location.href;
 		}
 	}
