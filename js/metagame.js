@@ -136,7 +136,7 @@ setInterval(function () {
             $("#milestone9display").html(format(1 + (total_points / 10000) ** 3));
         }
         if (document.location.href.indexOf("/incrementalgames") != -1) {
-            if (player.stat >= 1) $("#metagamelink").html((localStorage.lang == 1 ? "元-游戏 -- 分数倍率：" : "Metagame -- Point Multiplier: ") + player.metapoints.add(1).log10().div(1000).add(1).min(1.56).mul(100).toNumber().toFixed(2) + "%");
+            if (player.stat >= 1) $("#metagamelink").html((localStorage.lang == 1 ? "元-游戏 -- 分数倍率：" : "Metagame -- Point Multiplier: ") + player.metapoints.add(1).log10().div(1000).add(1).min(1.5627).mul(100).toNumber().toFixed(2) + "%");
             $("#total_points1").html(Math.floor(total_points));
         }
         if (document.location.href.indexOf("/b.html") != -1) {
