@@ -144,7 +144,7 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			getPoints(a) {
 				return Math.min(a * 9, 1575);
 			},
-			maxPoints: 1557,
+			maxPoints: 1575,
 			currentInGamePoints: 0
 		},
 		{
