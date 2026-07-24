@@ -142,9 +142,9 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 				return a;
 			},
 			getPoints(a) {
-				return Math.min(a * 9, 1575);
+				return Math.min(a * 8, 1408);
 			},
-			maxPoints: 1575,
+			maxPoints: 1408,
 			currentInGamePoints: 0
 		},
 		{
@@ -157,9 +157,9 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 				return format(Decimal.pow(10, a).sub(1));
 			},
 			getPoints(a) {
-				return Math.min(a * 10, 777);
+				return Math.min(a * 10, 800);
 			},
-			maxPoints: 777,
+			maxPoints: 800,
 			currentInGamePoints: 0
 		},
 		{
@@ -296,6 +296,38 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			},
 			maxPoints: 1000,
 			currentInGamePoints: 0
+		},
+		{
+			id: "infinitebattle",
+			location: "infinitebattle",
+			getInGamePoints(a) {
+				try{
+                    a = JSON.parse(a);
+					function getpassword(t,v){
+						v=parseInt(v);
+						if(v<=1)return "11111";
+						var sha="1"+sha512_256("ld_"+t+"#!#level"+v+"#!#");
+						var i=0;
+						while(sha[0]!='a'||sha[1]!='b'||sha[2]!='c'){
+							sha=sha512_256("ld_"+sha+"#!#level"+v+"#!#"+i);
+							i++;
+						}
+						return sha.slice(5,15);
+					}
+					if(a.pass != getpassword(a.name, a.level))return 0;
+					return parseInt(a.level) || 0;
+				}catch(e){
+					return 0;
+				}
+			},
+			displayInGamePoints(a) {
+				return a;
+			},
+			getPoints(a) {
+				return Math.min(a/10, 1000);
+			},
+			maxPoints: 1000,
+			currentInGamePoints: 0
 		}
 	];
 
@@ -320,11 +352,11 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			} catch (e) { }
 		}
 		if (document.location.href.indexOf("/incrementalgames") != -1) {
-			$("#total_points2").html(Math.floor(totalMaxPoints * 1.5627));
+			$("#total_points2").html(Math.floor(totalMaxPoints * 1.5664));
 		}
 		try {
 			if (metabonus) {
-				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.5627).toNumber();
+				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.5664).toNumber();
 				if (Number.isFinite(bonus) && bonus > 1) return Math.max(0, Math.min(total_points, totalMaxPoints) * bonus);
 			}
 		} catch (e) { }
