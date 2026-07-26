@@ -67,7 +67,7 @@ layout: default
 </div>
 
 <script>
-function getpassword(t,v){
+function getPassword(t,v){
 	v=parseInt(v);
 	if(v<=1)return "11111";
 	var sha="1"+sha512_256("ld_"+t+"#!#level"+v+"#!#");
@@ -78,7 +78,7 @@ function getpassword(t,v){
 	}
 	return sha.slice(5,15);
 }
-function gettf(t){
+function getTalent(t){
 	var sha="1"+sha512_256("ld_"+t);
 	var i=0;
 	while(sha[0]!='a'||sha[1]!='b'||sha[2]!='c'){
@@ -87,7 +87,7 @@ function gettf(t){
 	}
 	return Math.floor(hget(sha[24])/4);
 }
-function getequipmentpassword(name,owner,level){
+function getEquipmentPassword(name,owner,level){
 	level=parseInt(level);
 	var d="ldeq_"+name+"!level"+level+"#"+owner;
 	var e=sha512_256(d);
@@ -111,9 +111,9 @@ function getplayerbaseattr(level,type){ // type: ATK,HP,DEF,SPD
 	return [99+level*level,496+4*level*level,99+level*level,100+Math.max(0,Math.max(level-10,Math.ceil(Math.max(level*level/10-100,level**1.5-100))))][type];
 }
 function getplayerattr(level,type){ // type: ATK,HP,DEF,SPD
-	if(level>=1000 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+Math.ceil(checkequipment(type)*Math.min([2,3.5,3.5,3.5][type],1+level/[10000,4000,4000,4000][type]))+Math.ceil([1.27,11,3.5,1.35][type]*level*level*(Math.log10(level)-1)/2);
-	if(level>=500 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1.25,10.4,3.1,1.35][type]*level*level*(Math.log10(level)-1)/2);
-	if(level>=100 && type==gettf(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1,8.4,2.45,1.1][type]*level*level*(Math.log10(level)-1)/2);
+	if(level>=1000 && type==getTalent(document.getElementById("name").value))return getplayerbaseattr(level,type)+Math.ceil(checkequipment(type)*Math.min([2,3.5,3.5,3.5][type],1+level/[10000,4000,4000,4000][type]))+Math.ceil([1.27,11,3.5,1.35][type]*level*level*(Math.log10(level)-1)/2);
+	if(level>=500 && type==getTalent(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1.25,10.4,3.1,1.35][type]*level*level*(Math.log10(level)-1)/2);
+	if(level>=100 && type==getTalent(document.getElementById("name").value))return getplayerbaseattr(level,type)+checkequipment(type)+Math.ceil([1,8.4,2.45,1.1][type]*level*level*(Math.log10(level)-1)/2);
 	return getplayerbaseattr(level,type)+checkequipment(type);
 }
 function getmonsterbaseattr(stage,type){ // type: ATK,HP,DEF,SPD
@@ -167,7 +167,7 @@ function checkequipment(t){
 		sx.innerHTML=["Invalid Level","等级不合法"][localStorage.lang];
 		return 0;
 	}
-	if(mm.value!=getequipmentpassword(mc.value,yh.value,level)){
+	if(mm.value!=getEquipmentPassword(mc.value,yh.value,level)){
 		sx.innerHTML=["Incorrect Password","密码不正确"][localStorage.lang];
 		return 0;
 	}
@@ -242,7 +242,7 @@ function getzb(a,b,p){
 	if(j==2)c+=Math.ceil(2*p+(0.3+pj*0.2)*p*p);
 	if(j==3)c+=Math.ceil(p+(0.2+pj*0.2)*p*p);
 	c+=[", Password: ","，密码："][localStorage.lang];
-	c+=(window.equip_password=getequipmentpassword(a,b,p));
+	c+=(window.equip_password=getEquipmentPassword(a,b,p));
 	return c;
 }
 function equip(){
@@ -271,7 +271,7 @@ function fight(){
 		alert(["Invalid Level","等级不合法"][localStorage.lang]);
 		return;
 	}
-	if(mm.value!=getpassword(yh.value,level)){
+	if(mm.value!=getPassword(yh.value,level)){
 		alert(["Incorrect Password","密码不正确"][localStorage.lang]);
 		return;
 	}
@@ -305,7 +305,7 @@ function fight(){
 	jg.innerHTML+=pfy;
 	jg.innerHTML+=[" SPD:"," 速度"][localStorage.lang];
 	jg.innerHTML+=psd;
-	var j=gettf(yh.value0);
+	var j=getTalent(yh.value);
 	if(level>=100){
 		var c="";
 		if(j==0){
@@ -414,7 +414,7 @@ function fight(){
 				jg.innerHTML+=["<br>You won the battle","<br>战斗胜利"][localStorage.lang];
 				if(level<stage)level=stage;
 				dj.value=level;
-				mm.value=getpassword(yh.value,level);
+				mm.value=getPassword(yh.value,level);
 				hdzb.innerHTML=getzb(xhddzb.value,yh.value,stage);
 				document.getElementById("battle_log").innerHTML=jg.innerHTML;
 				save_game();
