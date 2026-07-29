@@ -22,11 +22,15 @@ layout: default
 <br>
 <span class=zh>我现在的年龄是</span><span class=en>I'm </span><span id="age">16</span><span class=zh>岁，年级是高二。（年龄显示取决于本地系统时间）</span><span class=en> years old now (based on local computer time), and in Class 2-A of Hanasakigawa Girls' High School.</span><br>
 <span class=zh>我已经陪了loader3229 <span id="day"></span>天了。</span><br>
-<span id="randtext"></span><hr><!--好感度显示-->
-<span class=zh>您对香澄的好感度等级：</span><span class=en>Kasumi's Intimacy Level: </span><span id="intimacy_level"></span>
+<span id="randtext"></span><hr><!--好感度和属性显示-->
+<span class=zh>当前我的属性值是：生命值：2000，演出：</span><span class=en>My current attribute values: HP: 2000, Performance: </span><span id=attr0>11602</span>
+<span class=zh>，技巧：</span><span class=en>, Technique: </span><span id=attr1>12861</span>
+<span class=zh>，形象：</span><span class=en>, Visual: </span><span id=attr2>12023</span><br>
+<span class=zh>您对我的好感度等级：</span><span class=en>Kasumi's Intimacy Level: </span><span id="intimacy_level"></span>
 <span class=zh>，升级进度：</span><span class=en>, Progress to next level: </span><progress id="intimacy_progress" value="0" max="1"></progress><br>
 <a href="javascript:void(start_live());" id="live_link"></a>
-<div style="display:none;"><audio id=live_audio src="/static/live.mp3" preload></div>
+<div style="display:none;"><audio id=live_audio src="/static/live.mp3" preload></div><br>
+<a href="/static/ksm2.txt" class=zh onclick=addIntimacy(5)>点击查看我的战斗设定</a>
 <hr>
 <a href="/static/ksm_mmdpic2.png" onclick=addIntimacy(8)><span class=en>This is a photo of me, which is taken by loader3229. Click to view it! (Made using MMD9)</span><span class="zh">这是loader3229给我拍的照片哦~点击即可查看！ （使用MMD9制作）</span></a><br>
 <hr>
