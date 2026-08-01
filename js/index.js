@@ -733,7 +733,7 @@ function init_programming_contest(){
 }
 
 var plstyle=document.createElement('style');
-plstyle.innerHTML='#plbar{position:fixed;height:10px;bottom:0px;left:0px;background-color:#0000ff;}#pldisp{position:fixed;bottom:10px;left:0px;user-select:none;}#pldiv{height:40px;}';
+plstyle.innerHTML='#plbar{position:fixed;height:10px;bottom:0px;left:0px;background-color:#0000ff;}#pldisp{position:fixed;bottom:10px;left:0px;user-select:none;}#pldiv{height:1000px;}';
 document.head.append(plstyle);
 var plbar=document.createElement('div');
 plbar.id='plbar';
