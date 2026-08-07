@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Frame Viewer</title>
+    <style>
+        body { font-family: monospace; background: #222; color: #fff; padding: 20px; }
+        .container { display: flex; gap: 20px; }
+        canvas { border: 2px solid #666; }
+        .controls { margin: 10px 0; }
+        button { padding: 8px 16px; margin: 0 5px; font-size: 16px; cursor: pointer; }
+        .info { margin-top: 10px; font-size: 14px; line-height: 1.6; }
+        .note-log { max-height: 300px; overflow-y: auto; background: #333; padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>6z.mp4 Frame Viewer</h1>
+    <div class="controls">
+        <button id="prevFrame">&lt;&lt; Prev</button>
+        <button id="play">Play/Pause</button>
+        <button id="nextFrame">Next &gt;&gt;</button>
+        <span id="frameInfo"></span>
+    </div>
+    <div class="container">
+        <canvas id="canvas" width="480" height="270"></canvas>
+        <div>
+            <h3>Note Log</h3>
+            <button id="markNote">Mark Current Position as Note</button>
+            <button id="clearLog">Clear Log</button>
+            <div class="note-log" id="noteLog"></div>
+        </div>
+    </div>
+    <div class="info" id="debugInfo"></div>
+
+    <script>
+        const video = document.createElement('video');
+        video.src = '6z.mp4';
+        video.muted = true;
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let frameCount = 0;
+        let currentFrame = 0;
+        let isPlaying = false;
+        let markedNotes = [];
+        
+        // Guitar fretboard mapping
+        // Standard tuning: 1=high E (thinnest), 2=B, 3=G, 4=D, 5=A, 6=low E (thickest)
+        // In the video: guitar goes from bottom-left to top-right
+        // Nut (0 fret) is near the headstock (top-right)
+        // We need to map x,y positions to string+fret
+        
+        // From visual inspection:
+        // The headstock is at top-right, so nut (fret 0) is at approximately x=460
+        // Fret markers (stars) are visible at certain positions
+        
+        const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const STRING_BASE = {
+            // Approximate y positions for each string (to be determined)
+            // 1 string (high E, thinnest) - visually this should be topmost? Let's see
+        };
+        
+        function getNote(stringIdx, fret) {
+            // stringIdx: 0=1 string (high E), 1=B, 2=G, 3=D, 4=A, 5=6 string (low E)
+            const bases = ['E', 'B', 'G', 'D', 'A', 'E'];
+            const baseIdx = NOTES.indexOf(bases[stringIdx]);
+            const noteIdx = (baseIdx + fret) % 12;
+            return NOTES[noteIdx];
+        }
+        
+        video.addEventListener('loadedmetadata', () => {
+            console.log('Video loaded:', video.duration, 'seconds');
+            frameCount = Math.floor(video.duration * 30);
+            document.getElementById('frameInfo').textContent = ` / ${frameCount} frames (${video.duration.toFixed(2)}s, 30fps)`;
+            drawFrame();
+        });
+        
+        function drawFrame() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Draw a reference grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            document.getElementById('frameInfo').textContent = `Frame ${currentFrame} / ${frameCount} (${(currentFrame/30).toFixed(2)}s)`;
+        }
+        
+        function seekToFrame(frame) {
+            currentFrame = Math.max(0, Math.min(frame, frameCount - 1));
+            video.currentTime = currentFrame / 30;
+        }
+        
+        video.addEventListener('seeked', () => {
+            drawFrame();
+        });
+        
+        document.getElementById('prevFrame').onclick = () => {
+            seekToFrame(currentFrame - 1);
+        };
+        
+        document.getElementById('nextFrame').onclick = () => {
+            seekToFrame(currentFrame + 1);
+        };
+        
+        document.getElementById('play').onclick = () => {
+            if (isPlaying) {
+                video.pause();
+                isPlaying = false;
+            } else {
+                video.play();
+                isPlaying = true;
+            }
+        };
+        
+        video.addEventListener('timeupdate', () => {
+            if (isPlaying) {
+                currentFrame = Math.floor(video.currentTime * 30);
+                drawFrame();
+            }
+        });
+        
+        let mouseX = 0, mouseY = 0;
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = Math.floor(e.clientX - rect.left);
+            mouseY = Math.floor(e.clientY - rect.top);
+            document.getElementById('debugInfo').textContent = `Mouse: (${mouseX}, ${mouseY}) | Marked notes: ${markedNotes.length}`;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor(e.clientX - rect.left);
+            const y = Math.floor(e.clientY - rect.top);
+            markedNotes.push({frame: currentFrame, x, y, time: (currentFrame/30).toFixed(2)});
+            updateNoteLog();
+        });
+        
+        document.getElementById('markNote').onclick = () => {
+            // The finger (black glove) position should be where the note is fretted
+            // Let's try to detect dark pixels in the fretboard area
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Look for very dark pixels (black glove) in the right portion of image (fretboard area)
+            let darkPixels = [];
+            for (let y = 100; y < 270; y++) {
+                for (let x = 250; x < 470; x++) {
+                    const i = (y * 480 + x) * 4;
+                    const r = data[i], g = data[i+1], b = data[i+2];
+                    if (r < 50 && g < 50 && b < 50) {
+                        darkPixels.push({x, y, brightness: r+g+b});
+                    }
+                }
+            }
+            
+            if (darkPixels.length > 0) {
+                // Find centroid
+                let cx = 0, cy = 0;
+                darkPixels.forEach(p => { cx += p.x; cy += p.y; });
+                cx = Math.floor(cx / darkPixels.length);
+                cy = Math.floor(cy / darkPixels.length);
+                
+                markedNotes.push({frame: currentFrame, x: cx, y: cy, time: (currentFrame/30).toFixed(2), auto: true});
+                updateNoteLog();
+                
+                // Draw marker
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 8, 0, Math.PI*2);
+                ctx.fill();
+            }
+        };
+        
+        document.getElementById('clearLog').onclick = () => {
+            markedNotes = [];
+            updateNoteLog();
+            drawFrame();
+        };
+        
+        function updateNoteLog() {
+            const log = document.getElementById('noteLog');
+            log.innerHTML = markedNotes.map((n, i) => 
+                `${i+1}. Frame ${n.frame} (${n.time}s) - pos: (${n.x}, ${n.y}) ${n.auto ? '[auto]' : ''}`
+            ).join('<br>');
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') seekToFrame(currentFrame - 1);
+            if (e.key === 'ArrowRight') seekToFrame(currentFrame + 1);
+            if (e.key === ' ') { e.preventDefault(); document.getElementById('play').click(); }
+        });
+    </script>
+</body>
+</html>

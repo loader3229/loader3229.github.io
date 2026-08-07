@@ -1,0 +1,55 @@
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;All Note Frames&lt;/title&gt;
+&lt;style&gt;
+body { background: #000; color: #fff; font-family: monospace; }
+.grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; }
+.frame { border: 2px solid #333; padding: 5px; background: #111; }
+.frame img { image-rendering: pixelated; width: 240px; }
+.frame .lbl { color: #0f0; text-align: center; margin: 5px 0; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="grid" id="g"&gt;&lt;/div&gt;
+&lt;script&gt;
+const g = document.getElementById('g');
+const files = [
+    'note_00_start_f10.png',
+    'note_01_f19.png',
+    'note_02_f42.png',
+    'note_03_f64.png',
+    'note_04_f87.png',
+    'note_05_f109.png',
+    'note_06_f132.png',
+    'note_07_f171.png',
+    'note_08_f182.png',
+    'note_09_f216.png',
+    'note_10_f261.png',
+    'note_11_f289.png',
+    'note_12_f302.png',
+    'note_13_f311.png',
+    'note_14_f356.png',
+    'note_15_f379.png',
+    'note_16_f402.png',
+    'note_17_f424.png',
+    'note_18_f447.png',
+    'note_19_f469.png',
+    'note_20_f492.png',
+    'note_21_f531.png',
+    'note_22_f542.png',
+    'note_23_f576.png',
+    'note_24_f621.png',
+    'note_25_f649.png',
+    'note_26_f662.png',
+    'note_27_f671.png'
+];
+files.forEach((f, i) =&gt; {
+    const d = document.createElement('div');
+    d.className = 'frame';
+    d.innerHTML = `&lt;div class="lbl"&gt;${i}&lt;/div&gt;&lt;img src="/static/note_frames/${f}"&gt;`;
+    g.appendChild(d);
+});
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;

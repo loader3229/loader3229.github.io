@@ -1,0 +1,29 @@
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Note Frames Viewer&lt;/title&gt;
+&lt;style&gt;
+body { font-family: monospace; background: #222; color: #eee; padding: 20px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.frame { border: 2px solid #555; padding: 5px; background: #000; }
+.frame img { width: 100%; image-rendering: pixelated; }
+.frame .label { color: #ff0; font-size: 12px; text-align: center; margin-top: 5px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Note Frames (0-27)&lt;/h1&gt;
+&lt;div class="grid" id="grid"&gt;&lt;/div&gt;
+&lt;script&gt;
+const grid = document.getElementById('grid');
+for (let i = 0; i &lt;= 27; i++) {
+    const padded = i.toString().padStart(2, '0');
+    // Find the matching file
+    const div = document.createElement('div');
+    div.className = 'frame';
+    div.innerHTML = `&lt;div class="label"&gt;Note ${i}&lt;/div&gt;`;
+    grid.appendChild(div);
+}
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
