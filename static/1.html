@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+Math.log10=Math.log10||function(a){return Math.log(a)*Math.LOG10E;}
+Math.sign=Math.sign||function(a){if(a==0)return Math.sign(1/a)==1?0:-0;if(a>0)return 1;if(a<0)return -1;return NaN;}
+Number.isFinite=Number.isFinite||function(a){return a<=Number.MAX_VALUE && a>=-Number.MAX_VALUE;}
+</script>
+<script src="https://cdn.staticaly.com/gh/Patashu/break_eternity.js/071096c433fc219bf201fd82566033ad794336be/break_eternity.min.js" type="text/javascript"></script>
+<script>
+var exp=new Decimal(0);
+var level2=0;
+var gold=new Decimal(0);
+var klevel=[1,0,0,0];
+var kbase=[100,1e5,1e6,1e7];
+var kexp=[1.2,1.2,1.2,1.2];
+function getlevel(){
+return exp.plus(2).log(2).pow(1.5).floor().toNumber();
+}
+function getnext(){
+return Decimal.pow(2,new Decimal(getlevel()+1).pow(2/3)).sub(2);
+}
+function getprog(){
+var _1=Decimal.pow(2,new Decimal(getlevel()).pow(2/3)).sub(2);
+var _2=Decimal.pow(2,new Decimal(getlevel()+1).pow(2/3)).sub(2);
+return exp.sub(_1).div(_2.sub(_1)).toNumber();
+}
+function gets(){
+return Decimal.pow(1.1,level2).sub(1).div(1000);
+}
+var time1=Date.now();
+function update(){
+var time2=Date.now();
+gold=gold.plus(gets().mul(time2-time1).mul(getg()));
+exp=exp.plus(gets().mul(time2-time1).mul(gete()));
+time1=time2;
+document.getElementById("level1").innerHTML=getlevel();
+document.getElementById("exp").innerHTML=disp(exp);
+document.getElementById("exp2").innerHTML=disp(getnext());
+document.getElementById("exp3").innerHTML=disp(gete());
+document.getElementById("prog").value=getprog();
+document.getElementById("gold").innerHTML=disp(gold);
+document.getElementById("gold3").innerHTML=disp(getg());
+document.getElementById("ac").innerHTML=disp(gets().mul(1000));
+document.getElementById("ac2").innerHTML=disp(Decimal.pow(2,level2));
+document.getElementById("level2").innerHTML=level2;
+for(var i=0;i<=3;i++){
+document.getElementById("kl"+i).innerHTML=klevel[i];
+document.getElementById("kg"+i).innerHTML=disp(Decimal.pow(kexp[i],klevel[i]).mul(kbase[i]));
+
+}
+}
+function gete(){
+return (1+getlevel()*0.01)*(klevel[0]+(getlevel()+klevel[0])*(klevel[1]+(getlevel()+klevel[1]*3)*(klevel[2]+(getlevel()+klevel[2]*6)*(klevel[3]))));
+}
+function getg(){
+return getlevel()+Math.pow(Math.log2(gete())+1,3);
+}
+function click(){
+gold=gold.plus(getg());
+exp=exp.plus(gete());
+}
+function disp(a){
+var b=a.toPrecision(4).toString();
+b=b.replace("+","");
+return b;
+}
+function upac(){
+if(gold.gte(Decimal.pow(2,level2))){
+gold=gold.sub(Decimal.pow(2,level2));
+level2++;
+}
+}
+function kup(a){
+if(gold.gte(Decimal.pow(kexp[a],klevel[a]).mul(kbase[a]))){
+gold=gold.sub(Decimal.pow(kexp[a],klevel[a]).mul(kbase[a]));
+klevel[a]++;
+}
+}
+setInterval(update,20);
+</script>
+</head>
+<body>
+Level: <span id="level1"></span><br>
+EXP: <span id="exp"></span>/<span id="exp2"></span> (PC:<span id="exp3"></span>)<br>
+<progress id="prog" min="0" max="1" ></progress><br>
+Gold: <span id="gold"></span> (PC:<span id="gold3"></span>)<br>
+Autoclick Level: <span id="level2"></span> (<span id="ac"></span>/s)<br>
+<a href="javascript:click()">Click</a>
+<a href="javascript:upac()">Autoclick Level Up(<span id="ac2"></span> Gold)</a>
+<br>
+<br>
+Gen0 Level: <span id="kl0"></span><br>
+<a href="javascript:kup(0)">Gen0 Level Up(<span id="kg0"></span> Gold)</a>
+<br>
+<br>
+Gen1 Level: <span id="kl1"></span><br>
+<a href="javascript:kup(1)">Gen1 Level Up(<span id="kg1"></span> Gold)</a>
+<br>
+<br>
+Gen2 Level: <span id="kl2"></span><br>
+<a href="javascript:kup(2)">Gen2 Level Up(<span id="kg2"></span> Gold)</a>
+<br>
+<br>
+Gen3 Level: <span id="kl3"></span><br>
+<a href="javascript:kup(3)">Gen3 Level Up(<span id="kg3"></span> Gold)</a>
+<br>
+<br>
+</body>
+</html>
