@@ -6,11 +6,13 @@ var guke=0;
 var yuangong=0;
 var waizhuang=0;
 var neizhuang=0;
+var dengji=0;
+var pq=["一","十","一百","一千","一万","十万"];
 function main(){
 	rmb-=yuangong*0.1*Math.pow(1.5,Math.floor(yuangong/10));
 	var guke0=0,sy=0;
 	for(var i=0;i<yuangong;i++){
-		if(Math.random()<0.2 && guke>0){
+		if(Math.random()<0.05 && guke>0){
 			guke--;guke0++;
 			sy+=shouyi();
 		}
@@ -18,7 +20,7 @@ function main(){
 	if(guke0)document.getElementById("log").innerHTML="你的员工服务了"+guke0+"位顾客，你得到了现金￥"+sy;
 	rmb+=sy;
 	rmb=Math.round(rmb*100)/100;
-	if(guke0 && rmb>=1e8)rmb=1e8,document.getElementById("log").innerHTML+="<br>你赚到了一个亿！";
+	if(guke0 && rmb>=1e8*Math.pow(10,dengji) && dengji<5)rmb=1e8*Math.pow(10,dengji),document.getElementById("log").innerHTML+="<br>你赚到了"+pq[dengji]+"个亿！";
 	display();
 	var guke1=0;
 	for(var i=0;i<guke;i++){
@@ -41,12 +43,15 @@ function display(){
 	document.getElementById("yuangong").innerHTML=yuangong;
 	document.getElementById("yuangong2").innerHTML=Math.round(yuangong*10*Math.pow(1.5,Math.floor(yuangong/10)))/100;
 	document.getElementById("yuangong3").innerHTML=Math.floor((Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10))-1)*100);
-	document.getElementById("yuangong4").innerHTML=Math.floor(10000*Math.pow(1.149756995398,yuangong))/100;
-	document.getElementById("yuangong5").innerHTML=Math.floor(10000*Math.pow(1.149756995398,yuangong-1))/100;
-	document.getElementById("mubiao1").checked=rmb==1e8;
-	document.getElementById("mubiao2").checked=yuangong==100;
+	document.getElementById("yuangong4").innerHTML=Math.ceil(10000*Math.pow(1.1497569953977359,yuangong))/100;
+	document.getElementById("yuangong5").innerHTML=Math.ceil(10000*Math.pow(1.1497569953977359,yuangong-1))/100;
+	document.getElementById("mubiao1").checked=rmb>=1e8*Math.pow(10,dengji);
+	document.getElementById("mubiao2").checked=yuangong>=Math.ceil(99.5+16.5*dengji);
 	document.getElementById("mubiao3").checked=(waizhuang==95&&neizhuang==25);
-	document.getElementById("jingshouru").innerHTML=Math.round((15*Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10)))*(5+waizhuang)-yuangong*10*Math.pow(1.5,Math.floor(yuangong/10)))/100;
+	document.getElementById("mubiao1a").innerHTML=pq[dengji];
+	document.getElementById("mubiao2a").innerHTML=Math.ceil(99.5+16.5*dengji);
+	document.getElementById("jingshouru").innerHTML=Math.round(((15+dengji*5)*Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10)))*(5+waizhuang)-yuangong*10*Math.pow(1.5,Math.floor(yuangong/10)))/100;
+	document.getElementById("jingshouru2").innerHTML=Math.round(((15+dengji*5)*Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10)))*(5+waizhuang)*(1-Math.pow(0.95,yuangong))/(1-Math.pow(0.95,yuangong)*(0.75+neizhuang*0.01))-yuangong*10*Math.pow(1.5,Math.floor(yuangong/10)))/100;
 }
 function waizhuangshengji(){
 	if(rmb>Math.floor(1000*Math.pow(1.125,waizhuang))/100 && waizhuang<95){
@@ -65,8 +70,8 @@ function neizhuangshengji(){
 	}
 }
 function guyong(){
-	if(rmb>=Math.floor(10000*Math.pow(1.149756995398,yuangong))/100){
-		rmb-=(Math.floor(10000*Math.pow(1.149756995398,yuangong))/100);
+	if(rmb>=Math.floor(10000*Math.pow(1.1497569953977359,yuangong))/100){
+		rmb-=(Math.floor(10000*Math.pow(1.1497569953977359,yuangong))/100);
 		rmb=Math.round(rmb*100)/100;
 		yuangong++;
 		display();
@@ -74,15 +79,15 @@ function guyong(){
 }
 function jiegu(){
 	if(yuangong>0 && yuangong<=99){
-		rmb+=(Math.floor(10000*Math.pow(1.149756995398,yuangong-1))/100);
+		rmb+=(Math.floor(10000*Math.pow(1.1497569953977359,yuangong-1))/100);
 		rmb=Math.round(rmb*100)/100;
 		yuangong--;
-		if(rmb>=1e8)rmb=1e8,document.getElementById("log").innerHTML+="<br>你赚到了一个亿！";
+		if(rmb>=1e8*Math.pow(10,dengji)&& dengji<5)rmb=1e8*Math.pow(10,dengji),document.getElementById("log").innerHTML+="<br>你赚到了"+pq[dengji]+"个亿！";
 		display();
 	}
 }
 function shouyi(){
-	return Math.floor((10+Math.random()*10)*Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10))*100)/100;
+	return Math.floor((10+Math.random()*(10+dengji*10))*Math.pow(1.1,yuangong)*Math.pow(1.3,Math.floor(yuangong/10))*100)/100;
 }
 function fuwu(){
 	if(guke>0){
@@ -91,12 +96,25 @@ function fuwu(){
 		document.getElementById("log").innerHTML="你服务了一位顾客，你得到了现金￥"+sy;
 		rmb+=sy;
 		rmb=Math.round(rmb*100)/100;
-		if(rmb>=1e8)rmb=1e8,document.getElementById("log").innerHTML+="<br>你赚到了一个亿！";
+		if(rmb>=1e8*Math.pow(10,dengji)&& dengji<5)rmb=1e8*Math.pow(10,dengji),document.getElementById("log").innerHTML+="<br>你赚到了"+pq[dengji]+"个亿！";
 		display();
 	}
 }
 function start(){
 	main();
+}
+function chongzhi(){
+	if(dengji>=5){
+		alert("重置次数已达到上限！");
+		return;
+	}
+	if(rmb>=1e8*Math.pow(10,dengji)&&yuangong>=Math.ceil(99.5+16.5*dengji)&&waizhuang==95&&neizhuang==25){
+		dengji++;rmb=0;guke=0;yuangong=0;neizhuang=0;waizhuang=10*dengji;
+		document.getElementById("log").innerHTML="";
+		display();
+	}else{
+		alert("目标都完成后才可以重置！");
+	}
 }
 </script>
 <body onload="start()">
@@ -104,6 +122,7 @@ function start(){
 员工：<span id="yuangong"></span>人，工资￥<span id="yuangong2"></span>/秒，收益加成：+<span id="yuangong3"></span>%<br>
 顾客：<span id="guke"></span>人<br>
 预计净收入：￥<span id="jingshouru"></span>/秒<br>
+预计净收入（挂机）：￥<span id="jingshouru2"></span>/秒<br>
 <br>
 <a href="javascript:fuwu();">服务顾客</a><br>
 <span id="log"></span>
@@ -118,9 +137,10 @@ function start(){
 <hr>
 我们的目标是：
 <ol>
-<li><input type="checkbox" id="mubiao1" disabled="disabled">赚到一个亿</li>
-<li><input type="checkbox" id="mubiao2" disabled="disabled">拥有100名员工</li>
+<li><input type="checkbox" id="mubiao1" disabled="disabled">赚到<span id="mubiao1a"></span>个亿</li>
+<li><input type="checkbox" id="mubiao2" disabled="disabled">拥有<span id="mubiao2a"></span>名员工</li>
 <li><input type="checkbox" id="mubiao3" disabled="disabled">将店面装修得很完美</li>
 </ol>
+<a href="javascript:chongzhi();">重置</a>
 </body>
 </html>

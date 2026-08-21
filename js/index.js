@@ -189,9 +189,9 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 				return a;
 			},
 			getPoints(a) {
-				return Math.min(a, 1000);
+				return Math.min(a, 1200);
 			},
-			maxPoints: 1000,
+			maxPoints: 1200,
 			currentInGamePoints: 0
 		},
 		{
@@ -352,11 +352,11 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			} catch (e) { }
 		}
 		if (document.location.href.indexOf("/incrementalgames") != -1) {
-			$("#total_points2").html(Math.floor(totalMaxPoints * 1.579));
+			$("#total_points2").html(Math.floor(totalMaxPoints * 1.58));
 		}
 		try {
 			if (metabonus) {
-				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.579).toNumber();
+				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.58).toNumber();
 				if (Number.isFinite(bonus) && bonus > 1) return Math.max(0, Math.min(total_points, totalMaxPoints) * bonus);
 			}
 		} catch (e) { }
