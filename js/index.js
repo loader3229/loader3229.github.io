@@ -135,16 +135,16 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			location: "multitree",
 			getInGamePoints(a) {
 				let tmp = 0;
-				for (let i = 1; i <= 9; i++)tmp += parseInt(JSON.parse(atob(a)).tm.buyables[i]);
+				for (let i = 1; i <= 10; i++)tmp += parseInt(JSON.parse(atob(a)).tm.buyables[i]);
 				return tmp;
 			},
 			displayInGamePoints(a) {
 				return a;
 			},
 			getPoints(a) {
-				return Math.min(a * 8, 1408);
+				return Math.min(a * 7, 1379);
 			},
-			maxPoints: 1408,
+			maxPoints: 1379,
 			currentInGamePoints: 0
 		},
 		{
@@ -352,11 +352,11 @@ $('#discord').attr('href','https://discord.gg/jztUReQ2vT');
 			} catch (e) { }
 		}
 		if (document.location.href.indexOf("/incrementalgames") != -1) {
-			$("#total_points2").html(Math.floor(totalMaxPoints * 1.5664));
+			$("#total_points2").html(Math.floor(totalMaxPoints * 1.579));
 		}
 		try {
 			if (metabonus) {
-				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.5664).toNumber();
+				let bonus = player.metapoints.add(1).log10().div(1000).add(1).min(1.579).toNumber();
 				if (Number.isFinite(bonus) && bonus > 1) return Math.max(0, Math.min(total_points, totalMaxPoints) * bonus);
 			}
 		} catch (e) { }
