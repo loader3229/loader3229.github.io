@@ -66,12 +66,12 @@ setInterval(function(){
 	
 	if(can_live()){
 		var mult=1+1/(parseInt(localStorage.kasumiLivecount)+2);
-		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="让loader3229的户山香澄开始演出。将会获得大量好感度，并且以后所有好感度获取变为"+(mult.toFixed(4))+"倍。";
-		else document.getElementById("live_link").innerHTML="Let loader3229's Kasumi start a live show. You will gain a lot of Kasumi's Intimacy Points, and gain a permanent x"+(mult.toFixed(4))+" Intimacy Points gain.";
+		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="让loader3229的户山香澄开始演出，每次演出需要30秒时间。将会获得大量好感度，并且以后所有好感度获取变为"+(mult.toFixed(4))+"倍。";
+		else document.getElementById("live_link").innerHTML="Let loader3229's Kasumi start a live show, each live show takes 30 seconds. You will gain a lot of Kasumi's Intimacy Points, and gain a permanent x"+(mult.toFixed(4))+" Intimacy Points gain.";
 	}else if(live_running){
-		var stat=document.getElementById("live_audio").currentTime/30*100;
-		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄正在进行演出……（"+(stat.toFixed(1))+"%）";
-		else document.getElementById("live_link").innerHTML="loader3229's Kasumi is performing a live show... "+(stat.toFixed(1))+"%";
+		var stat=30-document.getElementById("live_audio").currentTime;
+		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄正在进行演出……（剩余"+(stat.toFixed(1))+"秒）";
+		else document.getElementById("live_link").innerHTML="loader3229's Kasumi is performing a live show... Remaining time: "+(stat.toFixed(1))+"s";
 	}else{
 		var time=(3600000-Date.now()+parseInt(localStorage.kasumilastlive))/1000;
 		if(localStorage.lang==1)document.getElementById("live_link").innerHTML="loader3229的户山香澄暂时不能进行演出……请等待"+(time.toFixed(1))+"秒。";
