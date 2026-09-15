@@ -17,6 +17,9 @@ def main():
   with open(os.path.join(out_dir, "charts.csv"), encoding="utf-8") as f:
     rows = list(csv.DictReader(f))
   for row in rows:
+    path = os.path.join(out_dir, row["id"] + ".json")
+    if os.path.exists(path):
+      continue
     post = get_chart(int(row["bestdori_id"]))
     chart = json.loads(json.dumps(post["chart"]))
     data = {
@@ -29,7 +32,6 @@ def main():
       "difficultyCustomName": row["difficultyCustomName"],
       "chart": chart,
     }
-    path = os.path.join(out_dir, row["id"] + ".json")
     with open(path, "w", encoding="utf-8") as f:
       json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print("saved", path)
